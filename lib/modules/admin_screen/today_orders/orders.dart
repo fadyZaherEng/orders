@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
@@ -8,19 +9,14 @@ import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/lang/arabic.dart';
-import 'package:orders/shared/lang/english.dart';
-import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class TodayOrders extends StatelessWidget {
-   TodayOrders({super.key});
-   String  lang=SharedHelper.get(key: "lang");
+   const TodayOrders({super.key});
    @override
    Widget build(BuildContext context) {
      return BlocConsumer<OrdersHomeCubit,OrdersHomeStates>(
        listener: (ctx,state){},
        builder: (ctx,state){
-         lang=SharedHelper.get(key: "lang");
          return  ConditionalBuilder(
            condition: OrdersHomeCubit
                .get(context)
@@ -58,9 +54,9 @@ class TodayOrders extends StatelessWidget {
            padding: const EdgeInsets.all(8.0),
            child: Row(
              children: [
-               Text('${lang=='arabic'?arabic["Order Name: "]:english["Order Name: "]}${order.orderName}'),
+               Text('${"Order Name: ".tr()}${order.orderName}'),
                const Spacer(),
-               Text('${lang=='arabic'?arabic["Total Price: "]:english["Total Price: "]}${order.totalPrice.toString()}'),
+               Text('${"Total Price: ".tr()}${order.totalPrice.toString()}'),
              ],
            ),
          ),

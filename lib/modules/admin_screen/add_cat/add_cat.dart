@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
@@ -27,7 +28,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   double s=0;
 
   var formKey=GlobalKey<FormState>();
-  String lang=SharedHelper.get(key: "lang");
   @override
   void initState() {
     super.initState();
@@ -53,11 +53,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
-        lang=SharedHelper.get(key: "lang");
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title:  Text(lang=='arabic'?arabic["Add Category"]:english["Add Category"]),
+            title:  Text("Add Category".tr()),
           ),
           body: SingleChildScrollView(
             child: Form(
@@ -71,10 +70,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: catNameController,
                       prefixIcon: const Icon(Icons.category),
-                      text:lang=='arabic'?arabic["Category Name: "]:english["Category Name: "],
+                      text:"Category Name: ".tr(),
                       validate: (val) {
                         if (val.toString().isEmpty) {
-                          return lang=='arabic'?arabic["Please Enter Category Name"]:english["Please Enter Category Name"];
+                          return "Please Enter Category Name".tr();
                         }
                         return null;
                       },
@@ -86,10 +85,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: catAmountController,
                       prefixIcon: const Icon(Icons.numbers),
-                      text:lang=='arabic'?arabic["Amount"]:english["Amount"],
+                      text:"Amount".tr(),
                       validate: (val) {
                         if (val.toString().isEmpty) {
-                          return lang=='arabic'?arabic['Please Enter Amount']:english['Please Enter Amount'] ;
+                          return "Please Enter Amount".tr() ;
                         }
                         return null;
                       },
@@ -101,10 +100,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: priceController,
                       prefixIcon: const Icon(Icons.price_check),
-                      text:lang=='arabic'?arabic["Price"]:english["Price"],
+                      text:"Price".tr(),
                       validate: (val) {
                         if (val.toString().isEmpty) {
-                          return lang=='arabic'?arabic["Please Enter total price"]:english["Please Enter total price"] ;
+                          return "Please Enter total price".tr() ;
                         }
                         return null;
                       },
@@ -116,10 +115,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: salOfChargingController,
                       prefixIcon: const Icon(Icons.charging_station),
-                      text:lang=='arabic'?arabic["Charging"]:english["Charging"] ,
+                      text:"Charging".tr() ,
                       validate: (val) {
                         if (val.toString().isEmpty) {
-                          return lang=='arabic'?arabic["Please Enter Charging"]:english["Please Enter Charging"] ;
+                          return "Please Enter Charging".tr() ;
                         }
                         return null;
                       },
@@ -131,7 +130,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: notesController,
                       prefixIcon: const Icon(Icons.notes),
-                      text:lang=='arabic'?arabic["Notes"]:english["Notes"],
+                      text:"Notes".tr(),
                       validate: (val) {
                         return null;
                       },
@@ -139,7 +138,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Text("${lang=='arabic'?arabic["Total Price:"]:english["Total Price:"]} $totalPrice"),
+                  Text("${"Total Price:".tr()} $totalPrice"),
                   const SizedBox(
                     height: 10,
                   ),
@@ -163,7 +162,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                        }
                       },
                       child: Text(
-                        lang=='arabic'?arabic["Save"]:english["Save"],
+                        "Save".tr(),
                         style: TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 14,

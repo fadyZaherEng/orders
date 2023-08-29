@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
@@ -12,8 +13,6 @@ import 'package:orders/modules/admin_screen/search_using_barcode/search.dart';
 import 'package:orders/modules/admin_screen/share_order/copy_orders.dart';
 import 'package:orders/modules/login/login.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/lang/arabic.dart';
-import 'package:orders/shared/lang/english.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 import 'package:orders/shared/styles/Icon_broken.dart';
 
@@ -25,7 +24,6 @@ class AdminShowOrders extends StatefulWidget {
 }
 
 class _AdminShowOrdersState extends State<AdminShowOrders> {
-  String lang = SharedHelper.get(key: "lang");
 
   @override
   void initState() {
@@ -39,7 +37,6 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
-        lang = SharedHelper.get(key: "lang");
         return Scaffold(
           appBar: AppBar(
             title: Padding(
@@ -100,9 +97,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               navigateToWithReturn(
                                   context, const AddCategoryScreen());
                             },
-                            child: Text(lang == 'arabic'
-                                ? arabic["Add Category"]
-                                : english["Add Category"]),
+                            child: Text("Add Category".tr()),
                           ),
                         ),
                       if(OrdersHomeCubit
@@ -119,9 +114,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               navigateToWithReturn(
                                   context, const ShowCategoriesScreen());
                             },
-                            child: Text(lang == 'arabic'
-                                ? arabic["Show Categories"]
-                                : english["Show Categories"]),
+                            child: Text("Show Categories".tr()),
                           ),
                         ),
                       if(OrdersHomeCubit.get(context).currentAdmin != null
@@ -139,9 +132,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                                   .get(context)
                                   .orders));
                             },
-                            child: Text(lang == 'arabic'
-                                ? arabic["Share Orders"]
-                                : english["Share Orders"]),
+                            child: Text("Share Orders".tr()),
                           ),
                         ),
                       DropdownMenuItem(
@@ -152,9 +143,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             navigateToWithReturn(
                               context, const SearchByBarcodeScreen(),);
                           },
-                          child: Text(lang == 'arabic'
-                              ? arabic['Search By Barcode']
-                              : english['Search By Barcode']),
+                          child: Text('Search By Barcode'.tr()),
                         ),
                       ),
                       if(OrdersHomeCubit.get(context).currentAdmin != null
@@ -169,9 +158,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               Navigator.pop(context);
                               navigateToWithReturn(context, PermissionScreen());
                             },
-                            child: Text(lang == 'arabic'
-                                ? arabic["Permission"]
-                                : english["Permission"]),
+                            child: Text("Permission".tr()),
                           ),
                         ),
                       DropdownMenuItem(
@@ -181,7 +168,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             Navigator.pop(context);
                             navigateToWithReturn(context, const ScannerScreen());
                           },
-                          child: const Text("Scanner"),
+                          child:  Text("Scanner".tr()),
                         ),
                       ),
                       DropdownMenuItem(
@@ -191,9 +178,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             Navigator.pop(context);
                             OrdersHomeCubit.get(context).modeChange();
                           },
-                          child: Text(lang == 'arabic'
-                              ? arabic["Change Theme"]
-                              : english["Change Theme"]),
+                          child: Text("Change Theme".tr()),
                         ),
                       ),
                       DropdownMenuItem(
@@ -201,11 +186,9 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                         child: InkWell(
                           onTap: () {
                             Navigator.pop(context);
-                            OrdersHomeCubit.get(context).langChange();
+                            OrdersHomeCubit.get(context).langChange(context);
                           },
-                          child: Text(lang == 'arabic'
-                              ? arabic["Change lang"]
-                              : english["Change lang"]),
+                          child: Text("Change lang".tr()),
                         ),
                       ),
                       DropdownMenuItem(
@@ -217,9 +200,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             SharedHelper.remove(key: 'uid');
                             navigateToWithoutReturn(context, LogInScreen());
                           },
-                          child: Text(lang == 'arabic'
-                              ? arabic["Log Out"]
-                              : english["Log Out"]),
+                          child: Text("Log Out".tr()),
                         ),
                       ),
                     ],
@@ -237,17 +218,11 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
           bottomNavigationBar: BottomNavigationBar(
             items: [
               BottomNavigationBarItem(icon: const Icon(IconBroken.Home),
-                  label: lang == 'arabic'
-                      ? arabic["Show Orders"]
-                      : english["Show Orders"]),
+                  label: "Show Orders".tr()),
               BottomNavigationBarItem(icon: const Icon(Icons.today),
-                  label: lang == 'arabic'
-                      ? arabic['Today Orders']
-                      : english['Today Orders']),
+                  label:'Today Orders'.tr()),
               BottomNavigationBarItem(icon: const Icon(IconBroken.Search),
-                  label: lang == 'arabic'
-                      ? arabic['Search By Date']
-                      : english['Search By Date']),
+                  label: 'Search By Date'.tr()),
             ],
             currentIndex: OrdersHomeCubit
                 .get(context)

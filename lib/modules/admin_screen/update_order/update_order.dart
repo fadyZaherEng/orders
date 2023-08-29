@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, must_be_immutable
 
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
@@ -8,9 +9,6 @@ import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
 import 'package:orders/modules/admin_screen/print_order/order.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/lang/arabic.dart';
-import 'package:orders/shared/lang/english.dart';
-import 'package:orders/shared/network/local/cashe_helper.dart';
 import 'package:screenshot/screenshot.dart';
 
 class UpdateOrdersScreen extends StatefulWidget {
@@ -28,7 +26,6 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
   dynamic totalPrice;
   var screenShotController = ScreenshotController();
   var formKey = GlobalKey<FormState>();
-  String lang = SharedHelper.get(key: 'lang');
 
   @override
   void initState() {
@@ -68,7 +65,6 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
-        lang = SharedHelper.get(key: 'lang');
         return Scaffold(
           body: SingleChildScrollView(
             child: Column(
@@ -90,80 +86,58 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Order Name: "]
-                                  : english["Order Name: "]}${widget.orderModel
+                              Text('${"Order Name: ".tr()}${widget.orderModel
                                   .orderName}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Order Phone: "]
-                                  : english["Order Phone: "]}${widget.orderModel
+                              Text('${"Order Phone: ".tr()}${widget.orderModel
                                   .orderPhone}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Order City: "]
-                                  : english["Order City: "]}${widget.orderModel
+                              Text('${"Order City: ".tr()}${widget.orderModel
                                   .conservation}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Order Area: "]
-                                  : english["Order Area: "]}${widget.orderModel
+                              Text('${"Order Area: ".tr()}${widget.orderModel
                                   .city}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Order Address: "]
-                                  : english["Order Address: "]} ${widget.orderModel
+                              Text('${"Order Address: ".tr()} ${widget.orderModel
                                   .address}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Order Barcode: "]
-                                  : english["Order Barcode: "]}${widget.orderModel
+                              Text('${"Order Barcode: ".tr()}${widget.orderModel
                                   .barCode}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Item Name: "]
-                                  : english["Item Name: "]}${widget.orderModel
+                              Text('${"Item Name: ".tr()}${widget.orderModel
                                   .type}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Employer Name: "]
-                                  : english["Employer Name: "]}${widget.orderModel
+                              Text('${"Employer Name: ".tr()}${widget.orderModel
                                   .employerName}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Employer Email: "]
-                                  : english["Employer Email: "]}${widget.orderModel
+                              Text('${"Employer Email: ".tr()}${widget.orderModel
                                   .employerEmail}'),
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text('${lang == 'arabic'
-                                  ? arabic["Employer Phone: "]
-                                  : english["Employer Phone: "]}${widget.orderModel
+                              Text('${"Employer Phone: ".tr()}${widget.orderModel
                                   .employerPhone}'),
                               const SizedBox(
                                 height: 10,
                               ),
                               Text(
-                                  '${lang == 'arabic'
-                                      ? arabic["Order Number: "]
-                                      : english["Order Number: "]}${widget.orderModel
+                                  '${"Order Number: ".tr()}${widget.orderModel
                                       .number.toString()}'),
                               const SizedBox(
                                 height: 10,
@@ -171,7 +145,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               //barcode
                               Center(
                                 child: BarcodeWidget(
-                                  data: widget.orderModel.orderId,
+                                  data: widget.orderModel.barCode,
                                   barcode: Barcode.qrCode(
                                       errorCorrectLevel: BarcodeQRCorrectionLevel.high),
                                   width: 200,
@@ -185,16 +159,12 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   context: context,
                                   Controller: priceController,
                                   prefixIcon: const Icon(Icons.price_check),
-                                  text: lang == 'arabic'
-                                      ? arabic["Price"]
-                                      : english["Price"],
+                                  text: "Price".tr(),
                                   validate: (val) {
                                     if (val
                                         .toString()
                                         .isEmpty) {
-                                      return lang == 'arabic'
-                                          ? arabic["Please Enter total price"]
-                                          : english["Please Enter total price"];
+                                      return "Please Enter total price".tr();
                                     }
                                     return null;
                                   },
@@ -206,16 +176,12 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   context: context,
                                   Controller: salOfChargingController,
                                   prefixIcon: const Icon(Icons.charging_station),
-                                  text: lang == 'arabic'
-                                      ? arabic["Charging"]
-                                      : english["Charging"],
+                                  text: "Charging".tr(),
                                   validate: (val) {
                                     if (val
                                         .toString()
                                         .isEmpty) {
-                                      return lang == 'arabic'
-                                          ? arabic["Please Enter Charging"]
-                                          : english["Please Enter Charging"];
+                                      return "Please Enter Charging".tr();
                                     }
                                     return null;
                                   },
@@ -223,9 +189,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              Text("${lang == 'arabic'
-                                  ? arabic["Total Price: "]
-                                  : english["Total Price: "]}$totalPrice"),
+                              Text("${"Total Price: ".tr()}$totalPrice"),
 
 
                             ],
@@ -254,7 +218,6 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               if (formKey.currentState!.validate()) {
                                 OrdersHomeCubit.get(context)
                                     .updateOrder(
-                                    orderId: widget.orderModel.orderId,
                                     orderName: widget.orderModel
                                         .orderName,
                                     conservation: widget.orderModel
@@ -279,13 +242,10 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                     salOfCharging: widget.orderModel
                                         .salOfCharging,
                                     context: context);
-                                print(widget.orderModel.orderId);
                               }
                             },
                             child: Text(
-                              lang == 'arabic'
-                                  ? arabic["Save"]
-                                  : english["Save"],
+                              "Save".tr(),
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 14,
@@ -308,15 +268,12 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                 .of(context)
                                 .primaryColor,
                             onPressed: () {
-                              print(widget.orderModel.orderId);
                               OrdersHomeCubit.get(context).removeOrders(
-                                  docId: widget.orderModel.orderId,
+                                  docId: widget.orderModel.barCode,
                                   context: context);
                             },
                             child: Text(
-                              lang == 'arabic'
-                                  ? arabic["Delete"]
-                                  : english["Delete"],
+                              "Delete".tr(),
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 14,
@@ -344,9 +301,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                         print(onError.toString());
                       });
                     },
-                    child: Text(SharedHelper.get(key: 'lang') == 'arabic'
-                        ? arabic['Print Or Share']
-                        : english['Print Or Share'],),
+                    child: Text('Print Or Share'.tr(),),
                   ),
                 ),
               ],

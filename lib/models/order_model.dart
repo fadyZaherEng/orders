@@ -1,28 +1,26 @@
 class OrderModel {
   String orderName, conservation, city, address,
       type,
-      barCode,
+
       employerName,
       employerEmail,
       employerPhone,
       orderPhone,
       date;
-     dynamic orderId;
   int number;
   double price, totalPrice, salOfCharging;
-
+  dynamic barCode;
   OrderModel(
       {
         required this.employerPhone,
         required this.employerEmail,
         required this.orderName,
-       this.orderId,
        required this.orderPhone,
       required this.conservation,
       required this.city,
       required this.address,
       required this.type,
-      required this.barCode,
+       this.barCode,
       required this.employerName,
       required this.date,
       required this.number,
@@ -34,7 +32,6 @@ class OrderModel {
     return {
       'orderName': orderName,
       'orderPhone': orderPhone,
-      'orderId':orderId,
       'conservation': conservation,
       'city': city,
       'address': address,
@@ -54,7 +51,6 @@ class OrderModel {
   factory OrderModel.fromMap(Map<String, dynamic> map) {
     return OrderModel(
       employerEmail: map['employerEmail'],
-      orderId:map['orderId'],
       orderPhone:map['orderPhone'],
       orderName: map['orderName'] ,
       employerPhone: map['employerPhone'] ,

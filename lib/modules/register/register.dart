@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -7,13 +8,10 @@ import 'package:orders/layout/home_screen.dart';
 import 'package:orders/modules/register/bloc/cubit.dart';
 import 'package:orders/modules/register/bloc/states.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/lang/arabic.dart';
-import 'package:orders/shared/lang/english.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class RegisterScreen extends StatelessWidget {
   var formKey = GlobalKey<FormState>();
-  String lang = SharedHelper.get(key: 'lang');
 
   RegisterScreen({super.key});
 
@@ -25,9 +23,7 @@ class RegisterScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is OrdersAppRegisterSuccessStates) {
             showToast(
-                message: SharedHelper.get(key: 'lang') == 'arabic'
-                    ? arabic['Create Account Successfully']
-                    : english['Create Account Successfully'],
+                message: "Create Account Successfully".tr(),
                 state: ToastState.SUCCESS);
             SharedHelper.save(value: state.uid, key: 'uid');
             navigateToWithoutReturn(context, HomeScreen());
@@ -37,7 +33,6 @@ class RegisterScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          lang = SharedHelper.get(key: 'lang');
           return Scaffold(
             appBar: AppBar(),
             body: SingleChildScrollView(
@@ -68,10 +63,10 @@ class RegisterScreen extends StatelessWidget {
                             Icons.person,
                             color: Colors.indigo,
                           ),
-                          text:lang == 'arabic' ? arabic['Name'] : english['Name'] ,
+                          text:"Name".tr() ,
                           validate: (val) {
                             if (val.toString().isEmpty) {
-                              return lang == 'arabic' ? arabic['Please Enter Your Username'] : english['Please Enter Your Username'];
+                              return "Please Enter Your Username".tr();
                             }
                             return null;
                           },
@@ -88,15 +83,10 @@ class RegisterScreen extends StatelessWidget {
                               Icons.email,
                               color: Colors.indigo,
                             ),
-                            text: lang == 'arabic'
-                                ? arabic['Email']
-                                : english['Email'],
+                            text: "Email".tr(),
                             validate: (val) {
                               if (val.toString().isEmpty) {
-                                return lang == 'arabic'
-                                    ? arabic['Please Enter Your Email Address']
-                                    : english[
-                                        'Please Enter Your Email Address'];
+                                return "Please Enter Your Email Address".tr();
                               }
                               return null;
                             }),
@@ -112,10 +102,10 @@ class RegisterScreen extends StatelessWidget {
                             Icons.phone,
                             color: Colors.indigo,
                           ),
-                          text:lang == 'arabic' ? arabic['Phone'] : english['Phone'] ,
+                          text: "Phone".tr() ,
                           validate: (val) {
                             if (val.toString().isEmpty) {
-                              return lang == 'arabic' ? arabic[ 'Please Enter Your Phone'] : english[ 'Please Enter Your Phone'];
+                              return "Please Enter Your Phone".tr();
                             }
                             return null;
                           },
@@ -132,10 +122,10 @@ class RegisterScreen extends StatelessWidget {
                             Icons.lock,
                             color: Colors.indigo,
                           ),
-                          text: lang=='arabic'?arabic['Password']:english['Password'],
+                          text: "Password".tr(),
                           validate: (val) {
                             if (val.toString().isEmpty) {
-                              return  lang=='arabic'?arabic['Password is Very Short']:english['Password is Very Short'];
+                              return  "Password is Very Short".tr();
                             }
                             return null;
                           },
@@ -163,7 +153,7 @@ class RegisterScreen extends StatelessWidget {
                           },
                           color: HexColor('180040'),
                           child:  Text(
-                            lang == 'arabic' ? arabic[ 'REGISTER NOW'] : english[ 'REGISTER NOW'],
+                            "REGISTER NOW".tr(),
                             style:const TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,

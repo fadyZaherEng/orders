@@ -1,4 +1,5 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -66,7 +67,7 @@ class ShowCategoriesScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            SharedHelper.get(key: 'lang')=='arabic'?arabic["Category Name"]:english["Category Name"],
+                            "Category Name".tr(),
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontSize: 15,
@@ -81,7 +82,7 @@ class ShowCategoriesScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                      SharedHelper.get(key: 'lang')=='arabic'?arabic["Date: "]:english["Date: "],
+                      "Date: ".tr(),
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontSize: 15,
@@ -107,7 +108,7 @@ class ShowCategoriesScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            SharedHelper.get(key: 'lang')=='arabic'?arabic["Amount: "]:english['Amount: '],
+                            "Amount: ".tr(),
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontSize: 15,
@@ -122,7 +123,7 @@ class ShowCategoriesScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            SharedHelper.get(key: 'lang')=='arabic'?arabic["Price: "]:english['Price: '],
+                      "Price: ".tr(),
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontSize: 15,
@@ -147,7 +148,7 @@ class ShowCategoriesScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            SharedHelper.get(key: 'lang')=='arabic'?arabic["Charging: "]:english['Charging: '],
+                            "Charging: ".tr(),
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontSize: 15,
@@ -162,7 +163,7 @@ class ShowCategoriesScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            SharedHelper.get(key: 'lang')=='arabic'?arabic["Total Price: "]:english['Total Price: '],
+                            "Total Price: ".tr(),
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontSize: 15,

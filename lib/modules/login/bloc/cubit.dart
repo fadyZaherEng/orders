@@ -1,14 +1,13 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, non_constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/modules/admin_screen/show_order/show_orders.dart';
 import 'package:orders/modules/login/bloc/states.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/lang/arabic.dart';
-import 'package:orders/shared/lang/english.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class OrdersAppLoginCubit extends Cubit<OrdersAppLogInStates> {
@@ -16,14 +15,14 @@ class OrdersAppLoginCubit extends Cubit<OrdersAppLogInStates> {
 
   static OrdersAppLoginCubit get(context) => BlocProvider.of(context);
   bool isAdmin = false;
-  String adminText=SharedHelper.get(key: 'lang')=='arabic'?arabic['I\'m Admin?']:english['I\'m Admin?'];
+  String adminText="I'm Admin?".tr();
 
   void isAdminLogIn() {
     isAdmin = !isAdmin;
     if(isAdmin){
-      adminText=SharedHelper.get(key: 'lang')=='arabic'?arabic['I\'m Employer?']:english['I\'m Employer?'];
+      adminText="I'm Employer??".tr();
     }else{
-      adminText=SharedHelper.get(key: 'lang')=='arabic'?arabic['I\'m Admin?']:english['I\'m Admin?'];
+      adminText="I'm Admin?".tr();
     }
     emit(OrdersAppIsAdminStates());
   }
@@ -38,7 +37,7 @@ class OrdersAppLoginCubit extends Cubit<OrdersAppLogInStates> {
       email: email,
       password: password,
     ).then((value) {
-      showToast(message:SharedHelper.get(key: 'lang')=='arabic'?arabic["Welcome"]:english["Welcome"], state: ToastState.SUCCESS);
+      showToast(message:"Welcome".tr(), state: ToastState.SUCCESS);
       emit(OrdersAppLogInSuccessStates(value.user!.uid));
       print(value.user!.email);
     }).catchError((onError) {
@@ -84,14 +83,14 @@ class OrdersAppLoginCubit extends Cubit<OrdersAppLogInStates> {
             if(admin['password']==password&&admin['email']==email){
               adminFound=true;
               SharedHelper.save(value: email, key:'adminEmail');
-              showToast(message:SharedHelper.get(key: 'lang')=='arabic'?arabic["Welcome"]:english["Welcome"], state: ToastState.SUCCESS);
+              showToast(message:"Welcome".tr(), state: ToastState.SUCCESS);
               emit(OrdersAppLogInAdminSuccessStates('admin'));
-              navigateToWithoutReturn(context,  AdminShowOrders());
+              navigateToWithoutReturn(context, const AdminShowOrders());
               break;
             }
           }
           if(!adminFound){
-            showToast(message:SharedHelper.get(key: 'lang')=='arabic'?arabic["Admin Not Found"]:english["Admin Not Found"] , state: ToastState.ERROR);
+            showToast(message:"Admin Not Found".tr() , state: ToastState.ERROR);
           }
     }).catchError((onError) {
       showToast(message: onError.toString(), state: ToastState.ERROR);

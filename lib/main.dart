@@ -1,5 +1,7 @@
-import 'package:bloc/bloc.dart';
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:connectivity/connectivity.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,7 +32,15 @@ void main() async {
   if (SharedHelper.get(key: 'lang') == null) {
     SharedHelper.save(value: 'arabic', key: 'lang');
   }
-  runApp(MyApp());
+  await EasyLocalization.ensureInitialized();
+  runApp(
+    EasyLocalization(
+        supportedLocales:const  [ Locale('en', 'US'), Locale('ar', 'SA')],
+        path: 'assets/translations', // <-- change the path of the translation files
+        fallbackLocale: const Locale('en', 'US'),
+        child: MyApp()
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -40,7 +50,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool isOffline = true;
-
   @override
   void initState() {
     super.initState();
@@ -72,33 +81,33 @@ class _MyAppState extends State<MyApp> {
         builder: (context, state) {
           return Sizer(
             builder: (a, b, c) => MaterialApp(
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
               debugShowCheckedModeBanner: false,
               darkTheme: darkTheme(),
               theme: lightTheme(),
               themeMode: SharedHelper.get(key: 'theme') == 'Light Theme'
                   ? ThemeMode.light
                   : ThemeMode.dark,
-              home: Directionality(
-                textDirection:SharedHelper.get(key: 'lang')=='arabic'? TextDirection.rtl:TextDirection.ltr,
-                child: !isOffline
-                    ? startScreen()
-                    : Scaffold(
-                        backgroundColor:
-                            SharedHelper.get(key: 'theme') == 'Light Theme'
-                                ? Colors.white
-                                : Theme.of(context).scaffoldBackgroundColor,
-                        appBar: AppBar(
-                          title: const Text('No Internet'),
-                          centerTitle: true,
-                        ),
-                        body: const Center(
-                          child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.blue),
-                          ),
+              home: !isOffline
+                  ? startScreen()
+                  : Scaffold(
+                      backgroundColor:
+                          SharedHelper.get(key: 'theme') == 'Light Theme'
+                              ? Colors.white
+                              : Theme.of(context).scaffoldBackgroundColor,
+                      appBar: AppBar(
+                        title: const Text('No Internet'),
+                        centerTitle: true,
+                      ),
+                      body: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.blue),
                         ),
                       ),
-              ),
+                    ),
             ),
           );
         },

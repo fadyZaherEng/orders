@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, deprecated_member_use, must_be_immutable
 
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:orders/models/order_model.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -28,14 +29,14 @@ class _DataTableScreenState extends State<DataTableScreen> {
         build: (ctx) => [
           pw.Table.fromTextArray(data: <List<String>>[
             <String>[
-              'City',
-              'Area',
-              'Address',
-              'Order Phone',
-              'Employee Phone',
-              'Employee Email',
-              'Employee name',
-              'Item Name'
+              'City'.tr(),
+              'Area'.tr(),
+              'Address'.tr(),
+              'Order Phone'.tr(),
+              'Employee Phone'.tr(),
+              'Employee Email'.tr(),
+              'Employee name'.tr(),
+              'Item Name'.tr()
             ],
             ...widget.orders
                 .map((order) => [

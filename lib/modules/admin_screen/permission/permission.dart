@@ -1,27 +1,21 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/admin_model.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/lang/arabic.dart';
-import 'package:orders/shared/lang/english.dart';
-import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class PermissionScreen extends StatelessWidget {
   PermissionScreen({super.key});
-
-  String lang = SharedHelper.get(key: "lang");
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
-        lang = SharedHelper.get(key: "lang");
         return Scaffold(
           body: SafeArea(
             child: ConditionalBuilder(
@@ -61,117 +55,91 @@ class PermissionScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(lang == 'arabic'
-                      ? arabic["Show Orders"]
-                      : english["Show Orders"]),
+                  Text("Show Orders".tr()),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminShowOrdersPermission(true, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["Appear"]
-                          : english["Appear"])),
+                      child: Text("Appear".tr())),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminShowOrdersPermission(false, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["disAppear"]
-                          : english["disAppear"]))
+                      child: Text("disAppear".tr()))
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(lang == 'arabic'
-                      ? arabic["Show Categories"]
-                      : english["Show Categories"]),
+                  Text("Show Categories".tr()),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminShowCategoriesPermission(true, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["Appear"]
-                          : english["Appear"])),
+                      child: Text("Appear".tr())),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminShowCategoriesPermission(false, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["disAppear"]
-                          : english["disAppear"]))
+                      child: Text("disAppear".tr()))
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(lang == 'arabic'
-                      ? arabic["Add Category"]
-                      : english["Add Category"]),
+                  Text("Add Category".tr()),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminAddCatPermission(true, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["Appear"]
-                          : english["Appear"])),
+                      child: Text("Appear".tr())),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminAddCatPermission(false, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["disAppear"]
-                          : english["disAppear"]))
+                      child: Text("disAppear".tr()))
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(lang == 'arabic' ? arabic["Save"] : english["Save"]),
+                  Text("Save".tr()),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminSaveOrderPermission(true, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["Appear"]
-                          : english["Appear"])),
+                      child: Text("Appear".tr())),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminSaveOrderPermission(false, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["disAppear"]
-                          : english["disAppear"]))
+                      child: Text("disAppear".tr()))
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(lang == 'arabic' ? arabic["Delete"] : english["Delete"]),
+                  Text("Delete".tr()),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminRemoveOrderPermission(true, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["Appear"]
-                          : english["Appear"])),
+                      child: Text("Appear".tr())),
                   TextButton(
                       onPressed: () {
                         OrdersHomeCubit.get(ctx)
                             .adminRemoveOrderPermission(false, admin,ctx);
                       },
-                      child: Text(lang == 'arabic'
-                          ? arabic["disAppear"]
-                          : english["disAppear"]))
+                      child: Text("disAppear".tr()))
                 ],
               ),
             ],

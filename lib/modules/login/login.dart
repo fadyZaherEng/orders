@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, must_be_immutable
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -8,15 +9,12 @@ import 'package:orders/modules/login/bloc/cubit.dart';
 import 'package:orders/modules/login/bloc/states.dart';
 import 'package:orders/modules/register/register.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/lang/arabic.dart';
-import 'package:orders/shared/lang/english.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class LogInScreen extends StatelessWidget {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var formKey = GlobalKey<FormState>();
-  String lang=SharedHelper.get(key: 'lang');
 
   LogInScreen({super.key});
   @override
@@ -27,7 +25,7 @@ class LogInScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is OrdersAppLogInSuccessStates) {
             showToast(
-                message:SharedHelper.get(key:'lang')=='arabic'?arabic['Logged Successfully']:english['Logged Successfully'] , state: ToastState.SUCCESS);
+                message:"Logged Successfully".tr() , state: ToastState.SUCCESS);
             SharedHelper.save(value: state.uid, key: 'uid');
             navigateToWithoutReturn(context, HomeScreen());
           }
@@ -36,7 +34,6 @@ class LogInScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          lang=SharedHelper.get(key: 'lang');
           return Scaffold(
             appBar: AppBar(),
             body: SingleChildScrollView(
@@ -67,10 +64,10 @@ class LogInScreen extends StatelessWidget {
                           Icons.email,
                           color: Colors.indigo,
                         ),
-                        text:lang=='arabic'?arabic['Email']:english['Email'],
+                        text:"Email".tr(),
                         validate: (val) {
                           if (val.toString().isEmpty) {
-                            return lang=='arabic'?arabic['Please Enter Your Email Address']:english['Please Enter Your Email Address'];
+                            return "Please Enter Your Email Address".tr();
                           }
                           return null;
                         },
@@ -92,10 +89,10 @@ class LogInScreen extends StatelessWidget {
                                 .changeVisibilityOfEye();
                           },
                           icon: OrdersAppLoginCubit.get(context).suffixIcon),
-                      text: lang=='arabic'?arabic['Password']:english['Password'],
+                      text: "Password".tr(),
                       validate: (val) {
                         if (val.toString().isEmpty) {
-                          return  lang=='arabic'?arabic['Password is Very Short']:english['Password is Very Short'];
+                          return  "Password is Very Short".tr();
                         }
                         return null;
                       },
@@ -129,7 +126,7 @@ class LogInScreen extends StatelessWidget {
                       },
                       color: HexColor('180040'),
                       child:  Text(
-                        lang=='arabic'?arabic['Log In']:english['Log In'],
+                        "Log In".tr(),
                         style:const TextStyle(
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
@@ -142,14 +139,14 @@ class LogInScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(lang=='arabic'?arabic['Don\'t have an account?']:english['Don\'t have an account?'],
+                        Text("Don't have an account?".tr(),
                             style: Theme.of(context).textTheme.bodyText1),
                         TextButton(
                           onPressed: () {
                             navigateToWithReturn(context, RegisterScreen());
                           },
                           child: Text(
-                            lang=='arabic'?arabic['REGISTER']:english['REGISTER'],
+                            "REGISTER".tr(),
                             style: Theme.of(context).textTheme.bodyText1,
                           ),
                         )
