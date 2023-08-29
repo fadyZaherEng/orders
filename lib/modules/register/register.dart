@@ -1,0 +1,184 @@
+// ignore_for_file: must_be_immutable
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hexcolor/hexcolor.dart';
+import 'package:orders/layout/home_screen.dart';
+import 'package:orders/modules/register/bloc/cubit.dart';
+import 'package:orders/modules/register/bloc/states.dart';
+import 'package:orders/shared/components/components.dart';
+import 'package:orders/shared/lang/arabic.dart';
+import 'package:orders/shared/lang/english.dart';
+import 'package:orders/shared/network/local/cashe_helper.dart';
+
+class RegisterScreen extends StatelessWidget {
+  var formKey = GlobalKey<FormState>();
+  String lang = SharedHelper.get(key: 'lang');
+
+  RegisterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => OrdersAppRegisterCubit(),
+      child: BlocConsumer<OrdersAppRegisterCubit, OrdersAppRegisterStates>(
+        listener: (context, state) {
+          if (state is OrdersAppRegisterSuccessStates) {
+            showToast(
+                message: SharedHelper.get(key: 'lang') == 'arabic'
+                    ? arabic['Create Account Successfully']
+                    : english['Create Account Successfully'],
+                state: ToastState.SUCCESS);
+            SharedHelper.save(value: state.uid, key: 'uid');
+            navigateToWithoutReturn(context, HomeScreen());
+          }
+          if (state is OrdersAppRegisterErrorStates) {
+            showToast(message: state.error.toString(), state: ToastState.ERROR);
+          }
+        },
+        builder: (context, state) {
+          lang = SharedHelper.get(key: 'lang');
+          return Scaffold(
+            appBar: AppBar(),
+            body: SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                            backgroundColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            radius: 90.0,
+                            backgroundImage:
+                                const AssetImage('assets/images/register.jpg')),
+                        const SizedBox(
+                          height: 60,
+                        ),
+                        defaultTextForm(
+                          context: context,
+                          type: TextInputType.text,
+                          Controller: OrdersAppRegisterCubit.get(context)
+                              .nameController,
+                          prefixIcon: const Icon(
+                            Icons.person,
+                            color: Colors.indigo,
+                          ),
+                          text:lang == 'arabic' ? arabic['Name'] : english['Name'] ,
+                          validate: (val) {
+                            if (val.toString().isEmpty) {
+                              return lang == 'arabic' ? arabic['Please Enter Your Username'] : english['Please Enter Your Username'];
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        defaultTextForm(
+                            context: context,
+                            type: TextInputType.emailAddress,
+                            Controller: OrdersAppRegisterCubit.get(context)
+                                .emailController,
+                            prefixIcon: const Icon(
+                              Icons.email,
+                              color: Colors.indigo,
+                            ),
+                            text: lang == 'arabic'
+                                ? arabic['Email']
+                                : english['Email'],
+                            validate: (val) {
+                              if (val.toString().isEmpty) {
+                                return lang == 'arabic'
+                                    ? arabic['Please Enter Your Email Address']
+                                    : english[
+                                        'Please Enter Your Email Address'];
+                              }
+                              return null;
+                            }),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        defaultTextForm(
+                          context: context,
+                          type: TextInputType.phone,
+                          Controller: OrdersAppRegisterCubit.get(context)
+                              .phoneController,
+                          prefixIcon: const Icon(
+                            Icons.phone,
+                            color: Colors.indigo,
+                          ),
+                          text:lang == 'arabic' ? arabic['Phone'] : english['Phone'] ,
+                          validate: (val) {
+                            if (val.toString().isEmpty) {
+                              return lang == 'arabic' ? arabic[ 'Please Enter Your Phone'] : english[ 'Please Enter Your Phone'];
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        defaultTextForm(
+                          context: context,
+                          type: TextInputType.visiblePassword,
+                          Controller: OrdersAppRegisterCubit.get(context)
+                              .passwordController,
+                          prefixIcon: const Icon(
+                            Icons.lock,
+                            color: Colors.indigo,
+                          ),
+                          text: lang=='arabic'?arabic['Password']:english['Password'],
+                          validate: (val) {
+                            if (val.toString().isEmpty) {
+                              return  lang=='arabic'?arabic['Password is Very Short']:english['Password is Very Short'];
+                            }
+                            return null;
+                          },
+                          obscure: OrdersAppRegisterCubit.get(context).obscure,
+                          suffixIcon: IconButton(
+                              onPressed: () {
+                                OrdersAppRegisterCubit.get(context)
+                                    .changeVisibilityOfEye();
+                              },
+                              icon: OrdersAppRegisterCubit.get(context)
+                                  .suffixIcon),
+                        ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        MaterialButton(
+                          height: 50,
+                          minWidth: double.infinity,
+                          onPressed: () {
+                            //register
+                            if (formKey.currentState!.validate()) {
+                              OrdersAppRegisterCubit.get(context).signUp();
+                              FocusScope.of(context).unfocus();
+                            }
+                          },
+                          color: HexColor('180040'),
+                          child:  Text(
+                            lang == 'arabic' ? arabic[ 'REGISTER NOW'] : english[ 'REGISTER NOW'],
+                            style:const TextStyle(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
