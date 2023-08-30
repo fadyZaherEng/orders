@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'package:multiselect/multiselect.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +13,8 @@ import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       //update time all 24 in firestore
       //make it 0
     });
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -355,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   .toList(),
                               onChanged: (val) {
                                 if (val != null) {
-                                  catSelected = val!;
+                                  catSelected = val;
                                 }
                               }),
                           const SizedBox(height: 10,),

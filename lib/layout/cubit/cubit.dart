@@ -22,7 +22,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   static OrdersHomeCubit get(context) => BlocProvider.of(context);
   List<Widget>screens=[
     DisplayOrdersScreen(),
-    TodayOrders(),
+    const TodayOrders(),
     SearchByDateScreen(),
   ];
 
