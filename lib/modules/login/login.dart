@@ -43,8 +43,6 @@ class LogInScreen extends StatelessWidget {
               child: Form(
                 key: formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
                       radius: 100,
@@ -139,7 +137,7 @@ class LogInScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Don't have an account?".tr(),
+                        Text("Don\"t have an account?".tr(),
                             style: Theme.of(context).textTheme.bodyText1),
                         TextButton(
                           onPressed: () {

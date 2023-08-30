@@ -42,8 +42,6 @@ class RegisterScreen extends StatelessWidget {
                   child: Form(
                     key: formKey,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
                             backgroundColor:

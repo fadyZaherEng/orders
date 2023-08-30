@@ -29,6 +29,8 @@ Widget defaultTextForm({
 })
 => TextFormField(
   controller: Controller,
+  maxLines: 1000,
+  minLines: 1,
   decoration: InputDecoration(
     prefixIcon: prefixIcon,
     suffixIcon: suffixIcon,

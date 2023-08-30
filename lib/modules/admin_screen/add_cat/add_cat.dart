@@ -6,10 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/lang/arabic.dart';
-import 'package:orders/shared/lang/english.dart';
-import 'package:orders/shared/network/local/cashe_helper.dart';
-
 class AddCategoryScreen extends StatefulWidget {
   const AddCategoryScreen({super.key});
 

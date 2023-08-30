@@ -22,14 +22,10 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   static OrdersHomeCubit get(context) => BlocProvider.of(context);
   List<Widget>screens=[
     DisplayOrdersScreen(),
-    const TodayOrders(),
-    const SearchByDateScreen(),
+    TodayOrders(),
+    SearchByDateScreen(),
   ];
-  List<String>titles=[
-    "Total Price: ".tr(),
-    "Today Orders".tr(),
-    'Search By Date'.tr(),
-  ];
+
   //bottom nav
   int currentIndex=0;
   void changeNav(int idx){
@@ -62,6 +58,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   void getAdminsProfile() {
     emit(GetFileLoadingStates());
     FirebaseFirestore.instance.collection("admins").get().then((value) {
+      admins=[];
       for (var admin in value.docs) {
         if (admin['email'] == SharedHelper.get(key: 'adminEmail')) {
           currentAdmin = AdminModel.fromMap(admin.data());
@@ -367,7 +364,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       required String employerPhone,
       required String employerEmail,
       required String orderPhone,
-      required String date,
       required int number,
       required double price,
       required double totalPrice,
@@ -383,7 +379,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         type: type,
         employerName: employerName,
         employerPhone: employerPhone,
-        date: date,
+        date: DateTime.now().toString(),
         number: number,
         price: price,
         totalPrice: totalPrice,
@@ -537,17 +533,41 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 //search date
   List<OrderModel>searchOrdersDate=[];
-  void searchOrdersByDate(String date){
+  void searchOrdersByDate(String date,TimeOfDay firstTime,TimeOfDay lastTime){
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
         .orderBy('date')
-       .where('date',isEqualTo: date)
         .get()
         .then((event) {
+       searchOrdersDate=[];
+      int tempHourTime,tempHourLastTime,tempHourFirstTime;
       event.docs.forEach((element) {
         OrderModel orderModel=OrderModel.fromMap(element.data());
-        searchOrdersDate.add(orderModel);
+        if(orderModel.date.split(' ')[0]==date.split(' ')[0]){
+          TimeOfDay time=TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+          tempHourTime=time.hour;
+          tempHourFirstTime=firstTime.hour;
+          tempHourLastTime=lastTime.hour;
+          if(tempHourTime>12){
+            tempHourTime-=12;
+          }
+          if(tempHourFirstTime>12){
+            tempHourFirstTime-=12;
+          }
+          if(tempHourLastTime>12){
+            tempHourLastTime-=12;
+          }
+          if(tempHourTime>tempHourFirstTime&&tempHourTime<tempHourLastTime){
+            searchOrdersDate.add(orderModel);
+          }
+          if(tempHourTime==tempHourFirstTime&&time.minute>=firstTime.minute){
+            searchOrdersDate.add(orderModel);
+          }
+          if(tempHourTime==tempHourLastTime&&time.minute<=lastTime.minute){
+            searchOrdersDate.add(orderModel);
+          }
+        }
       });
       emit(ViewFileSuccessStates());
     }).catchError((handleError) {

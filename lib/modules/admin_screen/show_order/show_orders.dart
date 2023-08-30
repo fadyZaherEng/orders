@@ -8,8 +8,7 @@ import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/modules/admin_screen/add_cat/add_cat.dart';
 import 'package:orders/modules/admin_screen/get_cat/cat.dart';
 import 'package:orders/modules/admin_screen/permission/permission.dart';
-import 'package:orders/modules/admin_screen/scanner/scan.dart';
-import 'package:orders/modules/admin_screen/search_using_barcode/search.dart';
+import 'package:orders/modules/admin_screen/search_using_barcode/scan.dart';
 import 'package:orders/modules/admin_screen/share_order/copy_orders.dart';
 import 'package:orders/modules/login/login.dart';
 import 'package:orders/shared/components/components.dart';
@@ -24,10 +23,8 @@ class AdminShowOrders extends StatefulWidget {
 }
 
 class _AdminShowOrdersState extends State<AdminShowOrders> {
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     OrdersHomeCubit.get(context).getAdminsProfile();
   }
@@ -40,16 +37,15 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
         return Scaffold(
           appBar: AppBar(
             title: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(10.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(OrdersHomeCubit
+                  if(OrdersHomeCubit
                       .get(context)
-                      .titles[OrdersHomeCubit
-                      .get(context)
-                      .currentIndex]),
+                      .currentIndex == 0)
+                  Text("Total Price: ".tr()),
                   if(OrdersHomeCubit
                       .get(context)
                       .currentIndex == 0)
@@ -141,7 +137,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                           onTap: () {
                             Navigator.pop(context);
                             navigateToWithReturn(
-                              context, const SearchByBarcodeScreen(),);
+                              context, const ScannerScreen(),);
                           },
                           child: Text('Search By Barcode'.tr()),
                         ),
@@ -161,16 +157,6 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             child: Text("Permission".tr()),
                           ),
                         ),
-                      DropdownMenuItem(
-                        value: "scan",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            navigateToWithReturn(context, const ScannerScreen());
-                          },
-                          child:  Text("Scanner".tr()),
-                        ),
-                      ),
                       DropdownMenuItem(
                         value: "theme",
                         child: InkWell(

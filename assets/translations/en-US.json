@@ -10,6 +10,7 @@
   "Charging": "Charging",
   "Please Enter Charging": "Please Enter Charging",
   "Notes": "Notes",
+  "Add Order": "Add Order",
   "Scanner": "Scanner",
   "Total Price:": "Total Price:",
   "Save": "Save Order",
@@ -19,10 +20,13 @@
   "Deleted Successfully": "Deleted Successfully",
   "Category Uploaded Successfully": "Category Uploaded Successfully",
   "Date: ": "Date: ",
+  "Date": "Date",
   "Amount: ": "Quantity: ",
+
   "Price: ": "Price: ",
+  "First Time": "First Time",
+  "Last Time": "Last Time",
   "Charging: ": "Charging: ",
-  "Total Price: ": "Total Price: ",
   "Show Categories": "Show Categories",
   "Share Orders": "Share Orders",
   "Change Theme": "Change Theme",
@@ -64,18 +68,40 @@
   "Log Out": "Log Out",
   "Appear Successfully": "Successfully",
   "Search By Barcode": "Search Barcode",
+
+  "Total Price: ": "Total Price: ",
+  "Today Orders":  "Today Orders",
   "Search By Date": "Search Date",
+  "Search": "Search",
   "All Orders": "All Orders",
-  "Today Orders": "Today Orders",
+
   "Print Or Share": "Print Or Share or Download",
   "Save Order": "Save Order",
+
   "Save Orders": "Save Orders",
   "City": "City",
+  "Please Enter The City": "Please Enter The City",
   "Area": "Area",
   "Address": "Address",
   "Order Phone": "Order Phone",
   "Employee Phone": "Employee Phone",
   "Employee Email": "Employee Email",
   "Employee name": "Employee name",
-  "Item Name": "Item Name"
+  "Item Name": "Item Name",
+
+
+  "Please Enter Client Name":"Please Enter Client Name",
+  "Client name":  "Client name",
+  "Client Address":  "Client Address",
+  "Please Enter Client Address":  "Please Enter Client Address",
+  "Single Category":  "Single Category",
+  "Multi Category":  "Multi Category",
+  "Quantity": "Quantity",
+  "Please Enter Quantity": "Please Enter Quantity",
+  "Categories": "Categories",
+  "Please Enter Client Category":  "Please Enter Client Category",
+  "Please Enter Price": "Please Enter Price",
+
+  "Client Phone": "Client Phone",
+  "Please Enter Client Phone": "Please Enter Client Phone"
 }

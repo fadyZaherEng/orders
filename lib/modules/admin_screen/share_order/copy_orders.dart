@@ -36,7 +36,8 @@ class _DataTableScreenState extends State<DataTableScreen> {
               'Employee Phone'.tr(),
               'Employee Email'.tr(),
               'Employee name'.tr(),
-              'Item Name'.tr()
+              'Item Name'.tr(),
+              'Date'.tr()
             ],
             ...widget.orders
                 .map((order) => [
@@ -47,7 +48,8 @@ class _DataTableScreenState extends State<DataTableScreen> {
                       order.employerPhone,
                       order.employerEmail,
                       order.employerName,
-                      order.type
+                      order.type,
+                      order.date,
                     ])
                 .toList(),
           ], context: ctx),

@@ -15,14 +15,14 @@ class OrdersAppLoginCubit extends Cubit<OrdersAppLogInStates> {
 
   static OrdersAppLoginCubit get(context) => BlocProvider.of(context);
   bool isAdmin = false;
-  String adminText="I'm Admin?".tr();
+  String adminText="I\"m Admin?".tr();
 
   void isAdminLogIn() {
     isAdmin = !isAdmin;
     if(isAdmin){
-      adminText="I'm Employer??".tr();
+      adminText="I\"m Employer?".tr();
     }else{
-      adminText="I'm Admin?".tr();
+      adminText="I\"m Admin?".tr();
     }
     emit(OrdersAppIsAdminStates());
   }

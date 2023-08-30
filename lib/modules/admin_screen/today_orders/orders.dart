@@ -17,29 +17,32 @@ class TodayOrders extends StatelessWidget {
      return BlocConsumer<OrdersHomeCubit,OrdersHomeStates>(
        listener: (ctx,state){},
        builder: (ctx,state){
-         return  ConditionalBuilder(
-           condition: OrdersHomeCubit
-               .get(context)
-               .todayOrders
-               .isNotEmpty,
-           builder: (ctx) =>
-               ListView.separated(
-                 itemBuilder: (ctx, idx) {
-                   return listItem(OrdersHomeCubit
+         return  Padding(
+           padding: const EdgeInsets.all(10.0),
+           child: ConditionalBuilder(
+             condition: OrdersHomeCubit
+                 .get(context)
+                 .todayOrders
+                 .isNotEmpty,
+             builder: (ctx) =>
+                 ListView.separated(
+                   itemBuilder: (ctx, idx) {
+                     return listItem(OrdersHomeCubit
+                         .get(context)
+                         .todayOrders[idx], ctx);
+                   },
+                   itemCount: OrdersHomeCubit
                        .get(context)
-                       .todayOrders[idx], ctx);
-                 },
-                 itemCount: OrdersHomeCubit
-                     .get(context)
-                     .todayOrders
-                     .length,
-                 separatorBuilder: (ctx, idx) => mySeparator(context),
-               ),
-           fallback: (ctx) =>
-           const Center(
-               child: CircularProgressIndicator(
-                 color: Colors.blue,
-               )),
+                       .todayOrders
+                       .length,
+                   separatorBuilder: (ctx, idx) => mySeparator(context),
+                 ),
+             fallback: (ctx) =>
+             const Center(
+                 child: CircularProgressIndicator(
+                   color: Colors.blue,
+                 )),
+           ),
          );
        },
      );

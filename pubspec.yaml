@@ -60,6 +60,8 @@ dependencies:
   permission_handler:
   simple_barcode_scanner:
   easy_localization:
+  csc_picker:
+  multiselect:
 
 dev_dependencies:
   flutter_test:
