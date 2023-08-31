@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, deprecated_member_use
 
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     OrdersHomeCubit.get(context).getUserProfile();
     priceController.addListener(() {
       double p =
-      priceController.text != "" ? double.parse(priceController.text) : 0;
+          priceController.text != "" ? double.parse(priceController.text) : 0;
       totalPrice = p + salOfCharging;
       setState(() {});
     });
@@ -123,28 +123,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: DropdownButton(
-                    dropdownColor: Theme
-                        .of(context)
-                        .primaryColor,
-                    focusColor: Theme
-                        .of(context)
-                        .scaffoldBackgroundColor,
+                    dropdownColor: Theme.of(context).primaryColor,
+                    focusColor: Theme.of(context).scaffoldBackgroundColor,
                     underline: Container(),
                     icon: Icon(
                       Icons.reorder,
-                      color: Theme
-                          .of(context)
-                          .primaryColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                     elevation: 0,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(
-                        color: Theme
-                            .of(context)
-                            .scaffoldBackgroundColor),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).scaffoldBackgroundColor),
                     items: [
                       DropdownMenuItem(
                         value: "today",
@@ -211,9 +199,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         prefixIcon: const Icon(Icons.location_city),
                         text: "Client name".tr(),
                         validate: (val) {
-                          if (val
-                              .toString()
-                              .isEmpty) {
+                          if (val.toString().isEmpty) {
                             return "Please Enter Client Name".tr();
                           }
                           return null;
@@ -228,9 +214,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         prefixIcon: const Icon(Icons.phone),
                         text: "Client Phone".tr(),
                         validate: (val) {
-                          if (val
-                              .toString()
-                              .isEmpty) {
+                          if (val.toString().isEmpty) {
                             return "Please Enter Client Phone".tr();
                           }
                           return null;
@@ -242,24 +226,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     CSCPicker(
                       dropdownDialogRadius: 10.0,
                       searchBarRadius: 10.0,
-                      dropdownDecoration: BoxDecoration(
-                          color: Theme
-                              .of(context)
-                              .primaryColor
-                      ),
+                      dropdownDecoration:SharedHelper.get(key: 'theme') == 'Light Theme'?
+                      const BoxDecoration(color: Colors.white):const BoxDecoration(color: Colors.deepPurple),
+                      disabledDropdownDecoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
                       onCountryChanged: (value) {},
                       onStateChanged: (value) {
                         if (value != null) {
                           stateValue = value;
                           (stateValue.toLowerCase().contains("cairo") ||
-                              stateValue.toLowerCase().contains("giza"))
+                                  stateValue.toLowerCase().contains("giza"))
                               ? salOfCharging = 30
                               : salOfCharging = 50;
                         }
                         setState(() {
-                          double p =
-                          priceController.text != "" ? double.parse(
-                              priceController.text) : 0;
+                          double p = priceController.text != ""
+                              ? double.parse(priceController.text)
+                              : 0;
                           totalPrice = p + salOfCharging;
                         });
                       },
@@ -274,9 +256,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         prefixIcon: const Icon(Icons.location_city),
                         text: "City".tr(),
                         validate: (val) {
-                          if (val
-                              .toString()
-                              .isEmpty) {
+                          if (val.toString().isEmpty) {
                             return "Please Enter The City".tr();
                           }
                           return null;
@@ -291,9 +271,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         prefixIcon: const Icon(Icons.location_city),
                         text: "Client Address".tr(),
                         validate: (val) {
-                          if (val
-                              .toString()
-                              .isEmpty) {
+                          if (val.toString().isEmpty) {
                             return "Please Enter Client Address".tr();
                           }
                           return null;
@@ -334,41 +312,41 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             },
                           ),
                         ),
-
                       ],
                     ),
-                    const SizedBox(height: 10,),
-                    if(radioSelected == "Single Category".tr())
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (radioSelected == "Single Category".tr())
                       Column(
                         children: [
                           DropdownButton(
-                              focusColor: Theme
-                                  .of(context)
-                                  .primaryColor,
+                              focusColor: Theme.of(context).primaryColor,
                               borderRadius: BorderRadius.circular(10),
                               hint: Text(catSelected),
-                              items: OrdersHomeCubit
-                                  .get(context)
+                              items: OrdersHomeCubit.get(context)
                                   .categories
-                                  .map((cat) =>
-                                  DropdownMenuItem(child: Text(cat.catName),
-                                    value: cat.catName,))
+                                  .map((cat) => DropdownMenuItem(
+                                        child: Text(cat.catName),
+                                        value: cat.catName,
+                                      ))
                                   .toList(),
                               onChanged: (val) {
                                 if (val != null) {
                                   catSelected = val;
                                 }
                               }),
-                          const SizedBox(height: 10,),
-                          defaultTextForm(context: context,
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          defaultTextForm(
+                              context: context,
                               Controller: quantityController,
-                              prefixIcon: const Icon(
-                                  Icons.production_quantity_limits),
+                              prefixIcon:
+                                  const Icon(Icons.production_quantity_limits),
                               text: "Quantity".tr(),
                               validate: (val) {
-                                if (val
-                                    .toString()
-                                    .isEmpty) {
+                                if (val.toString().isEmpty) {
                                   return "Please Enter Quantity".tr();
                                 }
                                 return null;
@@ -376,34 +354,41 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               type: TextInputType.text),
                         ],
                       ),
-                    if(radioSelected == "Multi Category".tr())
-                      defaultTextForm(context: context,
-                          Controller: catsClientController,
+                    if (radioSelected == "Multi Category".tr())
+                      TextFormField(
+                        controller: catsClientController,
+                        maxLines: 1000,
+                        minLines: 1,
+                        decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.category_outlined),
-                          text: "Categories".tr(),
-                          validate: (val) {
-                            if (val
-                                .toString()
-                                .isEmpty) {
-                              return "Please Enter Client Category".tr();
-                            }
-                            return null;
-                          },
-                          type: TextInputType.text),
-                    const SizedBox(height: 10,),
-
+                          label: Text("Categories".tr()),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        style: Theme.of(context).textTheme.bodyText2,
+                        validator: (val) {
+                          if (val.toString().isEmpty) {
+                            return "Please Enter Client Category".tr();
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.text,
+                      ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: defaultTextForm(context: context,
+                          child: defaultTextForm(
+                              context: context,
                               Controller: priceController,
                               prefixIcon: const Icon(Icons.money),
                               text: "Price".tr(),
                               validate: (val) {
-                                if (val
-                                    .toString()
-                                    .isEmpty) {
+                                if (val.toString().isEmpty) {
                                   return "Please Enter Price".tr();
                                 }
                                 return null;
@@ -413,38 +398,60 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         Text('${"Charging".tr()} ${salOfCharging.toString()}'),
                       ],
                     ),
-                    const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Text('${"Total Price:".tr()} ${totalPrice.toString()}'),
-                    const SizedBox(height: 10,),
-                    MaterialButton(onPressed: () {
-                      String cat="";
-                      int number=0;
-                      if(radioSelected == "Single Category".tr()){
-                        cat=catSelected;
-                        number=int.parse(quantityController.text);
-                      }
-                      if(radioSelected == "Multi Category".tr()){
-                        cat=catsClientController.text;
-                        number=0;
-                      }
-                      if(formKey.currentState!.validate()&&OrdersHomeCubit.get(context).userProfile!=null){
-                        OrdersHomeCubit.get(context).addOrders(
-                            orderName: nameClientController.text,
-                            conservation: stateValue,
-                            city: cityController.text,
-                            address: addressClientController.text,
-                            type: cat,
-                            employerName: OrdersHomeCubit.get(context).userProfile!.name,
-                            employerPhone:  OrdersHomeCubit.get(context).userProfile!.phone,
-                            employerEmail:  OrdersHomeCubit.get(context).userProfile!.email,
-                            orderPhone: phoneClientController.text,
-                            number: number,
-                            price: double.parse(priceController.text),
-                            totalPrice: totalPrice,
-                            salOfCharging: salOfCharging,
-                            context: context);
-                      }
-                    }, child: Text("Add Order".tr()),),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 43,
+                      child: MaterialButton(
+                        color:SharedHelper.get(key: 'theme') == 'Light Theme'?
+                        Colors.deepPurple:Colors.white,
+                        onPressed: () {
+                          String cat = "";
+                          int number = 0;
+                          if (radioSelected == "Single Category".tr()) {
+                            cat = catSelected;
+                            number = int.parse(quantityController.text);
+                          }
+                          if (radioSelected == "Multi Category".tr()) {
+                            cat = catsClientController.text;
+                            number = 0;
+                          }
+                          if (formKey.currentState!.validate() &&
+                              OrdersHomeCubit.get(context).userProfile != null) {
+                            OrdersHomeCubit.get(context).addOrders(
+                                orderName: nameClientController.text,
+                                conservation: stateValue,
+                                city: cityController.text,
+                                address: addressClientController.text,
+                                type: cat,
+                                employerName: OrdersHomeCubit.get(context)
+                                    .userProfile!
+                                    .name,
+                                employerPhone: OrdersHomeCubit.get(context)
+                                    .userProfile!
+                                    .phone,
+                                employerEmail: OrdersHomeCubit.get(context)
+                                    .userProfile!
+                                    .email,
+                                orderPhone: phoneClientController.text,
+                                number: number,
+                                price: double.parse(priceController.text),
+                                totalPrice: totalPrice,
+                                salOfCharging: salOfCharging,
+                                context: context);
+                          }
+                        },
+                        child: Text("Add Order".tr(),style:TextStyle(
+                          color:SharedHelper.get(key: 'theme') == 'Light Theme'?Colors.white:Colors.black
+                        )),
+                      ),
+                    ),
                   ],
                 ),
               ),
