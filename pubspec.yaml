@@ -61,7 +61,9 @@ dependencies:
   simple_barcode_scanner:
   easy_localization:
   csc_picker:
-
+  flutter_phoenix:
+  text2pdf:
+  share:
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -86,9 +88,10 @@ flutter:
     - assets/images/
     - assets/translations/
   fonts:
-    - family:  IconBroken
+    - family: Cairo
       fonts:
-        - asset: assets/fonts/icons.ttf  # To add assets to your application, add an assets section, like this:
+        - asset: assets/fonts/Cairo-Bold.ttf
+  # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

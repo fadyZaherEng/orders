@@ -4,11 +4,13 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
 import 'package:orders/modules/admin_screen/print_order/order.dart';
 import 'package:orders/shared/components/components.dart';
+import 'package:orders/shared/network/local/cashe_helper.dart';
 import 'package:screenshot/screenshot.dart';
 
 class UpdateOrdersScreen extends StatefulWidget {
@@ -26,11 +28,15 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
   dynamic totalPrice;
   var screenShotController = ScreenshotController();
   var formKey = GlobalKey<FormState>();
+  String arabicDate="";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState(); //theme logout lang
+    if(SharedHelper.get(key: 'lang')=='arabic'){
+      getArabic(widget.orderModel.date);
+    }
     priceController.addListener(() {
       print(priceController.text);
       double p =
@@ -65,6 +71,9 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
+        if(SharedHelper.get(key: 'lang')=='arabic'){
+          getArabic(widget.orderModel.date);
+        }
         return Scaffold(
           body: SingleChildScrollView(
             child: Column(
@@ -76,7 +85,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                   child: SafeArea(
                     child: SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(15.0),
                         child: Form(
                           key: formKey,
                           child: Column(
@@ -84,62 +93,57 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Order Name: ".tr()}${widget.orderModel.orderName}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Order Phone: ".tr()}${widget.orderModel.orderPhone}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Order City: ".tr()}${widget.orderModel.conservation}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Order Area: ".tr()}${widget.orderModel.city}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Order Address: ".tr()} ${widget.orderModel.address}'),
                               const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Order Barcode: ".tr()}${widget.orderModel.barCode}'),
-                              const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Item Name: ".tr()}${widget.orderModel.type}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Employer Name: ".tr()}${widget.orderModel.employerName}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Employer Email: ".tr()}${widget.orderModel.employerEmail}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Employer Phone: ".tr()}${widget.orderModel.employerPhone}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
                                   '${"Order Number: ".tr()}${widget.orderModel.number.toString()}'),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               //barcode
                               Center(
@@ -153,12 +157,15 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                 ),
                               ),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text(
-                                  '${"Date : ".tr()}${DateFormat().format(DateTime.parse(widget.orderModel.date))}'),
+                                  SharedHelper.get(key: 'lang')=='arabic'?
+                                  '${"Date: ".tr()}$arabicDate':
+                                  '${"Date: ".tr()}${DateFormat().format(DateTime.parse(widget.orderModel.date))}'
+                              ),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               defaultTextForm(
                                   context: context,
@@ -173,7 +180,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   },
                                   type: TextInputType.number),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               defaultTextForm(
                                   context: context,
@@ -189,7 +196,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   },
                                   type: TextInputType.number),
                               const SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               Text("${"Total Price: ".tr()}$totalPrice"),
                             ],
@@ -295,4 +302,15 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
       },
     );
   }
+  void getArabic(String date)async{
+    await initializeDateFormatting('ar_SA','');
+    var formatter=DateFormat('yyyy-MM-dd hh:mm:ss','ar_SA');
+    print(formatter.locale);
+    String formatted=formatter.format(DateTime.parse(date));
+    arabicDate=formatted;
+    setState(() {
+
+    });
+  }
+
 }

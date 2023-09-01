@@ -1,5 +1,5 @@
 // ignore_for_file: use_key_in_widget_constructors
-
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -80,34 +80,36 @@ class _MyAppState extends State<MyApp> {
         listener: (context, state) {},
         builder: (context, state) {
           return Sizer(
-            builder: (a, b, c) => MaterialApp(
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-              debugShowCheckedModeBanner: false,
-              darkTheme: darkTheme(),
-              theme: lightTheme(),
-              themeMode: SharedHelper.get(key: 'theme') == 'Light Theme'
-                  ? ThemeMode.light
-                  : ThemeMode.dark,
-              home: !isOffline
-                  ? startScreen()
-                  : Scaffold(
-                      backgroundColor:
-                          SharedHelper.get(key: 'theme') == 'Light Theme'
-                              ? Colors.white
-                              : Theme.of(context).scaffoldBackgroundColor,
-                      appBar: AppBar(
-                        title: const Text('No Internet'),
-                        centerTitle: true,
-                      ),
-                      body: const Center(
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.blue),
+            builder: (a, b, c) => Phoenix(
+              child: MaterialApp(
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+                debugShowCheckedModeBanner: false,
+                darkTheme: darkTheme(),
+                theme: lightTheme(),
+                themeMode: SharedHelper.get(key: 'theme') == 'Light Theme'
+                    ? ThemeMode.light
+                    : ThemeMode.dark,
+                home: !isOffline
+                    ? startScreen()
+                    : Scaffold(
+                        backgroundColor:
+                            SharedHelper.get(key: 'theme') == 'Light Theme'
+                                ? Colors.white
+                                : Theme.of(context).scaffoldBackgroundColor,
+                        appBar: AppBar(
+                          title: const Text('No Internet'),
+                          centerTitle: true,
+                        ),
+                        body: const Center(
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.blue),
+                          ),
                         ),
                       ),
-                    ),
+              ),
             ),
           );
         },

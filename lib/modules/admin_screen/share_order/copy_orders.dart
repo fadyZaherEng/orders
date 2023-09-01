@@ -1,12 +1,11 @@
 // ignore_for_file: avoid_print, deprecated_member_use, must_be_immutable
-
-
 import 'package:easy_localization/easy_localization.dart';
+import 'package:orders/modules/admin_screen/update_order/update_order.dart';
+import 'package:orders/shared/components/components.dart';
+import 'package:share/share.dart';
 import 'package:flutter/material.dart';
 import 'package:orders/models/order_model.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf/pdf.dart';
-import 'package:printing/printing.dart';
+
 class DataTableScreen extends StatefulWidget {
   List<OrderModel> orders = [];
 
@@ -17,56 +16,76 @@ class DataTableScreen extends StatefulWidget {
 }
 
 class _DataTableScreenState extends State<DataTableScreen> {
-  final pdf = pw.Document();
+  String date = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        build: (ctx) => [
-          pw.Table.fromTextArray(data: <List<String>>[
-            <String>[
-              'City'.tr(),
-              'Area'.tr(),
-              'Address'.tr(),
-              'Order Phone'.tr(),
-              'Employee Phone'.tr(),
-              'Employee Email'.tr(),
-              'Employee name'.tr(),
-              'Item Name'.tr(),
-              'Date'.tr()
-            ],
-            ...widget.orders
-                .map((order) => [
-                      order.conservation,
-                      order.city,
-                      order.address,
-                      order.orderPhone,
-                      order.employerPhone,
-                      order.employerEmail,
-                      order.employerName,
-                      order.type,
-                      order.date,
-                    ])
-                .toList(),
-          ], context: ctx),
-        ],
-      ),
-    );
-    //savePdf();
-    print(pdf.document);
+    getData(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: Expanded(child: showOrders())),
+      appBar: AppBar(
+        actions: [
+          TextButton(
+              onPressed: () {
+                Share.share(date);
+              },
+              child: Text("Copy".tr())),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: getData(context),
+          ),
+        ),
+      ),
     );
   }
-  Widget showOrders(){
-    return PdfPreview(build: (format)=>pdf.save(),pdfFileName: "orders.pdf",);
+
+  List<Widget> getData(ctx) {
+    List<Widget> list = [];
+    date="";
+    String res = "";
+    widget.orders.forEach((element) {
+      res = "";
+      res += "City: "+element.conservation +
+          " | " +
+          "Area: "+ element.city +
+          " | " +
+          "Address: "+ element.address +
+          " | " +
+          "Client Phone: "+element.orderPhone +
+          " | " +
+          "Employer Phone: "+element.employerPhone +
+          " | " +
+          "Employer Email: "+element.employerEmail +
+          " | " +
+          "Employer Name: "+element.employerName +
+          " | " +
+          "Item Type: "+element.type +
+          " | " +
+          "Date: "+element.date;
+      date += res + "\n";
+      date += "----------------------------------------------------------- \n";
+      list.add(SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child:
+        InkWell(onTap:(){
+          navigateToWithReturn(ctx, UpdateOrdersScreen(element));
+        },child: Text(res+ "\n",maxLines: 20,)),
+      ));
+      list.add(
+        mySeparator(context),
+      );
+    });
+
+    return list;
   }
 }
+

@@ -13,7 +13,6 @@ import 'package:orders/modules/admin_screen/share_order/copy_orders.dart';
 import 'package:orders/modules/login/login.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
-import 'package:orders/shared/styles/Icon_broken.dart';
 
 class AdminShowOrders extends StatefulWidget {
   const AdminShowOrders({super.key});
@@ -36,24 +35,25 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
       builder: (ctx, state) {
         return Scaffold(
           appBar: AppBar(
-            title: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  if(OrdersHomeCubit
-                      .get(context)
-                      .currentIndex == 0)
-                  Text("Total Price: ".tr()),
-                  if(OrdersHomeCubit
-                      .get(context)
-                      .currentIndex == 0)
-                    Text(OrdersHomeCubit
+            title: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  children: [
+                    if(OrdersHomeCubit
                         .get(context)
-                        .totalOfAllOrders
-                        .toString()),
-                ],
+                        .currentIndex == 0)
+                      Text("Total Price: ".tr()),
+                    if(OrdersHomeCubit
+                        .get(context)
+                        .currentIndex == 0)
+                      Text(OrdersHomeCubit
+                          .get(context)
+                          .totalOfAllOrders
+                          .toString()),
+                  ],
+                ),
               ),
             ),
             centerTitle: true,
@@ -83,8 +83,13 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             .of(context)
                             .scaffoldBackgroundColor),
                     items: [
-                      if(OrdersHomeCubit.get(context).currentAdmin != null
-                          && OrdersHomeCubit.get(context).currentAdmin!.addCat)
+                      if(OrdersHomeCubit
+                          .get(context)
+                          .currentAdmin != null
+                          && OrdersHomeCubit
+                              .get(context)
+                              .currentAdmin!
+                              .addCat)
                         DropdownMenuItem(
                           value: "cat",
                           child: InkWell(
@@ -93,12 +98,15 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               navigateToWithReturn(
                                   context, const AddCategoryScreen());
                             },
-                            child: Text("Add Category".tr()),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5,bottom: 5),
+                              child: Text("Add Category".tr()),
+                            ),
                           ),
                         ),
                       if(OrdersHomeCubit
                           .get(context)
-                          .currentAdmin!=null&&OrdersHomeCubit
+                          .currentAdmin != null && OrdersHomeCubit
                           .get(context)
                           .currentAdmin!
                           .showCategories)
@@ -110,14 +118,19 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               navigateToWithReturn(
                                   context, const ShowCategoriesScreen());
                             },
-                            child: Text("Show Categories".tr()),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5,bottom: 5),
+                              child: Text("Show Categories".tr()),
+                            ),
                           ),
                         ),
-                      if(OrdersHomeCubit.get(context).currentAdmin != null
-                          &&OrdersHomeCubit
+                      if(OrdersHomeCubit
                           .get(context)
-                          .currentAdmin!
-                          .showOrders)
+                          .currentAdmin != null
+                          && OrdersHomeCubit
+                              .get(context)
+                              .currentAdmin!
+                              .showOrders)
                         DropdownMenuItem(
                           value: "copy",
                           child: InkWell(
@@ -128,7 +141,10 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                                   .get(context)
                                   .orders));
                             },
-                            child: Text("Share Orders".tr()),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5,bottom: 5),
+                              child: Text("Share Orders".tr()),
+                            ),
                           ),
                         ),
                       DropdownMenuItem(
@@ -139,14 +155,19 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             navigateToWithReturn(
                               context, const ScannerScreen(),);
                           },
-                          child: Text('Search By Barcode'.tr()),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5,bottom: 5),
+                            child: Text('Search By Barcode'.tr()),
+                          ),
                         ),
                       ),
-                      if(OrdersHomeCubit.get(context).currentAdmin != null
-                          &&OrdersHomeCubit
+                      if(OrdersHomeCubit
                           .get(context)
-                          .currentAdmin!
-                          .email == 'x@gmail.com')
+                          .currentAdmin != null
+                          && OrdersHomeCubit
+                              .get(context)
+                              .currentAdmin!
+                              .email == 'x@gmail.com')
                         DropdownMenuItem(
                           value: "permission",
                           child: InkWell(
@@ -154,7 +175,10 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               Navigator.pop(context);
                               navigateToWithReturn(context, PermissionScreen());
                             },
-                            child: Text("Permission".tr()),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5,bottom: 5),
+                              child: Text("Permission".tr()),
+                            ),
                           ),
                         ),
                       DropdownMenuItem(
@@ -164,7 +188,10 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             Navigator.pop(context);
                             OrdersHomeCubit.get(context).modeChange();
                           },
-                          child: Text("Change Theme".tr()),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5,bottom: 5),
+                            child: Text("Change Theme".tr()),
+                          ),
                         ),
                       ),
                       DropdownMenuItem(
@@ -174,7 +201,10 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             Navigator.pop(context);
                             OrdersHomeCubit.get(context).langChange(context);
                           },
-                          child: Text("Change lang".tr()),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5,bottom: 5),
+                            child: Text("Change lang".tr()),
+                          ),
                         ),
                       ),
                       DropdownMenuItem(
@@ -186,7 +216,10 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             SharedHelper.remove(key: 'uid');
                             navigateToWithoutReturn(context, LogInScreen());
                           },
-                          child: Text("Log Out".tr()),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5,bottom: 5),
+                            child: Text("Log Out".tr()),
+                          ),
                         ),
                       ),
                     ],
@@ -203,11 +236,11 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
               .currentIndex],
           bottomNavigationBar: BottomNavigationBar(
             items: [
-              BottomNavigationBarItem(icon: const Icon(IconBroken.Home),
+              BottomNavigationBarItem(icon: const Icon(Icons.home),
                   label: "Show Orders".tr()),
               BottomNavigationBarItem(icon: const Icon(Icons.today),
-                  label:'Today Orders'.tr()),
-              BottomNavigationBarItem(icon: const Icon(IconBroken.Search),
+                  label: 'Today Orders'.tr()),
+              BottomNavigationBarItem(icon: const Icon(Icons.search),
                   label: 'Search By Date'.tr()),
             ],
             currentIndex: OrdersHomeCubit

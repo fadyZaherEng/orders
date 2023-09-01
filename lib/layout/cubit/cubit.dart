@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/admin_model.dart';
 import 'package:orders/models/category_model.dart';
@@ -444,6 +445,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       SharedHelper.save(value: 'arabic', key: 'lang');
       context.setLocale(const Locale('ar','SA'));
     }
+    Phoenix.rebirth(context);
     emit(OrdersChangeModeStates());
   }
 
@@ -581,13 +583,17 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     FirebaseFirestore.instance
         .collection('orders')
         .orderBy('date')
-        .where('date',isEqualTo: DateTime.now())
         .snapshots()
         .listen((event) {
       todayOrders = [];
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        todayOrders.add(orderModel);
+        if(orderModel.date.split(' ')[0]==DateTime.now().toString().split(' ')[0]) {
+          print("today ${DateTime.now().toString()}");
+          print("today1 ${event.docs.length}");
+          todayOrders.add(orderModel);
+        }
+        emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
     }).onError((handleError) {

@@ -158,7 +158,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                        }
                       },
                       child: Text(
-                        "Save".tr(),
+                        "Add Category".tr(),
                         style: TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 14,

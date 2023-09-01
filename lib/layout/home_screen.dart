@@ -144,7 +144,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               const ScannerScreen(),
                             );
                           },
-                          child: Text('Search By Barcode'.tr()),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text('Search By Barcode'.tr()),
+                          ),
                         ),
                       ),
                       DropdownMenuItem(
@@ -154,7 +157,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             Navigator.pop(context);
                             OrdersHomeCubit.get(context).modeChange();
                           },
-                          child: Text("Change Theme".tr()),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text("Change Theme".tr()),
+                          ),
                         ),
                       ),
                       DropdownMenuItem(
@@ -164,7 +170,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             Navigator.pop(context);
                             OrdersHomeCubit.get(context).langChange(context);
                           },
-                          child: Text("Change lang".tr()),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text("Change lang".tr()),
+                          ),
                         ),
                       ),
                       DropdownMenuItem(
@@ -176,7 +185,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             SharedHelper.remove(key: 'uid');
                             navigateToWithoutReturn(context, LogInScreen());
                           },
-                          child: Text("Log Out".tr()),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text("Log Out".tr()),
+                          ),
                         ),
                       ),
                     ],
@@ -226,6 +238,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     CSCPicker(
                       dropdownDialogRadius: 10.0,
                       searchBarRadius: 10.0,
+                      showCities: false,
                       dropdownDecoration:SharedHelper.get(key: 'theme') == 'Light Theme'?
                       const BoxDecoration(color: Colors.white):const BoxDecoration(color: Colors.deepPurple),
                       disabledDropdownDecoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
@@ -334,8 +347,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               onChanged: (val) {
                                 if (val != null) {
                                   catSelected = val;
+                                  setState(() {
+
+                                  });
                                 }
-                              }),
+                              },
+
+                          ),
                           const SizedBox(
                             height: 10,
                           ),
@@ -403,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     Text('${"Total Price:".tr()} ${totalPrice.toString()}'),
                     const SizedBox(
-                      height: 10,
+                      height: 30,
                     ),
                     SizedBox(
                       width: double.infinity,

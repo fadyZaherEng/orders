@@ -5,10 +5,12 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/modules/admin_screen/print_order/order.dart';
 import 'package:orders/shared/components/components.dart';
+import 'package:orders/shared/network/local/cashe_helper.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
@@ -27,10 +29,15 @@ class _ScannerScreenState extends State<ScannerScreen> {
   dynamic totalPrice;
   var screenShotController = ScreenshotController();
   var formKey = GlobalKey<FormState>();
+  String arabicDate="";
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState(); //theme logout lang
+    if(SharedHelper.get(key: 'lang')=='arabic'){
+      getArabic(OrdersHomeCubit.get(context).searchOrderBarcode!.date);
+    }//theme logout lang
     priceController.addListener(() {
       if(OrdersHomeCubit.get(context).searchOrderBarcode!=null){
         print(priceController.text);
@@ -60,6 +67,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
+        if(SharedHelper.get(key: 'lang')=='arabic'){
+          getArabic(OrdersHomeCubit.get(context).searchOrderBarcode!.date);
+        }
         return Scaffold(
           body: SafeArea(
             child: Column(
@@ -174,8 +184,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
                             const SizedBox(
                               height: 10,
                             ),
-                            Text(
-                                '${"Date : ".tr()}${DateFormat().format(DateTime.parse(OrdersHomeCubit.get(context).searchOrderBarcode!.date))}'),
+                      Text(
+                          SharedHelper.get(key: 'lang')=='arabic'?
+                          '${"Date: ".tr()}$arabicDate':
+                          '${"Date: ".tr()}${DateTime.parse(OrdersHomeCubit.get(context).searchOrderBarcode!.date)}'),
                             const SizedBox(
                               height: 10,
                             ),
@@ -315,7 +327,17 @@ class _ScannerScreenState extends State<ScannerScreen> {
             ),
           ),
         );
-      },
+      }
     );
+  }
+  void getArabic(String date)async{
+    await initializeDateFormatting('ar_SA','');
+    var formatter=DateFormat('yyyy-MM-dd hh:mm:ss','ar_SA');
+    print(formatter.locale);
+    String formatted=formatter.format(DateTime.parse(date));
+    arabicDate=formatted;
+    setState(() {
+
+    });
   }
 }

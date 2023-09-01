@@ -9,9 +9,25 @@ import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share/share.dart';
 
-class TodayOrders extends StatelessWidget {
+class TodayOrders extends StatefulWidget {
    const TodayOrders({super.key});
+
+  @override
+  State<TodayOrders> createState() => _TodayOrdersState();
+}
+
+class _TodayOrdersState extends State<TodayOrders> {
+  String date="";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+    OrdersHomeCubit.get(context).getTodayOrders();
+  }
    @override
    Widget build(BuildContext context) {
      return BlocConsumer<OrdersHomeCubit,OrdersHomeStates>(
@@ -25,28 +41,42 @@ class TodayOrders extends StatelessWidget {
                  .todayOrders
                  .isNotEmpty,
              builder: (ctx) =>
-                 ListView.separated(
-                   itemBuilder: (ctx, idx) {
-                     return listItem(OrdersHomeCubit
-                         .get(context)
-                         .todayOrders[idx], ctx);
-                   },
-                   itemCount: OrdersHomeCubit
-                       .get(context)
-                       .todayOrders
-                       .length,
-                   separatorBuilder: (ctx, idx) => mySeparator(context),
+                 Column(
+                   children: [
+                     Expanded(
+                       child: ListView.separated(
+                         itemBuilder: (ctx, idx) {
+                           return listItem(OrdersHomeCubit
+                               .get(context)
+                               .todayOrders[idx], ctx);
+                         },
+                         itemCount: OrdersHomeCubit
+                             .get(context)
+                             .todayOrders
+                             .length,
+                         separatorBuilder: (ctx, idx) => mySeparator(context),
+                       ),
+                     ),
+                     Padding(
+                       padding: const EdgeInsets.all(0.0),
+                       child: TextButton(
+                           onPressed: () {
+                             getData();
+                             Share.share(date);
+                           },
+                           child: Text("Copy".tr())),
+                     ),
+                   ],
                  ),
              fallback: (ctx) =>
-             const Center(
-                 child: CircularProgressIndicator(
-                   color: Colors.blue,
-                 )),
+              Center(
+                 child: Text("Not Orders Today".tr())),
            ),
          );
        },
      );
    }
+
    Widget listItem(OrderModel order, ctx) {
      return InkWell(
        onTap: () {
@@ -66,4 +96,32 @@ class TodayOrders extends StatelessWidget {
        ),
      );
    }
+  void getData() {
+    date="";
+    String res = "";
+    OrdersHomeCubit
+        .get(context)
+        .todayOrders.forEach((element) {
+      res = "";
+      res += "City: "+element.conservation +
+          " | " +
+          "Area: "+ element.city +
+          " | " +
+          "Address: "+ element.address +
+          " | " +
+          "Client Phone: "+element.orderPhone +
+          " | " +
+          "Employer Phone: "+element.employerPhone +
+          " | " +
+          "Employer Email: "+element.employerEmail +
+          " | " +
+          "Employer Name: "+element.employerName +
+          " | " +
+          "Item Type: "+element.type +
+          " | " +
+          "Date: "+element.date;
+      date += res + "\n";
+      date += "----------------------------------------------------------- \n";
+    });
+  }
 }

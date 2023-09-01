@@ -2,6 +2,7 @@
   "Add Category": "Add Category",
   "Category Name": "Category Name",
   "Amount": "Amount",
+  "Copy": "Copy",
   "Category Name: ": "Category Name: ",
   "Please Enter Category Name": "Please Enter Category Name",
   "Please Enter Amount": "Please Enter Amount",
@@ -82,14 +83,13 @@
   "City": "City",
   "Please Enter The City": "Please Enter The City",
   "Area": "Area",
+  "Not Orders Today": "Not Orders Today",
   "Address": "Address",
   "Order Phone": "Order Phone",
   "Employee Phone": "Employee Phone",
   "Employee Email": "Employee Email",
   "Employee name": "Employee name",
   "Item Name": "Item Name",
-
-
   "Please Enter Client Name":"Please Enter Client Name",
   "Client name":  "Client name",
   "Client Address":  "Client Address",
@@ -101,7 +101,6 @@
   "Categories": "Categories",
   "Please Enter Client Category":  "Please Enter Client Category",
   "Please Enter Price": "Please Enter Price",
-
   "Client Phone": "Client Phone",
   "Please Enter Client Phone": "Please Enter Client Phone"
 }
