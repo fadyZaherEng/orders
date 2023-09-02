@@ -208,7 +208,7 @@ class _MoneyScreenState extends State<MoneyScreen> {
                           }
                         },
                         child: Text(
-                          "Save",
+                          "Save".tr(),
                           style: TextStyle(
                         color:SharedHelper.get(key: 'theme') == 'Light Theme'?Colors.white:Colors.black
                       )

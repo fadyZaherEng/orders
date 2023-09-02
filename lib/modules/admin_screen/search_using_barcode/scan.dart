@@ -33,11 +33,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState(); //theme logout lang
-    if(SharedHelper.get(key: 'lang')=='arabic'){
+    super.initState();
+    if(SharedHelper.get(key: 'lang')=='arabic'&&OrdersHomeCubit.get(context).searchOrderBarcode!=null){
       getArabic(OrdersHomeCubit.get(context).searchOrderBarcode!.date);
-    }//theme logout lang
+    }
     priceController.addListener(() {
       if(OrdersHomeCubit.get(context).searchOrderBarcode!=null){
         print(priceController.text);
@@ -67,7 +66,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
-        if(SharedHelper.get(key: 'lang')=='arabic'){
+        if(SharedHelper.get(key: 'lang')=='arabic'&&OrdersHomeCubit.get(context).searchOrderBarcode!=null){
           getArabic(OrdersHomeCubit.get(context).searchOrderBarcode!.date);
         }
         return Scaffold(
@@ -86,8 +85,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                   const SimpleBarcodeScannerPage(),
                             ),
                           );
-                          OrdersHomeCubit.get(context)
-                              .searchOrdersByBarcode(res);
+                          OrdersHomeCubit.get(context).searchOrdersByBarcode(res);
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(15.0),

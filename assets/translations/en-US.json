@@ -23,7 +23,6 @@
   "Date: ": "Date: ",
   "Date": "Date",
   "Amount: ": "Quantity: ",
-
   "Price: ": "Price: ",
   "First Time": "First Time",
   "Last Time": "Last Time",
@@ -124,5 +123,7 @@
   "The Sale Money: ": "The Sale Money: ",
   "The Gain: ": "The Gain: ",
   "View Information About Costs": "View Information About Costs",
-  "Not Orders in this time": "Not Orders in this time"
+  "Not Orders in this time": "Not Orders in this time",
+
+  "Edit": "Edit"
 }

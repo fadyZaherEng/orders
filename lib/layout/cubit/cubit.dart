@@ -13,6 +13,7 @@ import 'package:orders/models/order_model.dart';
 import 'package:orders/models/user_profile.dart';
 import 'package:orders/modules/admin_screen/orders/orders.dart';
 import 'package:orders/modules/admin_screen/search_by_date/search.dart';
+import 'package:orders/modules/admin_screen/show_order/show_orders.dart';
 import 'package:orders/modules/admin_screen/today_orders/orders.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
@@ -418,8 +419,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         ),
         backgroundColor: Colors.pink,
       ));
-      Navigator.of(context);
-
+      navigateToWithReturn(context, const AdminShowOrders());
       emit(RejectFileSuccessStates());
     }).catchError((onError) {
       emit(RejectFileErrorStates());
@@ -442,10 +442,13 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     if (SharedHelper.get(key: 'lang') == 'arabic') {
       SharedHelper.save(value: 'english', key: 'lang');
       context.setLocale(const Locale('en', 'US'));
+      emit(OrdersChangeModeStates());
     } else {
       SharedHelper.save(value: 'arabic', key: 'lang');
       context.setLocale(const Locale('ar', 'SA'));
+      emit(OrdersChangeModeStates());
     }
+    emit(OrdersChangeModeStates());
     Phoenix.rebirth(context);
     emit(OrdersChangeModeStates());
   }
@@ -501,7 +504,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     String docId = docRef.id;
     categoryModel.catId = docId;
     String text = "Category Uploaded Successfully".tr();
-
     ref.add(categoryModel.toMap()).then((value) {
       showToast(message: text, state: ToastState.SUCCESS);
       emit(GetFileSuccessStates());
@@ -511,7 +513,56 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(GetFileErrorStates());
     });
   }
-
+  void removeCat({required String docId, required context}) {
+    emit(RejectFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('categories')
+        .doc(docId)
+        .delete()
+        .then((value) {
+      String text = "Deleted Successfully".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+        ),
+        backgroundColor: Colors.pink,
+      ));
+      navigateToWithReturn(context, const AdminShowOrders());
+      emit(RejectFileSuccessStates());
+    }).catchError((onError) {
+      emit(RejectFileErrorStates());
+    });
+  }
+  void editCat({required String docId,required CategoryModel categoryModel,required context}) {
+    if(categoryModel.amount==0){
+      removeCat(docId: docId, context: context);
+    }
+    else{
+      emit(RejectFileLoadingStates());
+      FirebaseFirestore.instance
+          .collection('categories')
+          .doc(docId)
+          .set(categoryModel.toMap())
+          .then((value) {
+        String text = "Deleted Successfully".tr();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+          ),
+          backgroundColor: Colors.pink,
+        ));
+        navigateToWithReturn(context, const AdminShowOrders());
+        emit(RejectFileSuccessStates());
+      }).catchError((onError) {
+        emit(RejectFileErrorStates());
+      });
+    }
+  }
+  //////////////////////////////////////////////////////////////////////////////////
   //search barcode
   OrderModel? searchOrderBarcode;
 
@@ -539,8 +590,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 //search date
   List<OrderModel> searchOrdersDate = [];
 
-  void searchOrdersByDate(
-      String date, TimeOfDay firstTime, TimeOfDay lastTime) {
+  void searchOrdersByDate(String date, TimeOfDay firstTime, TimeOfDay lastTime) {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
