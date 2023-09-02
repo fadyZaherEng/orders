@@ -10,11 +10,18 @@ import 'package:orders/models/order_model.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
 
-class SearchByDateScreen extends StatelessWidget {
+class SearchByDateScreen extends StatefulWidget {
   SearchByDateScreen({super.key});
 
+  @override
+  State<SearchByDateScreen> createState() => _SearchByDateScreenState();
+}
+
+class _SearchByDateScreenState extends State<SearchByDateScreen> {
   DateTime _date = DateTime.now();
+
   TimeOfDay firstTime = TimeOfDay.now();
+
   TimeOfDay lastTime = TimeOfDay.now();
 
   @override
@@ -23,9 +30,8 @@ class SearchByDateScreen extends StatelessWidget {
       listener: (ctx, state) {},
       builder: (ctx, state) {
         return Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 10),
           child: Column(
-            mainAxisSize: MainAxisSize.max,
             children: [
               Align(
                 alignment: Alignment.topCenter,
@@ -38,23 +44,41 @@ class SearchByDateScreen extends StatelessWidget {
                           onPressed: () {
                             _selectDate(context);
                           },
-                          child: Row(
+                          child: Column(
                             children: [
-                              const Icon(Icons.date_range),
-                              const SizedBox(width: 2,),
-                              Text('Date'.tr()),
+                              Row(
+                                children: [
+                                  const Icon(Icons.date_range),
+                                  const SizedBox(width: 2,),
+                                  Text('Date'.tr()),
+                                ],
+                              ),
+                              const SizedBox(height: 5,),
+                              Text(_date.toString().split(" ")[0]),
                             ],
                           )),
                       TextButton(
                           onPressed: () {
                             _selectFirstTime(context);
                           },
-                          child:  Text("First Time".tr())),
+                          child:  Column(
+                            children: [
+                              Text("First Time".tr()),
+                              const SizedBox(height: 5,),
+                              Text('${firstTime.hour>12?(firstTime.hour-12).toString():firstTime.hour.toString()}:${firstTime.minute.toString()}'),
+                            ],
+                          )),
                       TextButton(
                           onPressed: () {
                             _selectLastTime(context);
                           },
-                          child:  Text("Last Time".tr())),
+                          child:  Column(
+                            children: [
+                              Text("Last Time".tr()),
+                              const SizedBox(height: 5,),
+                              Text('${lastTime.hour>12?(lastTime.hour-12).toString():lastTime.hour.toString()}:${lastTime.minute.toString()}'),
+                            ],
+                          )),
                       TextButton(
                           onPressed: () {
                             OrdersHomeCubit.get(context).searchOrdersByDate(
@@ -78,52 +102,50 @@ class SearchByDateScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              ConditionalBuilder(
-                condition: OrdersHomeCubit.get(context).searchOrdersDate.isNotEmpty,
-                builder: (ctx) =>
-                    ListView.separated(
-                      itemBuilder: (ctx, idx) {
-                        return listItem(OrdersHomeCubit
+              Expanded(
+                child: ConditionalBuilder(
+                  condition: OrdersHomeCubit.get(context).searchOrdersDate.isNotEmpty,
+                  builder: (ctx) =>
+                      ListView.separated(
+                        itemBuilder: (ctx, idx) {
+                          return listItem(OrdersHomeCubit
+                              .get(context)
+                              .searchOrdersDate[idx], ctx);
+                        },
+                        itemCount: OrdersHomeCubit
                             .get(context)
-                            .searchOrdersDate[idx], ctx);
-                      },
-                      itemCount: OrdersHomeCubit
-                          .get(context)
-                          .searchOrdersDate
-                          .length,
-                      separatorBuilder: (ctx, idx) => mySeparator(context),
-                    ),
-                fallback: (ctx) =>state is  ViewFileLoadingStates?
-                const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.blue,
-                    )):Container(),
-              )
+                            .searchOrdersDate
+                            .length,
+                        separatorBuilder: (ctx, idx) => mySeparator(context),
+                      ),
+                  fallback: (ctx) =>Center(
+                      child: Text("Not Orders in this time".tr())),
+                ),
+              ),
             ],
           ),
         );
       },
     );
   }
+
   Widget listItem(OrderModel order, ctx) {
     return InkWell(
       onTap: () {
         navigateToWithReturn(ctx, UpdateOrdersScreen(order));
       },
       child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Text('${"Order Name: ".tr()}${order.orderName}'),
-              const Spacer(),
-              Text('${"Total Price: ".tr()}${order.totalPrice.toString()}'),
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(child: Text('${"Order Name: ".tr()}${order.orderName}')),
+            Flexible(child: Text('${"Total Price: ".tr()}${order.totalPrice.toString()}',)),
+          ],
         ),
       ),
     );
   }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -135,6 +157,9 @@ class SearchByDateScreen extends StatelessWidget {
     );
     if (picked != null && picked != _date) {
       _date = picked;
+      setState(() {
+
+      });
       print("data $_date");
     }
   }
@@ -146,6 +171,10 @@ class SearchByDateScreen extends StatelessWidget {
     );
     if (picked != null && picked != firstTime) {
       firstTime = picked;
+      setState(() {
+
+      });
+
       print("first ${firstTime.hour} ${firstTime.minute}");
     }
   }
@@ -157,6 +186,9 @@ class SearchByDateScreen extends StatelessWidget {
     );
     if (picked != null && picked != lastTime) {
       lastTime = picked;
+      setState(() {
+
+      });
       print("last ${lastTime.hour} ${lastTime.minute}");
     }
   }

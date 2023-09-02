@@ -34,7 +34,7 @@ class _TodayOrdersState extends State<TodayOrders> {
        listener: (ctx,state){},
        builder: (ctx,state){
          return  Padding(
-           padding: const EdgeInsets.all(10.0),
+           padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 5),
            child: ConditionalBuilder(
              condition: OrdersHomeCubit
                  .get(context)
@@ -83,15 +83,12 @@ class _TodayOrdersState extends State<TodayOrders> {
          navigateToWithReturn(ctx, UpdateOrdersScreen(order));
        },
        child: Center(
-         child: Padding(
-           padding: const EdgeInsets.all(8.0),
-           child: Row(
-             children: [
-               Text('${"Order Name: ".tr()}${order.orderName}'),
-               const Spacer(),
-               Text('${"Total Price: ".tr()}${order.totalPrice.toString()}'),
-             ],
-           ),
+         child: Row(
+         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+         children: [
+           Flexible(child: Text('${"Order Name: ".tr()}${order.orderName}')),
+           Flexible(child: Text('${"Total Price: ".tr()}${order.totalPrice.toString()}',)),
+         ],
          ),
        ),
      );

@@ -6,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/modules/admin_screen/add_cat/add_cat.dart';
+import 'package:orders/modules/admin_screen/gain/gain.dart';
 import 'package:orders/modules/admin_screen/get_cat/cat.dart';
+import 'package:orders/modules/admin_screen/money/money.dart';
 import 'package:orders/modules/admin_screen/permission/permission.dart';
 import 'package:orders/modules/admin_screen/search_using_barcode/scan.dart';
 import 'package:orders/modules/admin_screen/share_order/copy_orders.dart';
@@ -38,7 +40,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
             title: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Padding(
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(2.0),
                 child: Row(
                   children: [
                     if(OrdersHomeCubit
@@ -48,10 +50,12 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                     if(OrdersHomeCubit
                         .get(context)
                         .currentIndex == 0)
-                      Text(OrdersHomeCubit
-                          .get(context)
-                          .totalOfAllOrders
-                          .toString()),
+                      SingleChildScrollView(
+                        child: Text(OrdersHomeCubit
+                            .get(context)
+                            .totalOfAllOrders
+                            .toString(),),
+                      ),
                   ],
                 ),
               ),
@@ -61,7 +65,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
             actions: [
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(0,0,3,0),
                   child: DropdownButton(
                     dropdownColor: Theme
                         .of(context)
@@ -90,6 +94,34 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               .get(context)
                               .currentAdmin!
                               .addCat)
+                        DropdownMenuItem(
+                          value: "money",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              navigateToWithReturn(
+                                  context,  MoneyScreen());
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5,bottom: 5),
+                              child: Text("Add Money".tr()),
+                            ),
+                          ),
+                        ),
+                      DropdownMenuItem(
+                        value: "gain",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                                context, const GainScreen());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5,bottom: 5),
+                            child: Text("Calculate The Gain".tr()),
+                          ),
+                        ),
+                      ),
                         DropdownMenuItem(
                           value: "cat",
                           child: InkWell(

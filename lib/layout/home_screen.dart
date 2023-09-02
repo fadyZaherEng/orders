@@ -348,11 +348,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 if (val != null) {
                                   catSelected = val;
                                   setState(() {
-
                                   });
                                 }
                               },
-
                           ),
                           const SizedBox(
                             height: 10,

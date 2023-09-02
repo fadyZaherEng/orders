@@ -17,29 +17,32 @@ class DisplayOrdersScreen extends StatelessWidget {
     return BlocConsumer<OrdersHomeCubit,OrdersHomeStates>(
       listener: (ctx,state){},
       builder: (ctx,state){
-         return  ConditionalBuilder(
-           condition: OrdersHomeCubit
-               .get(context)
-               .orders
-               .isNotEmpty,
-           builder: (ctx) =>
-               ListView.separated(
-                 itemBuilder: (ctx, idx) {
-                   return listItem(OrdersHomeCubit
-                       .get(context)
-                       .orders[idx], ctx);
-                 },
-                 itemCount: OrdersHomeCubit
-                      .get(context)
-                     .orders
-                     .length,
-                 separatorBuilder: (ctx, idx) => mySeparator(context),
-               ),
-           fallback: (ctx) =>
-           const Center(
-               child: CircularProgressIndicator(
-                 color: Colors.blue,
-               )),
+         return  Padding(
+           padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 5),
+           child: ConditionalBuilder(
+             condition: OrdersHomeCubit
+                 .get(context)
+                 .orders
+                 .isNotEmpty,
+             builder: (ctx) =>
+                 ListView.separated(
+                   itemBuilder: (ctx, idx) {
+                     return listItem(OrdersHomeCubit
+                         .get(context)
+                         .orders[idx], ctx);
+                   },
+                   itemCount: OrdersHomeCubit
+                        .get(context)
+                       .orders
+                       .length,
+                   separatorBuilder: (ctx, idx) => mySeparator(context),
+                 ),
+             fallback: (ctx) =>
+             const Center(
+                 child: CircularProgressIndicator(
+                   color: Colors.blue,
+                 )),
+           ),
          );
       },
     );
@@ -50,15 +53,12 @@ class DisplayOrdersScreen extends StatelessWidget {
         navigateToWithReturn(ctx, UpdateOrdersScreen(order));
       },
       child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Text('${"Order Name: ".tr()}${order.orderName}'),
-              const Spacer(),
-              Text('${"Total Price: ".tr()}${order.totalPrice.toString()}'),
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(child: Text('${"Order Name: ".tr()}${order.orderName}')),
+            Flexible(child: Text('${"Total Price: ".tr()}${order.totalPrice.toString()}',)),
+          ],
         ),
       ),
     );

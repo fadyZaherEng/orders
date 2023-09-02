@@ -102,5 +102,27 @@
   "Please Enter Client Category":  "Please Enter Client Category",
   "Please Enter Price": "Please Enter Price",
   "Client Phone": "Client Phone",
-  "Please Enter Client Phone": "Please Enter Client Phone"
+  "Please Enter Client Phone": "Please Enter Client Phone",
+
+  "Money Uploaded Successfully": "Money Uploaded Successfully",
+  "Add Money": "Add Money",
+  "Add the Advertising Money": "Add the Advertising Money",
+  "Add the Products Money": "Add the Products Money",
+  "Add the Salaries Money": "Add the Salaries Money",
+  "Type": "Type",
+  "Please Enter type": "Please Enter type",
+  "Money": "Money",
+  "Please Enter Money": "Please Enter Money",
+  "Calculate The Gain": "Calculate The Gain",
+
+  "Money Of The Cost": "Money Of The Cost",
+  "Advertisments":"Advertisments",
+  "Salaries": "Salaries",
+  "Products": "Products",
+  "Cost: ": "Cost: ",
+  "Total Price Of Orders": "Total Price Of Orders",
+  "The Sale Money: ": "The Sale Money: ",
+  "The Gain: ": "The Gain: ",
+  "View Information About Costs": "View Information About Costs",
+  "Not Orders in this time": "Not Orders in this time"
 }

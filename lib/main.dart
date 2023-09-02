@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => OrdersHomeCubit()..getOrders()..getCategories()..getAdminsProfile(),
+      create: (context) => OrdersHomeCubit()..getOrders()..getCategories()..getAdminsProfile()..getMoney(),
       child: BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
         listener: (context, state) {},
         builder: (context, state) {
