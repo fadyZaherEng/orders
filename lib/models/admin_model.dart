@@ -1,8 +1,8 @@
 class AdminModel {
-  String email, password;
+  String email, password,id;
   bool showOrders, showCategories, addCat, saveOrder, removeOrder;
 
-  AdminModel({
+  AdminModel({required this.id,
     required this.email, required this.showOrders, required this.showCategories, required this.addCat,
     required this.saveOrder, required this.removeOrder,required this.password
   });
@@ -10,6 +10,7 @@ class AdminModel {
   Map<String, dynamic> toMap() {
     return {
       'email': email,
+      'id': id,
       'showOrders': showOrders,
       'showCategories': showCategories,
       'addCat': addCat,
@@ -22,6 +23,7 @@ class AdminModel {
   factory AdminModel.fromMap(Map<String, dynamic> map) {
     return AdminModel(
       email: map['email'],
+      id: map['id'],
       password: map['password'],
       showOrders: map['showOrders'],
       showCategories: map['showCategories'],

@@ -28,19 +28,19 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
   dynamic totalPrice;
   var screenShotController = ScreenshotController();
   var formKey = GlobalKey<FormState>();
-  String arabicDate="";
+  String arabicDate = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState(); //theme logout lang
-    if(SharedHelper.get(key: 'lang')=='arabic'){
+    if (SharedHelper.get(key: 'lang') == 'arabic') {
       getArabic(widget.orderModel.date);
     }
     priceController.addListener(() {
       print(priceController.text);
       double p =
-          priceController.text != "" ? double.parse(priceController.text) : 0;
+      priceController.text != "" ? double.parse(priceController.text) : 0;
       double s = salOfChargingController.text != ""
           ? double.parse(salOfChargingController.text)
           : 0;
@@ -52,7 +52,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
     salOfChargingController.addListener(() {
       print(priceController.text);
       double p =
-          priceController.text != "" ? double.parse(priceController.text) : 0;
+      priceController.text != "" ? double.parse(priceController.text) : 0;
       double s = salOfChargingController.text != ""
           ? double.parse(salOfChargingController.text)
           : 0;
@@ -71,7 +71,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
-        if(SharedHelper.get(key: 'lang')=='arabic'){
+        if (SharedHelper.get(key: 'lang') == 'arabic') {
           getArabic(widget.orderModel.date);
         }
         return Scaffold(
@@ -96,52 +96,44 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                 height: 15,
                               ),
                               Text(
-                                  '${"Order Name: ".tr()}${widget.orderModel.orderName}'),
+                                  '${"Order Name: ".tr()}${widget.orderModel
+                                      .orderName}'),
                               const SizedBox(
                                 height: 15,
                               ),
                               Text(
-                                  '${"Order Phone: ".tr()}${widget.orderModel.orderPhone}'),
+                                  '${"Order Phone: ".tr()}${widget.orderModel
+                                      .orderPhone}'),
                               const SizedBox(
                                 height: 15,
                               ),
                               Text(
-                                  '${"Order City: ".tr()}${widget.orderModel.conservation}'),
+                                  '${"Order City: ".tr()}${widget.orderModel
+                                      .conservation}'),
                               const SizedBox(
                                 height: 15,
                               ),
                               Text(
-                                  '${"Order Area: ".tr()}${widget.orderModel.city}'),
+                                  '${"Order Area: ".tr()}${widget.orderModel
+                                      .city}'),
                               const SizedBox(
                                 height: 15,
                               ),
                               Text(
-                                  '${"Order Address: ".tr()} ${widget.orderModel.address}'),
+                                  '${"Order Address: ".tr()} ${widget.orderModel
+                                      .address}'),
                               const SizedBox(
                                 height: 15,
                               ),
                               Text(
-                                  '${"Item Name: ".tr()}${widget.orderModel.type}'),
+                                  '${"Item Name: ".tr()}${widget.orderModel
+                                      .type}'),
                               const SizedBox(
                                 height: 15,
                               ),
                               Text(
-                                  '${"Employer Name: ".tr()}${widget.orderModel.employerName}'),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              Text(
-                                  '${"Employer Email: ".tr()}${widget.orderModel.employerEmail}'),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              Text(
-                                  '${"Employer Phone: ".tr()}${widget.orderModel.employerPhone}'),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              Text(
-                                  '${"Order Number: ".tr()}${widget.orderModel.number.toString()}'),
+                                  widget.orderModel.number!=0 ?
+                                  '${"Order Number: ".tr()}${widget.orderModel.number.toString()}':""),
                               const SizedBox(
                                 height: 15,
                               ),
@@ -151,7 +143,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   data: widget.orderModel.barCode,
                                   barcode: Barcode.qrCode(
                                       errorCorrectLevel:
-                                          BarcodeQRCorrectionLevel.high),
+                                      BarcodeQRCorrectionLevel.high),
                                   width: 200,
                                   height: 200,
                                 ),
@@ -160,9 +152,10 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                 height: 15,
                               ),
                               Text(
-                                  SharedHelper.get(key: 'lang')=='arabic'?
-                                  '${"Date: ".tr()}$arabicDate':
-                                  '${"Date: ".tr()}${DateFormat().format(DateTime.parse(widget.orderModel.date))}'
+                                  SharedHelper.get(key: 'lang') == 'arabic' ?
+                                  '${"Date: ".tr()}$arabicDate' :
+                                  '${"Date: ".tr()}${DateFormat().format(
+                                      DateTime.parse(widget.orderModel.date))}'
                               ),
                               const SizedBox(
                                 height: 15,
@@ -173,7 +166,9 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   prefixIcon: const Icon(Icons.price_check),
                                   text: "Price".tr(),
                                   validate: (val) {
-                                    if (val.toString().isEmpty) {
+                                    if (val
+                                        .toString()
+                                        .isEmpty) {
                                       return "Please Enter total price".tr();
                                     }
                                     return null;
@@ -186,10 +181,12 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   context: context,
                                   Controller: salOfChargingController,
                                   prefixIcon:
-                                      const Icon(Icons.charging_station),
+                                  const Icon(Icons.charging_station),
                                   text: "Charging".tr(),
                                   validate: (val) {
-                                    if (val.toString().isEmpty) {
+                                    if (val
+                                        .toString()
+                                        .isEmpty) {
                                       return "Please Enter Charging".tr();
                                     }
                                     return null;
@@ -211,34 +208,41 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if (OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
+                      if (OrdersHomeCubit
+                          .get(context)
+                          .currentAdmin!
+                          .saveOrder)
                         Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: MaterialButton(
-                            color: Theme.of(context).primaryColor,
+                            color: Theme
+                                .of(context)
+                                .primaryColor,
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
                                 OrdersHomeCubit.get(context).updateOrder(
                                     orderName: widget.orderModel.orderName,
+                                    notes: widget.orderModel.notes,
+                                    serviceType: widget.orderModel.serviceType,
                                     conservation:
-                                        widget.orderModel.conservation,
+                                    widget.orderModel.conservation,
                                     city: widget.orderModel.city,
                                     address: widget.orderModel.address,
                                     type: widget.orderModel.type,
                                     barCode: widget.orderModel.barCode,
                                     employerName:
-                                        widget.orderModel.employerName,
+                                    widget.orderModel.employerName,
                                     employerPhone:
-                                        widget.orderModel.employerPhone,
+                                    widget.orderModel.employerPhone,
                                     employerEmail:
-                                        widget.orderModel.employerEmail,
+                                    widget.orderModel.employerEmail,
                                     orderPhone: widget.orderModel.orderPhone,
                                     date: widget.orderModel.date,
                                     number: widget.orderModel.number,
                                     price: widget.orderModel.price,
                                     totalPrice: widget.orderModel.totalPrice,
                                     salOfCharging:
-                                        widget.orderModel.salOfCharging,
+                                    widget.orderModel.salOfCharging,
                                     context: context);
                               }
                             },
@@ -248,18 +252,23 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                 fontWeight: FontWeight.normal,
                                 fontSize: 14,
                                 color:
-                                    Theme.of(context).scaffoldBackgroundColor,
+                                Theme
+                                    .of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                           ),
                         ),
-                      if (OrdersHomeCubit.get(context)
+                      if (OrdersHomeCubit
+                          .get(context)
                           .currentAdmin!
                           .removeOrder)
                         Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: MaterialButton(
-                            color: Theme.of(context).primaryColor,
+                            color: Theme
+                                .of(context)
+                                .primaryColor,
                             onPressed: () {
                               OrdersHomeCubit.get(context).removeOrders(
                                   docId: widget.orderModel.barCode,
@@ -270,7 +279,9 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 14,
-                                color: Theme.of(context).scaffoldBackgroundColor,
+                                color: Theme
+                                    .of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                           ),
@@ -302,12 +313,13 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
       },
     );
   }
-  void getArabic(String date)async{
-    await initializeDateFormatting('ar_SA','');
-    var formatter=DateFormat('yyyy-MM-dd hh:mm:ss','ar_SA');
+
+  void getArabic(String date) async {
+    await initializeDateFormatting('ar_SA', '');
+    var formatter = DateFormat('yyyy-MM-dd hh:mm:ss', 'ar_SA');
     print(formatter.locale);
-    String formatted=formatter.format(DateTime.parse(date));
-    arabicDate=formatted;
+    String formatted = formatter.format(DateTime.parse(date));
+    arabicDate = formatted;
     setState(() {
 
     });

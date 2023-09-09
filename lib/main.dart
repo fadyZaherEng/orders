@@ -32,12 +32,14 @@ void main() async {
   if (SharedHelper.get(key: 'lang') == null) {
     SharedHelper.save(value: 'arabic', key: 'lang');
   }
+
+
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(
         supportedLocales:const  [ Locale('en', 'US'), Locale('ar', 'SA')],
         path: 'assets/translations', // <-- change the path of the translation files
-        fallbackLocale: const Locale('en', 'US'),
+        fallbackLocale: const Locale('ar', 'SA'),
         child: MyApp()
     ),
   );
@@ -74,14 +76,14 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => OrdersHomeCubit()..getOrders()..getCategories()..getAdminsProfile()..getMoney(),
-      child: BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          return Sizer(
-            builder: (a, b, c) => Phoenix(
-              child: MaterialApp(
+    return Phoenix(
+      child: BlocProvider(
+        create: (context) => OrdersHomeCubit()..getOrders()..getCategories()..getAdminsProfile()..getMoney()..getCites()..getStates(),
+        child: BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            return Sizer(
+              builder: (a, b, c) => MaterialApp(
               localizationsDelegates: context.localizationDelegates,
               supportedLocales: context.supportedLocales,
               locale: context.locale,
@@ -110,9 +112,9 @@ class _MyAppState extends State<MyApp> {
                         ),
                       ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

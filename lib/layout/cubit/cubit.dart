@@ -54,13 +54,98 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
+  //get num all orders
+  int totalAllOrdersOfCurrentEmp = 0;
+
+  void getTotalAllOrdersOfCurrentEmp() {
+    emit(ViewFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('orders')
+        .orderBy('date')
+        .snapshots()
+        .listen((event) {
+      totalAllOrdersOfCurrentEmp = 0;
+      event.docs.forEach((element) {
+        OrderModel orderModel = OrderModel.fromMap(element.data());
+        if (orderModel.employerName == userProfile!.name) {
+          totalAllOrdersOfCurrentEmp++;
+        }
+        emit(ViewFileSuccessStates());
+      });
+      emit(ViewFileSuccessStates());
+    }).onError((handleError) {
+      emit(ViewFileErrorStates());
+    });
+  }
+
+  //get num today orders
+  int totalTodayOrdersOfCurrentEmp = 0;
+  List<OrderModel> totalTodayOrdersOfCurrentEmpList = [];
+
+  void getTodayTotalTodayOrdersOfCurrentEmp() {
+    emit(ViewFileLoadingStates()); //=order id
+    FirebaseFirestore.instance
+        .collection('orders')
+        .orderBy('date')
+        .snapshots()
+        .listen((event) {
+      totalTodayOrdersOfCurrentEmp = 0;
+      totalTodayOrdersOfCurrentEmpList = [];
+      event.docs.forEach((element) {
+        OrderModel orderModel = OrderModel.fromMap(element.data());
+        if (orderModel.date.split(' ')[0] ==
+                DateTime.now().toString().split(' ')[0] &&
+            orderModel.employerName == userProfile!.name) {
+          totalTodayOrdersOfCurrentEmp++;
+          totalTodayOrdersOfCurrentEmpList.add(orderModel);
+        }
+        emit(ViewFileSuccessStates());
+      });
+      emit(ViewFileSuccessStates());
+    }).onError((handleError) {
+      emit(ViewFileErrorStates());
+    });
+  }
+
+  //update orders
+  void updateOrderConfirm(
+      {required OrderModel orderModel, required context}) async {
+    FirebaseFirestore.instance
+        .collection('orders')
+        .doc(orderModel.barCode)
+        .update(orderModel.toMap())
+        .then((value) {
+      String text = "Edited Successfully...".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.green),
+        ),
+        backgroundColor: Colors.blueGrey,
+      ));
+      print(orderModel.price);
+      emit(OrdersEditProfileSuccessStates());
+    }).catchError((onError) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          onError.toString(),
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.red),
+        ),
+        backgroundColor: Colors.pink,
+      ));
+      emit(OrdersEditProfileErrorStates());
+    });
+  }
+
   //admins
   AdminModel? currentAdmin;
   List<AdminModel> admins = [];
 
   void getAdminsProfile() {
     emit(GetFileLoadingStates());
-    FirebaseFirestore.instance.collection("admins").get().then((value) {
+    FirebaseFirestore.instance.collection("admins").snapshots().listen((value) {
       admins = [];
       for (var admin in value.docs) {
         if (admin['email'] == SharedHelper.get(key: 'adminEmail')) {
@@ -72,7 +157,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         }
       }
       emit(GetFileSuccessStates());
-    }).catchError((onError) {
+    }).onError((onError) {
       showToast(message: onError.toString(), state: ToastState.ERROR);
       emit(GetUserWaitingErrorStates());
     });
@@ -286,6 +371,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         orders.add(orderModel);
         totalOfAllOrders += orderModel.totalPrice;
+        emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
     }).onError((handleError) {
@@ -305,6 +391,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       required String employerPhone,
       required String employerEmail,
       required String orderPhone,
+      required String serviceType,
+      required String notes,
       required String date,
       required int number,
       required double price,
@@ -314,6 +402,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     OrderModel orderModel = OrderModel(
         employerEmail: employerEmail,
         orderPhone: orderPhone,
+        serviceType: serviceType,
+        notes: notes,
         orderName: orderName,
         conservation: conservation,
         city: city,
@@ -330,7 +420,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     FirebaseFirestore.instance
         .collection('orders')
         .doc(barCode)
-        .set(orderModel.toMap())
+        .update(orderModel.toMap())
         .then((value) {
       String text = "Edited Successfully...".tr();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -367,6 +457,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       required String employerPhone,
       required String employerEmail,
       required String orderPhone,
+      required String notes,
+      required String serviceType,
       required int number,
       required double price,
       required double totalPrice,
@@ -375,6 +467,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     OrderModel orderModel = OrderModel(
         orderPhone: orderPhone,
         orderName: orderName,
+        notes: notes,
+        serviceType: serviceType,
         employerEmail: employerEmail,
         conservation: conservation,
         city: city,
@@ -392,7 +486,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     String docId = docRef.id;
     orderModel.barCode = docId;
     String text = "Order Uploaded Successfully".tr();
-    ref.add(orderModel.toMap()).then((value) {
+    docRef.set(orderModel.toMap()).then((value) {
       showToast(message: text, state: ToastState.SUCCESS);
       emit(GetFileSuccessStates());
     }).catchError((onError) {
@@ -443,10 +537,12 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       SharedHelper.save(value: 'english', key: 'lang');
       context.setLocale(const Locale('en', 'US'));
       emit(OrdersChangeModeStates());
+      //Phoenix.rebirth(context);
     } else {
       SharedHelper.save(value: 'arabic', key: 'lang');
       context.setLocale(const Locale('ar', 'SA'));
       emit(OrdersChangeModeStates());
+      //Phoenix.rebirth(context);
     }
     emit(OrdersChangeModeStates());
     Phoenix.rebirth(context);
@@ -473,6 +569,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       categories = [];
       event.docs.forEach((element) {
         categories.add(CategoryModel.fromMap(element.data()));
+        emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
     }).onError((handleError) {
@@ -504,7 +601,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     String docId = docRef.id;
     categoryModel.catId = docId;
     String text = "Category Uploaded Successfully".tr();
-    ref.add(categoryModel.toMap()).then((value) {
+    docRef.set(categoryModel.toMap()).then((value) {
       showToast(message: text, state: ToastState.SUCCESS);
       emit(GetFileSuccessStates());
     }).catchError((onError) {
@@ -513,6 +610,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(GetFileErrorStates());
     });
   }
+
   void removeCat({required String docId, required context}) {
     emit(RejectFileLoadingStates());
     FirebaseFirestore.instance
@@ -535,16 +633,19 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(RejectFileErrorStates());
     });
   }
-  void editCat({required String docId,required CategoryModel categoryModel,required context}) {
-    if(categoryModel.amount==0){
+
+  void editCat(
+      {required String docId,
+      required CategoryModel categoryModel,
+      required context}) {
+    if (categoryModel.amount == 0) {
       removeCat(docId: docId, context: context);
-    }
-    else{
+    } else {
       emit(RejectFileLoadingStates());
       FirebaseFirestore.instance
           .collection('categories')
           .doc(docId)
-          .set(categoryModel.toMap())
+          .update(categoryModel.toMap())
           .then((value) {
         String text = "Deleted Successfully".tr();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -562,6 +663,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       });
     }
   }
+
   //////////////////////////////////////////////////////////////////////////////////
   //search barcode
   OrderModel? searchOrderBarcode;
@@ -590,15 +692,16 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 //search date
   List<OrderModel> searchOrdersDate = [];
 
-  void searchOrdersByDate(String date, TimeOfDay firstTime, TimeOfDay lastTime) {
+  void searchOrdersByDate(
+      String date, TimeOfDay firstTime, TimeOfDay lastTime) {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
-        .orderBy('date')
+        .where('confirm', isEqualTo: true)
         .get()
         .then((event) {
       searchOrdersDate = [];
-      int tempHourTime=0, tempHourLastTime=0, tempHourFirstTime=0;
+      int tempHourTime = 0, tempHourLastTime = 0, tempHourFirstTime = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (orderModel.date.split(' ')[0] == date.split(' ')[0]) {
@@ -610,31 +713,40 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           tempHourLastTime = lastTime.hour;
           print(tempHourFirstTime);
           print(tempHourLastTime);
-          if (tempHourTime > tempHourFirstTime&&(tempHourTime>=1&&tempHourTime<=12)&&
-          (tempHourFirstTime>=1&&tempHourFirstTime<=12)&&
-              (tempHourLastTime>=1&&tempHourLastTime<=12)&& tempHourTime < tempHourLastTime) {
+          if (tempHourTime > tempHourFirstTime &&
+              (tempHourTime >= 1 && tempHourTime <= 12) &&
+              (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
+              (tempHourLastTime >= 1 && tempHourLastTime <= 12) &&
+              tempHourTime < tempHourLastTime) {
             searchOrdersDate.add(orderModel);
             print(orderModel.orderName);
           }
-          if (tempHourTime > tempHourFirstTime&&(tempHourTime>=13&&tempHourTime<=23)&&
-              (tempHourFirstTime>=13&&tempHourFirstTime<=23)&&
-              (tempHourLastTime>=13&&tempHourLastTime<=23)&& tempHourTime < tempHourLastTime) {
+          if (tempHourTime > tempHourFirstTime &&
+              (tempHourTime >= 13 && tempHourTime <= 23) &&
+              (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
+              (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
+              tempHourTime < tempHourLastTime) {
             searchOrdersDate.add(orderModel);
             print(orderModel.orderName);
           }
-          if ((tempHourTime>=13&&tempHourTime<=23)&& (tempHourFirstTime>=1&&tempHourFirstTime<=12)
-              && (tempHourLastTime>=13&&tempHourLastTime<=23)&& tempHourTime < tempHourLastTime||
-              (tempHourTime>=13&&tempHourTime<=23)&& (tempHourFirstTime>=13&&tempHourFirstTime<=23)
-                  &&tempHourTime>tempHourFirstTime&& (tempHourLastTime>=1&&tempHourLastTime<=12)) {
+          if ((tempHourTime >= 13 && tempHourTime <= 23) &&
+                  (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
+                  (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
+                  tempHourTime < tempHourLastTime ||
+              (tempHourTime >= 13 && tempHourTime <= 23) &&
+                  (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
+                  tempHourTime > tempHourFirstTime &&
+                  (tempHourLastTime >= 1 && tempHourLastTime <= 12)) {
             searchOrdersDate.add(orderModel);
             print(orderModel.orderName);
           }
-          if (tempHourTime == tempHourFirstTime && time.minute >= firstTime.minute) {
+          if (tempHourTime == tempHourFirstTime &&
+              time.minute >= firstTime.minute) {
             searchOrdersDate.add(orderModel);
             print(orderModel.orderName);
-
           }
-          if (tempHourTime == tempHourLastTime && time.minute <= lastTime.minute) {
+          if (tempHourTime == tempHourLastTime &&
+              time.minute <= lastTime.minute) {
             searchOrdersDate.add(orderModel);
             print(orderModel.orderName);
           }
@@ -646,17 +758,48 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
+//search barcode
+  List<OrderModel> searchOrderPhone = [];
+  double searchOrderPhonePrice=0;
+  int searchOrderPhoneNum=0;
+  void searchOrdersByPhone(String phone) {
+    emit(ViewFileLoadingStates()); //=order id
+    FirebaseFirestore.instance
+        .collection('orders')
+        .get()
+        .then((event) {
+      searchOrderPhone = [];
+       searchOrderPhonePrice=0;
+       searchOrderPhoneNum=0;
+      event.docs.forEach((element) {
+        OrderModel orderModel = OrderModel.fromMap(element.data());
+        print(orderModel.orderPhone);
+        print(phone);
+        if (orderModel.orderPhone == phone) {
+          searchOrderPhone.add(orderModel);
+          emit(ViewFileSuccessStates());
+        }
+      });
+      emit(ViewFileSuccessStates());
+    }).catchError((handleError) {
+      emit(ViewFileErrorStates());
+    });
+  }
+
 //today order
   List<OrderModel> todayOrders = [];
-
+  double todayOrdersPrice=0;
+  int todayOrdersNumber=0;
   void getTodayOrders() {
     emit(ViewFileLoadingStates()); //=order id
     FirebaseFirestore.instance
         .collection('orders')
-        .orderBy('date')
+        .where('confirm', isEqualTo: true)
         .snapshots()
         .listen((event) {
       todayOrders = [];
+      todayOrdersPrice=0;
+      todayOrdersNumber=0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (orderModel.date.split(' ')[0] ==
@@ -678,9 +821,10 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     CollectionReference ref = FirebaseFirestore.instance.collection('money');
     DocumentReference docRef = ref.doc();
     String docId = docRef.id;
-    MoneyModel moneyModel = MoneyModel(type: type, value: double.parse(value), docId: docId);
+    MoneyModel moneyModel =
+        MoneyModel(type: type, value: double.parse(value), docId: docId);
     String text = "Money Uploaded Successfully".tr();
-    ref.add(moneyModel.toMap()).then((value) {
+    docRef.set(moneyModel.toMap()).then((value) {
       showToast(message: text, state: ToastState.SUCCESS);
       emit(GetFileSuccessStates());
     }).catchError((onError) {
@@ -689,27 +833,75 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(GetFileErrorStates());
     });
   }
+
   //get money
-  double totalPriceCost=0;
+  double totalPriceCost = 0;
   List<MoneyModel> moneys = [];
+
   void getMoney() {
-    FirebaseFirestore.instance
-        .collection('money')
-        .snapshots()
-        .listen((event) {
-      moneys=[];
-      totalPriceCost=0;
-          event.docs.forEach((element) {
-            MoneyModel moneyModel=MoneyModel.fromMap(element.data());
+    FirebaseFirestore.instance.collection('money').snapshots().listen((event) {
+      moneys = [];
+      totalPriceCost = 0;
+      event.docs.forEach((element) {
+        MoneyModel moneyModel = MoneyModel.fromMap(element.data());
         moneys.add(moneyModel);
-        totalPriceCost+=moneyModel.value;
+        totalPriceCost += moneyModel.value;
         emit(GetFileSuccessStates());
-          });
+      });
       emit(GetFileSuccessStates());
     }).onError((onError) {
       print('pppppppppppppppppppppppp${onError.toString()}');
       showToast(message: onError.toString(), state: ToastState.WARNING);
       emit(GetFileErrorStates());
+    });
+  }
+
+  //add cities and states
+  void addCites(String city) {
+    FirebaseFirestore.instance
+        .collection('cities')
+        .add({'city': city}).then((value) {
+          showToast(message: "تم اضافة مدينة بنجاح", state: ToastState.SUCCESS);
+      emit(SocialGetUserStatusSuccessStates());
+    }).catchError((onError) {
+      emit(GetVedioErrorStates());
+    });
+  }
+
+  void addStates(String state) {
+    FirebaseFirestore.instance
+        .collection('states')
+        .add({'state': state}).then((value) {
+      showToast(message: "تم اضافة محافظة بنجاح", state: ToastState.SUCCESS);
+      emit(SocialGetUserStatusSuccessStates());
+    }).catchError((onError) {
+      emit(GetVedioErrorStates());
+    });
+  }
+
+  List<String> cites = [];
+
+  void getCites() {
+    FirebaseFirestore.instance.collection('cities').snapshots().listen((value) {
+      value.docs.forEach((element) {
+        cites.add(element['city']);
+      });
+      emit(SocialGetUserStatusSuccessStates());
+    }).onError((onError) {
+      emit(GetVedioErrorStates());
+    });
+  }
+
+  List<String> states = [];
+
+  void getStates() {
+    FirebaseFirestore.instance.collection('states').snapshots().listen((value) {
+      value.docs.forEach((element) {
+        states.add(element['state']);
+      });
+      emit(SocialGetUserStatusSuccessStates());
+    }).onError((onError) {
+      emit(GetVedioErrorStates());
     });
   }
 }

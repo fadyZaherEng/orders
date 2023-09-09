@@ -163,8 +163,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
                             const SizedBox(
                               height: 10,
                             ),
-                            Text(
-                                '${"Order Number: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.number.toString()}'),
+                            Text(OrdersHomeCubit.get(context).searchOrderBarcode!=null&&
+                                OrdersHomeCubit.get(context).searchOrderBarcode!.number!=0?
+                                '${"Order Number: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.number.toString()}'
+                                :""
+                            ),
                             const SizedBox(
                               height: 10,
                             ),
@@ -254,7 +257,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                               totalPrice: OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice,
                                               salOfCharging:
                                               OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging,
-                                              context: context);
+                                              context: context,
+                                            notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
+                                            serviceType:OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType
+                                          );
                                         }
                                       },
                                       child: Text(

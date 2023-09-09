@@ -48,21 +48,19 @@ dependencies:
   firebase_auth:
   cloud_firestore:
   firebase_storage:
-  #google fonts
-  google_fonts:
   #network
   connectivity:
   pdf:
   printing:
   path_provider:
+  open_file:
   barcode_widget:
   screenshot:
   permission_handler:
   simple_barcode_scanner:
   easy_localization:
-  csc_picker:
   flutter_phoenix:
-  text2pdf:
+  syncfusion_flutter_xlsio:
   share:
 dev_dependencies:
   flutter_test:
@@ -87,10 +85,6 @@ flutter:
   assets:
     - assets/images/
     - assets/translations/
-  fonts:
-    - family: Cairo
-      fonts:
-        - asset: assets/fonts/Cairo-Bold.ttf
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

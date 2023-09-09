@@ -4,11 +4,12 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:csc_picker/csc_picker.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/modules/admin_screen/search_using_barcode/scan.dart';
+import 'package:orders/modules/emp_today_order/order.dart';
 import 'package:orders/modules/login/login.dart';
+import 'package:orders/modules/search_phone/search.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 
@@ -21,18 +22,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int minutes = 0;
+  double p = 0;
+  double s = 0;
 
   @override
   void initState() {
     super.initState();
     OrdersHomeCubit.get(context).getUserProfile();
+    OrdersHomeCubit.get(context).getTodayTotalTodayOrdersOfCurrentEmp();
+    OrdersHomeCubit.get(context).getTotalAllOrdersOfCurrentEmp();
     priceController.addListener(() {
-      double p =
-          priceController.text != "" ? double.parse(priceController.text) : 0;
-      totalPrice = p + salOfCharging;
+      p = priceController.text != "" ? double.parse(priceController.text) : 0;
+      s = salOfChargingController.text != ""
+          ? double.parse(salOfChargingController.text)
+          : 0;
+      totalPrice = p + s;
       setState(() {});
     });
-
+    salOfChargingController.addListener(() {
+      p = priceController.text != "" ? double.parse(priceController.text) : 0;
+      s = salOfChargingController.text != ""
+          ? double.parse(salOfChargingController.text)
+          : 0;
+      totalPrice = p + s;
+      setState(() {});
+    });
     print(SharedHelper.get(key: "min"));
     Timer.periodic(const Duration(hours: 24), (timer) {
       //update time all 24 in firestore
@@ -43,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
@@ -90,17 +103,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  var cityController = TextEditingController();
+  List<String> serviceType = ['تسليم وتحصيل', 'جلب مرتجعات', 'استبدال'];
+  var service = "Select Service".tr();
+  var city = "Select City".tr();
   var nameClientController = TextEditingController();
+  var notesController = TextEditingController();
   var addressClientController = TextEditingController();
   var quantityController = TextEditingController();
   var catsClientController = TextEditingController();
   var priceController = TextEditingController();
   var phoneClientController = TextEditingController();
-  String stateValue = "";
-  String catSelected = "Select";
+  var salOfChargingController = TextEditingController();
+  String stateValue = "Select State".tr();
+  String catSelected = "Select".tr();
   int quantityForMultiCats = 0;
-  double salOfCharging = 0;
   double totalPrice = 0;
   String radioSelected = "";
   var formKey = GlobalKey<FormState>();
@@ -147,6 +163,64 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Text('Search By Barcode'.tr()),
+                          ),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "toda",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                              context,
+                               EmployerTodayOrdersScreen(),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text("Today Orders".tr()),
+                          ),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "phone",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                              context,
+                              SearchOrderPhoneScreen(),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text("Search Phone".tr()),
+                          ),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "t",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                                '${"all num".tr()} ${OrdersHomeCubit.get(context).totalAllOrdersOfCurrentEmp}'),
+                          ),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "tod",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                                '${"today num".tr()} ${OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmp}'),
                           ),
                         ),
                       ),
@@ -235,46 +309,156 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(
                       height: 10,
                     ),
-                    CSCPicker(
-                      dropdownDialogRadius: 10.0,
-                      searchBarRadius: 10.0,
-                      showCities: false,
-                      dropdownDecoration:SharedHelper.get(key: 'theme') == 'Light Theme'?
-                      const BoxDecoration(color: Colors.white):const BoxDecoration(color: Colors.deepPurple),
-                      disabledDropdownDecoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
-                      onCountryChanged: (value) {},
-                      onStateChanged: (value) {
-                        if (value != null) {
-                          stateValue = value;
-                          (stateValue.toLowerCase().contains("cairo") ||
-                                  stateValue.toLowerCase().contains("giza"))
-                              ? salOfCharging = 30
-                              : salOfCharging = 50;
-                        }
-                        setState(() {
-                          double p = priceController.text != ""
-                              ? double.parse(priceController.text)
-                              : 0;
-                          totalPrice = p + salOfCharging;
-                        });
-                      },
-                      onCityChanged: (value) {},
+                    SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownButton(
+                            dropdownColor: Theme.of(context).primaryColor,
+                            focusColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            underline: Container(),
+                            hint: Text(service),
+                            icon: Icon(
+                              Icons.medical_services_sharp,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            elevation: 0,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor),
+                            items: serviceType
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e,
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        service = e;
+                                        setState(() {});
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(e),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                service = val;
+                                setState(() {});
+                              }
+                            }),
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    defaultTextForm(
-                        context: context,
-                        Controller: cityController,
-                        prefixIcon: const Icon(Icons.location_city),
-                        text: "City".tr(),
-                        validate: (val) {
-                          if (val.toString().isEmpty) {
-                            return "Please Enter The City".tr();
-                          }
-                          return null;
-                        },
-                        type: TextInputType.text),
+                    Text("Country:Egypt".tr()),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DropdownButton(
+                              dropdownColor: Theme.of(context).primaryColor,
+                              focusColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
+                              underline: Container(),
+                              hint: Text(stateValue),
+                              //      value: stateValue,
+                              icon: Icon(
+                                Icons.baby_changing_station,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              elevation: 0,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor),
+                              items: OrdersHomeCubit.get(context)
+                                  .states
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          stateValue = e;
+                                          setState(() {});
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Text(e),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  stateValue = val;
+                                  setState(() {});
+                                }
+                              }),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DropdownButton(
+                              dropdownColor: Theme.of(context).primaryColor,
+                              focusColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
+                              underline: Container(),
+                              hint: Text(city),
+                              icon: Icon(
+                                Icons.location_city,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              elevation: 0,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor),
+                              items: OrdersHomeCubit.get(context)
+                                  .cites
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          city = e;
+                                          setState(() {});
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Text(e),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  city = val;
+                                  setState(() {});
+                                }
+                              }),
+                        ),
+                      ],
+                    ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -287,6 +471,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           if (val.toString().isEmpty) {
                             return "Please Enter Client Address".tr();
                           }
+                          return null;
+                        },
+                        type: TextInputType.text),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    defaultTextForm(
+                        context: context,
+                        Controller: notesController,
+                        prefixIcon: const Icon(Icons.notes),
+                        text: "Notes".tr(),
+                        validate: (val) {
                           return null;
                         },
                         type: TextInputType.text),
@@ -334,23 +530,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       Column(
                         children: [
                           DropdownButton(
-                              focusColor: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(10),
-                              hint: Text(catSelected),
-                              items: OrdersHomeCubit.get(context)
-                                  .categories
-                                  .map((cat) => DropdownMenuItem(
-                                        child: Text(cat.catName),
-                                        value: cat.catName,
-                                      ))
-                                  .toList(),
-                              onChanged: (val) {
-                                if (val != null) {
-                                  catSelected = val;
-                                  setState(() {
-                                  });
-                                }
-                              },
+                            focusColor: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                            hint: Text(catSelected),
+                            items: OrdersHomeCubit.get(context)
+                                .categories
+                                .map((cat) => DropdownMenuItem(
+                                      child: Text(cat.catName),
+                                      value: cat.catName,
+                                    ))
+                                .toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                catSelected = val;
+                                setState(() {});
+                              }
+                            },
                           ),
                           const SizedBox(
                             height: 10,
@@ -394,26 +589,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: defaultTextForm(
-                              context: context,
-                              Controller: priceController,
-                              prefixIcon: const Icon(Icons.money),
-                              text: "Price".tr(),
-                              validate: (val) {
-                                if (val.toString().isEmpty) {
-                                  return "Please Enter Price".tr();
-                                }
-                                return null;
-                              },
-                              type: TextInputType.number),
-                        ),
-                        Text('${"Charging".tr()} ${salOfCharging.toString()}'),
-                      ],
+                    defaultTextForm(
+                        context: context,
+                        Controller: priceController,
+                        prefixIcon: const Icon(Icons.money),
+                        text: "Price".tr(),
+                        validate: (val) {
+                          if (val.toString().isEmpty) {
+                            return "Please Enter Price".tr();
+                          }
+                          return null;
+                        },
+                        type: TextInputType.number),
+                    const SizedBox(
+                      height: 10,
                     ),
+                    defaultTextForm(
+                        context: context,
+                        Controller: salOfChargingController,
+                        prefixIcon: const Icon(Icons.charging_station),
+                        text: "Charging".tr(),
+                        validate: (val) {
+                          if (val.toString().isEmpty) {
+                            return "Please Enter Charging".tr();
+                          }
+                          return null;
+                        },
+                        type: TextInputType.number),
                     const SizedBox(
                       height: 10,
                     ),
@@ -425,8 +627,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       width: double.infinity,
                       height: 43,
                       child: MaterialButton(
-                        color:SharedHelper.get(key: 'theme') == 'Light Theme'?
-                        Colors.deepPurple:Colors.white,
+                        color: SharedHelper.get(key: 'theme') == 'Light Theme'
+                            ? Colors.deepPurple
+                            : Colors.white,
                         onPressed: () {
                           String cat = "";
                           int number = 0;
@@ -439,11 +642,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             number = 0;
                           }
                           if (formKey.currentState!.validate() &&
-                              OrdersHomeCubit.get(context).userProfile != null) {
+                              OrdersHomeCubit.get(context).userProfile !=
+                                  null) {
                             OrdersHomeCubit.get(context).addOrders(
                                 orderName: nameClientController.text,
                                 conservation: stateValue,
-                                city: cityController.text,
+                                city: city,
+                                serviceType: service,
+                                notes: notesController.text,
                                 address: addressClientController.text,
                                 type: cat,
                                 employerName: OrdersHomeCubit.get(context)
@@ -459,13 +665,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 number: number,
                                 price: double.parse(priceController.text),
                                 totalPrice: totalPrice,
-                                salOfCharging: salOfCharging,
+                                salOfCharging:
+                                    double.parse(salOfChargingController.text),
                                 context: context);
+
+                            nameClientController.text = "";
+                            addressClientController.text = "";
+                            notesController.text = "";
+                            salOfChargingController.text = "";
+                            quantityController.text = "";
+                            catsClientController.text = "";
+                            priceController.text = "";
+                            phoneClientController.text = "";
                           }
                         },
-                        child: Text("Add Order".tr(),style:TextStyle(
-                          color:SharedHelper.get(key: 'theme') == 'Light Theme'?Colors.white:Colors.black
-                        )),
+                        child: Text("Add Order".tr(),
+                            style: TextStyle(
+                                color: SharedHelper.get(key: 'theme') ==
+                                        'Light Theme'
+                                    ? Colors.white
+                                    : Colors.black)),
                       ),
                     ),
                   ],

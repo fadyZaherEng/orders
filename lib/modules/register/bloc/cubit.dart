@@ -53,7 +53,6 @@ class OrdersAppRegisterCubit extends Cubit<OrdersAppRegisterStates>
         name: nameController.text,
         email: emailController.text,
         uid: uid,
-
     );
     CollectionReference users = FirebaseFirestore.instance.collection('users');
    return users.doc(uid).set(profile.toMap());

@@ -1,0 +1,31 @@
+abstract class OrdersAppChangeAdminPasswordStates{}
+
+class OrdersAppIsAdminStates extends OrdersAppChangeAdminPasswordStates{}
+
+class OrdersAppChangeAdminPasswordInitialStates extends OrdersAppChangeAdminPasswordStates{}
+class OrdersAppChangeAdminPasswordLoadingStates extends OrdersAppChangeAdminPasswordStates{}
+class OrdersAppChangeAdminPasswordSuccessStates extends OrdersAppChangeAdminPasswordStates{
+String uid;
+
+OrdersAppChangeAdminPasswordSuccessStates(this.uid);
+}
+class OrdersAppChangeAdminPasswordErrorStates extends OrdersAppChangeAdminPasswordStates{
+  String error;
+
+  OrdersAppChangeAdminPasswordErrorStates(this.error);
+}
+//admin
+class OrdersAppChangeAdminPasswordAdminInitialStates extends OrdersAppChangeAdminPasswordStates{}
+class OrdersAppChangeAdminPasswordAdminLoadingStates extends OrdersAppChangeAdminPasswordStates{}
+class OrdersAppChangeAdminPasswordAdminSuccessStates extends OrdersAppChangeAdminPasswordStates{
+  String uid;
+
+  OrdersAppChangeAdminPasswordAdminSuccessStates(this.uid);
+}
+class OrdersAppChangeAdminPasswordAdminErrorStates extends OrdersAppChangeAdminPasswordStates{
+  String error;
+
+  OrdersAppChangeAdminPasswordAdminErrorStates(this.error);
+}
+
+class OrdersAppChangeAdminPasswordChangeEyeStates extends OrdersAppChangeAdminPasswordStates{}

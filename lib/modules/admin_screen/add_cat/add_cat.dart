@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/shared/components/components.dart';
+
 class AddCategoryScreen extends StatefulWidget {
   const AddCategoryScreen({super.key});
 
@@ -19,24 +20,27 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   var catNameController = TextEditingController();
   var catAmountController = TextEditingController();
   var notesController = TextEditingController();
-  double totalPrice=0;
-  double p=0;
-  double s=0;
+  double totalPrice = 0;
+  double p = 0;
+  double s = 0;
 
-  var formKey=GlobalKey<FormState>();
+  var formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
     priceController.addListener(() {
-       p = priceController.text != "" ? double.parse(priceController.text) : 0;
-       s = salOfChargingController.text != "" ? double.parse(salOfChargingController.text) : 0;
+      p = priceController.text != "" ? double.parse(priceController.text) : 0;
+      s = salOfChargingController.text != "" ? double.parse(
+          salOfChargingController.text) : 0;
       totalPrice = p + s;
       setState(() {});
     });
     salOfChargingController.addListener(() {
       print(priceController.text);
       p = priceController.text != "" ? double.parse(priceController.text) : 0;
-      s = salOfChargingController.text != "" ? double.parse(salOfChargingController.text) : 0;
+      s = salOfChargingController.text != "" ? double.parse(
+          salOfChargingController.text) : 0;
       totalPrice = p + s;
       setState(() {});
     });
@@ -45,14 +49,13 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title:  Text("Add Category".tr()),
+            title: Text("Add Category".tr()),
           ),
           body: SingleChildScrollView(
             child: Form(
@@ -66,9 +69,11 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: catNameController,
                       prefixIcon: const Icon(Icons.category),
-                      text:"Category Name: ".tr(),
+                      text: "Category Name: ".tr(),
                       validate: (val) {
-                        if (val.toString().isEmpty) {
+                        if (val
+                            .toString()
+                            .isEmpty) {
                           return "Please Enter Category Name".tr();
                         }
                         return null;
@@ -81,10 +86,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: catAmountController,
                       prefixIcon: const Icon(Icons.numbers),
-                      text:"Amount".tr(),
+                      text: "Amount".tr(),
                       validate: (val) {
-                        if (val.toString().isEmpty) {
-                          return "Please Enter Amount".tr() ;
+                        if (val
+                            .toString()
+                            .isEmpty) {
+                          return "Please Enter Amount".tr();
                         }
                         return null;
                       },
@@ -96,10 +103,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: priceController,
                       prefixIcon: const Icon(Icons.price_check),
-                      text:"Price".tr(),
+                      text: "Price".tr(),
                       validate: (val) {
-                        if (val.toString().isEmpty) {
-                          return "Please Enter total price".tr() ;
+                        if (val
+                            .toString()
+                            .isEmpty) {
+                          return "Please Enter total price".tr();
                         }
                         return null;
                       },
@@ -111,10 +120,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: salOfChargingController,
                       prefixIcon: const Icon(Icons.charging_station),
-                      text:"Charging".tr() ,
+                      text: "Charging".tr(),
                       validate: (val) {
-                        if (val.toString().isEmpty) {
-                          return "Please Enter Charging".tr() ;
+                        if (val
+                            .toString()
+                            .isEmpty) {
+                          return "Please Enter Charging".tr();
                         }
                         return null;
                       },
@@ -126,7 +137,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       context: context,
                       Controller: notesController,
                       prefixIcon: const Icon(Icons.notes),
-                      text:"Notes".tr(),
+                      text: "Notes".tr(),
                       validate: (val) {
                         return null;
                       },
@@ -145,17 +156,18 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           .of(context)
                           .primaryColor,
                       onPressed: () {
-                       if(formKey.currentState!.validate()){
-                         OrdersHomeCubit.get(context).addCategories(
-                             date: DateTime.now().toString(),
-                             catName: catNameController.text,
-                             salOfCharging: s,
-                             notes: notesController.text,
-                             totalPrice: totalPrice,
-                             price: p,
-                             amount: catAmountController.text==""?0:int.parse(catAmountController.text),
-                             context: context);
-                       }
+                        if (formKey.currentState!.validate()) {
+                          OrdersHomeCubit.get(context).addCategories(
+                              date: DateTime.now().toString(),
+                              catName: catNameController.text,
+                              salOfCharging: s,
+                              notes: notesController.text,
+                              totalPrice: totalPrice,
+                              price: p,
+                              amount: catAmountController.text == "" ? 0 : int
+                                  .parse(catAmountController.text),
+                              context: context);
+                        }
                       },
                       child: Text(
                         "Add Category".tr(),

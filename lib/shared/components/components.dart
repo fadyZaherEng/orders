@@ -75,11 +75,11 @@ Color chooseToastColor(ToastState state)
 
 Widget mySeparator(context)
 =>Container(
-  padding: const EdgeInsets.all(8),
-  margin: const EdgeInsets.all(8),
-  color: HexColor('180040'),
+  padding: const EdgeInsets.all(15),
+  margin: const EdgeInsets.all(15),
+  color: Colors.grey,
   width: double.infinity,
-  height: 1,
+  height: 0.5,
 );
 Widget verifyEmail(context)
   => Padding(

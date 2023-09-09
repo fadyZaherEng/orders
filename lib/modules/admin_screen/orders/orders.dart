@@ -47,20 +47,30 @@ class DisplayOrdersScreen extends StatelessWidget {
       },
     );
   }
-  Widget listItem(OrderModel order, ctx) {
-    return InkWell(
-      onTap: () {
-        navigateToWithReturn(ctx, UpdateOrdersScreen(order));
-      },
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(child: Text('${"Order Name: ".tr()}${order.orderName}')),
-            Flexible(child: Text('${"Total Price: ".tr()}${order.totalPrice.toString()}',)),
-          ],
-        ),
-      ),
-    );
-  }
+   Widget listItem(OrderModel order, ctx) {
+     return InkWell(
+       onTap: () {
+         navigateToWithReturn(ctx, UpdateOrdersScreen(order));
+       },
+       child: Center(
+         child: Padding(
+           padding: const EdgeInsets.all(10.0),
+           child: Column(
+             children: [
+               Row(
+                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                 children: [
+                   Flexible(child: Text('${"Order Name: ".tr()}${order.orderName}')),
+                   Flexible(child: Text(order.confirm==true?"Confirm".tr():"Cancel".tr(),)),
+                 ],
+               ),
+               const SizedBox(height: 10,),
+               Text('${"Total Price: ".tr()}${order.totalPrice.toString()}',maxLines: 100,),
+             ],
+           ),
+         ),
+       ),
+     );
+   }
+
 }
