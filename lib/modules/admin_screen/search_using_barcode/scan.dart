@@ -230,7 +230,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
-                                  if (OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
+                                  if (OrdersHomeCubit.get(context).currentAdmin!=null&&OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
                                     Padding(
                                       padding: const EdgeInsets.all(4.0),
                                       child: MaterialButton(
@@ -275,7 +275,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                         ),
                                       ),
                                     ),
-                                  if (OrdersHomeCubit.get(context)
+                                  if (OrdersHomeCubit.get(context).currentAdmin!=null&&OrdersHomeCubit.get(context)
                                       .currentAdmin!
                                       .removeOrder)
                                     Padding(
