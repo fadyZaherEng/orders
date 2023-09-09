@@ -102,135 +102,122 @@ class _ScannerScreenState extends State<ScannerScreen> {
                 Expanded(
                   child: ConditionalBuilder(
                     condition: OrdersHomeCubit.get(context).searchOrderBarcode != null,
-                    builder: (ctx) => Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Form(
-                        key: formKey,
-                        child: SingleChildScrollView(
+                    builder: (ctx) => SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Form(
+                          key: formKey,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text(
-                                  '${"Order Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.orderName}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Order Phone: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.orderPhone}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Order City: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.conservation}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Order Area: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.city}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Order Address: ".tr()} ${OrdersHomeCubit.get(context).searchOrderBarcode!.address}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Order Barcode: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.barCode}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Item Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.type}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              Text(
-                                  '${"Service Type: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType}'),
-                              Text(
-                                  '${"Employer Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerName}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Employer Email: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerEmail}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                  '${"Employer Phone: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerPhone}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(OrdersHomeCubit.get(context).searchOrderBarcode!=null&&
-                                  OrdersHomeCubit.get(context).searchOrderBarcode!.number!=0?
-                                  '${"Order Number: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.number.toString()}'
-                                  :""
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              //barcode
-                              Center(
-                                child: BarcodeWidget(
-                                  data: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
-                                  barcode: Barcode.qrCode(
-                                      errorCorrectLevel:
-                                      BarcodeQRCorrectionLevel.high),
-                                  width: 200,
-                                  height: 200,
+                              Screenshot(
+                                controller: screenShotController,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        '${"Order Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.orderName}'),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                        '${"Order Phone: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.orderPhone}'),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                        '${"Order City: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.conservation}'),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                        '${"Order Area: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.city}'),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                        '${"Order Address: ".tr()} ${OrdersHomeCubit.get(context).searchOrderBarcode!.address}'),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+
+                                    Text(
+                                        '${"Item Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.type}'),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+
+                                    Text('${"Service Type: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType}'),
+                                     const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(OrdersHomeCubit.get(context).searchOrderBarcode!=null&&
+                                        OrdersHomeCubit.get(context).searchOrderBarcode!.number!=0?
+                                        '${"Order Number: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.number.toString()}'
+                                        :""
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    //barcode
+                                    Center(
+                                      child: BarcodeWidget(
+                                        data: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
+                                        barcode: Barcode.qrCode(
+                                            errorCorrectLevel:
+                                            BarcodeQRCorrectionLevel.high),
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                        Text(
+                                  '${"Date: ".tr()}${DateTime.parse(OrdersHomeCubit.get(context).searchOrderBarcode!.date)}'),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    defaultTextForm(
+                                        context: context,
+                                        Controller: priceController,
+                                        prefixIcon: const Icon(Icons.price_check),
+                                        text: "Price".tr(),
+                                        validate: (val) {
+                                          if (val.toString().isEmpty) {
+                                            return "Please Enter total price".tr();
+                                          }
+                                          return null;
+                                        },
+                                        type: TextInputType.number),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    defaultTextForm(
+                                        context: context,
+                                        Controller: salOfChargingController,
+                                        prefixIcon:
+                                        const Icon(Icons.charging_station),
+                                        text: "Charging".tr(),
+                                        validate: (val) {
+                                          if (val.toString().isEmpty) {
+                                            return "Please Enter Charging".tr();
+                                          }
+                                          return null;
+                                        },
+                                        type: TextInputType.number),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text("${"Total Price: ".tr()}$totalPrice"),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                      Text(
-                            '${"Date: ".tr()}${DateTime.parse(OrdersHomeCubit.get(context).searchOrderBarcode!.date)}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              defaultTextForm(
-                                  context: context,
-                                  Controller: priceController,
-                                  prefixIcon: const Icon(Icons.price_check),
-                                  text: "Price".tr(),
-                                  validate: (val) {
-                                    if (val.toString().isEmpty) {
-                                      return "Please Enter total price".tr();
-                                    }
-                                    return null;
-                                  },
-                                  type: TextInputType.number),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              defaultTextForm(
-                                  context: context,
-                                  Controller: salOfChargingController,
-                                  prefixIcon:
-                                  const Icon(Icons.charging_station),
-                                  text: "Charging".tr(),
-                                  validate: (val) {
-                                    if (val.toString().isEmpty) {
-                                      return "Please Enter Charging".tr();
-                                    }
-                                    return null;
-                                  },
-                                  type: TextInputType.number),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text("${"Total Price: ".tr()}$totalPrice"),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  if (OrdersHomeCubit.get(context).currentAdmin!=null&&OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
                                     Padding(
                                       padding: const EdgeInsets.all(4.0),
                                       child: MaterialButton(
@@ -259,8 +246,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                                 salOfCharging:
                                                 OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging,
                                                 context: context,
-                                              notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
-                                              serviceType:OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType
+                                                notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
+                                                serviceType:OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType
                                             );
                                           }
                                         },
@@ -275,9 +262,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                         ),
                                       ),
                                     ),
-                                  if (OrdersHomeCubit.get(context).currentAdmin!=null&&OrdersHomeCubit.get(context)
-                                      .currentAdmin!
-                                      .removeOrder)
                                     Padding(
                                       padding: const EdgeInsets.all(4.0),
                                       child: MaterialButton(
@@ -297,26 +281,26 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                         ),
                                       ),
                                     ),
-                                ],
-                              ),
-                            ),
-                            //share or print order
-                            Center(
-                              child: TextButton(
-                                onPressed: () {
-                                  screenShotController
-                                      .capture(delay: const Duration(milliseconds: 200))
-                                      .then((image) {
-                                    navigateToWithReturn(context, PrintOrderScreen(image!));
-                                  }).catchError((onError) {
-                                    print(onError.toString());
-                                  });
-                                },
-                                child: Text(
-                                  'Print Or Share'.tr(),
+                                  ],
                                 ),
                               ),
-                            ),
+                              //share or print order
+                              Center(
+                                child: TextButton(
+                                  onPressed: () {
+                                    screenShotController
+                                        .capture(delay: const Duration(milliseconds: 200))
+                                        .then((image) {
+                                      navigateToWithReturn(context, PrintOrderScreen(image!));
+                                    }).catchError((onError) {
+                                      print(onError.toString());
+                                    });
+                                  },
+                                  child: Text(
+                                    'Print Or Share'.tr(),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
