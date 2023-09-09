@@ -357,7 +357,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   //get orders
   List<OrderModel> orders = [];
   double totalOfAllOrders = 0;
-
+  double totalOfAllOrdersConfirm = 0;
   void getOrders() {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
@@ -367,9 +367,14 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .listen((event) {
       orders = [];
       totalOfAllOrders = 0;
+      totalOfAllOrdersConfirm=0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
+        print(orderModel.orderName);
         orders.add(orderModel);
+        if(orderModel.confirm){
+          totalOfAllOrdersConfirm+=orderModel.totalPrice;
+        }
         totalOfAllOrders += orderModel.totalPrice;
         emit(ViewFileSuccessStates());
       });
@@ -647,7 +652,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           .doc(docId)
           .update(categoryModel.toMap())
           .then((value) {
-        String text = "Deleted Successfully".tr();
+        String text = "Updated Successfully".tr();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
             text,
@@ -656,7 +661,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           ),
           backgroundColor: Colors.pink,
         ));
-        navigateToWithReturn(context, const AdminShowOrders());
         emit(RejectFileSuccessStates());
       }).catchError((onError) {
         emit(RejectFileErrorStates());

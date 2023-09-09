@@ -132,6 +132,12 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                 height: 15,
                               ),
                               Text(
+                                  '${"Service Type: ".tr()}${widget.orderModel
+                                      .serviceType}'),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Text(
                                   widget.orderModel.number!=0 ?
                                   '${"Order Number: ".tr()}${widget.orderModel.number.toString()}':""),
                               const SizedBox(

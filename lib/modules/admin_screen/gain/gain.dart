@@ -59,11 +59,12 @@ class GainScreen extends StatelessWidget {
                   const SizedBox(height: 50,),
                   Text("Total Price Of Orders".tr()),
                   const SizedBox(height: 10,),
-                  Text('${"The Sale Money: ".tr()}${OrdersHomeCubit.get(context).totalOfAllOrders}',maxLines: 100,),
+                  Text('${"The Sale Money: ".tr()}${OrdersHomeCubit.get(context).totalOfAllOrdersConfirm}',maxLines: 100,),
                   const SizedBox(height: 50,),
                   Text("Calculate The Gain".tr()),
                   const SizedBox(height: 10,),
-                  Text('${"The Gain: ".tr()} ${(OrdersHomeCubit.get(context).totalOfAllOrders-OrdersHomeCubit.get(context).totalPriceCost)}',style: TextStyle(
+                  Text('${"The Gain: ".tr()} '
+                      '${(OrdersHomeCubit.get(context).totalOfAllOrdersConfirm-OrdersHomeCubit.get(context).totalPriceCost)}',style: TextStyle(
                     color: Theme.of(context).primaryColor,fontWeight: FontWeight.bold,fontSize: 19
                   ),
                     maxLines: 100,

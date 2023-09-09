@@ -34,9 +34,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   void initState() {
     super.initState();
-    if(SharedHelper.get(key: 'lang')=='arabic'&&OrdersHomeCubit.get(context).searchOrderBarcode!=null){
-      getArabic(OrdersHomeCubit.get(context).searchOrderBarcode!.date);
-    }
     priceController.addListener(() {
       if(OrdersHomeCubit.get(context).searchOrderBarcode!=null){
         print(priceController.text);
@@ -45,7 +42,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
         totalPrice = p + s;
         OrdersHomeCubit.get(context).searchOrderBarcode!.price = p;
         OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice = totalPrice;
-        setState(() {});
       }
     });
     salOfChargingController.addListener(() {
@@ -56,7 +52,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
        totalPrice = p + s;
        OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging = s;
        OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice = totalPrice;
-       setState(() {});
      }
     });
   }
@@ -66,11 +61,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
-        if(SharedHelper.get(key: 'lang')=='arabic'&&OrdersHomeCubit.get(context).searchOrderBarcode!=null){
-          getArabic(OrdersHomeCubit.get(context).searchOrderBarcode!.date);
+        if(OrdersHomeCubit.get(context).searchOrderBarcode!=null){
+          priceController.text =  OrdersHomeCubit.get(context).searchOrderBarcode!.price.toString();
+          salOfChargingController.text =  OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging.toString();
+          totalPrice = OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging +  OrdersHomeCubit.get(context).searchOrderBarcode!.price;
         }
         return Scaffold(
-          body: SafeArea(
+          body:SafeArea(
             child: Column(
               children: [
                 Center(
@@ -109,214 +106,219 @@ class _ScannerScreenState extends State<ScannerScreen> {
                       padding: const EdgeInsets.all(10.0),
                       child: Form(
                         key: formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                                '${"Order Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.orderName}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Order Phone: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.orderPhone}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Order City: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.conservation}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Order Area: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.city}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Order Address: ".tr()} ${OrdersHomeCubit.get(context).searchOrderBarcode!.address}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Order Barcode: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.barCode}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Item Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.type}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Employer Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerName}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Employer Email: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerEmail}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                '${"Employer Phone: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerPhone}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(OrdersHomeCubit.get(context).searchOrderBarcode!=null&&
-                                OrdersHomeCubit.get(context).searchOrderBarcode!.number!=0?
-                                '${"Order Number: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.number.toString()}'
-                                :""
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            //barcode
-                            Center(
-                              child: BarcodeWidget(
-                                data: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
-                                barcode: Barcode.qrCode(
-                                    errorCorrectLevel:
-                                    BarcodeQRCorrectionLevel.high),
-                                width: 200,
-                                height: 200,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                  '${"Order Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.orderName}'),
+                              const SizedBox(
+                                height: 10,
                               ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                              Text(
+                                  '${"Order Phone: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.orderPhone}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  '${"Order City: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.conservation}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  '${"Order Area: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.city}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  '${"Order Address: ".tr()} ${OrdersHomeCubit.get(context).searchOrderBarcode!.address}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  '${"Order Barcode: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.barCode}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  '${"Item Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.type}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Text(
+                                  '${"Service Type: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType}'),
+                              Text(
+                                  '${"Employer Name: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerName}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  '${"Employer Email: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerEmail}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  '${"Employer Phone: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.employerPhone}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(OrdersHomeCubit.get(context).searchOrderBarcode!=null&&
+                                  OrdersHomeCubit.get(context).searchOrderBarcode!.number!=0?
+                                  '${"Order Number: ".tr()}${OrdersHomeCubit.get(context).searchOrderBarcode!.number.toString()}'
+                                  :""
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              //barcode
+                              Center(
+                                child: BarcodeWidget(
+                                  data: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
+                                  barcode: Barcode.qrCode(
+                                      errorCorrectLevel:
+                                      BarcodeQRCorrectionLevel.high),
+                                  width: 200,
+                                  height: 200,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
                       Text(
-                          SharedHelper.get(key: 'lang')=='arabic'?
-                          '${"Date: ".tr()}$arabicDate':
-                          '${"Date: ".tr()}${DateTime.parse(OrdersHomeCubit.get(context).searchOrderBarcode!.date)}'),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            defaultTextForm(
-                                context: context,
-                                Controller: priceController,
-                                prefixIcon: const Icon(Icons.price_check),
-                                text: "Price".tr(),
-                                validate: (val) {
-                                  if (val.toString().isEmpty) {
-                                    return "Please Enter total price".tr();
-                                  }
-                                  return null;
-                                },
-                                type: TextInputType.number),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            defaultTextForm(
-                                context: context,
-                                Controller: salOfChargingController,
-                                prefixIcon:
-                                const Icon(Icons.charging_station),
-                                text: "Charging".tr(),
-                                validate: (val) {
-                                  if (val.toString().isEmpty) {
-                                    return "Please Enter Charging".tr();
-                                  }
-                                  return null;
-                                },
-                                type: TextInputType.number),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("${"Total Price: ".tr()}$totalPrice"),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                if (OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: MaterialButton(
-                                      color: Theme.of(context).primaryColor,
-                                      onPressed: () {
-                                        if (formKey.currentState!.validate()) {
-                                          OrdersHomeCubit.get(context).updateOrder(
-                                              orderName: OrdersHomeCubit.get(context).searchOrderBarcode!.orderName,
-                                              conservation:
-                                              OrdersHomeCubit.get(context).searchOrderBarcode!.conservation,
-                                              city: OrdersHomeCubit.get(context).searchOrderBarcode!.city,
-                                              address: OrdersHomeCubit.get(context).searchOrderBarcode!.address,
-                                              type: OrdersHomeCubit.get(context).searchOrderBarcode!.type,
-                                              barCode: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
-                                              employerName:
-                                              OrdersHomeCubit.get(context).searchOrderBarcode!.employerName,
-                                              employerPhone:
-                                              OrdersHomeCubit.get(context).searchOrderBarcode!.employerPhone,
-                                              employerEmail:
-                                              OrdersHomeCubit.get(context).searchOrderBarcode!.employerEmail,
-                                              orderPhone: OrdersHomeCubit.get(context).searchOrderBarcode!.orderPhone,
-                                              date: OrdersHomeCubit.get(context).searchOrderBarcode!.date,
-                                              number: OrdersHomeCubit.get(context).searchOrderBarcode!.number,
-                                              price: OrdersHomeCubit.get(context).searchOrderBarcode!.price,
-                                              totalPrice: OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice,
-                                              salOfCharging:
-                                              OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging,
-                                              context: context,
-                                            notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
-                                            serviceType:OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Save".tr(),
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 14,
-                                          color:
-                                          Theme.of(context).scaffoldBackgroundColor,
+                            '${"Date: ".tr()}${DateTime.parse(OrdersHomeCubit.get(context).searchOrderBarcode!.date)}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              defaultTextForm(
+                                  context: context,
+                                  Controller: priceController,
+                                  prefixIcon: const Icon(Icons.price_check),
+                                  text: "Price".tr(),
+                                  validate: (val) {
+                                    if (val.toString().isEmpty) {
+                                      return "Please Enter total price".tr();
+                                    }
+                                    return null;
+                                  },
+                                  type: TextInputType.number),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              defaultTextForm(
+                                  context: context,
+                                  Controller: salOfChargingController,
+                                  prefixIcon:
+                                  const Icon(Icons.charging_station),
+                                  text: "Charging".tr(),
+                                  validate: (val) {
+                                    if (val.toString().isEmpty) {
+                                      return "Please Enter Charging".tr();
+                                    }
+                                    return null;
+                                  },
+                                  type: TextInputType.number),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text("${"Total Price: ".tr()}$totalPrice"),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  if (OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: MaterialButton(
+                                        color: Theme.of(context).primaryColor,
+                                        onPressed: () {
+                                          if (formKey.currentState!.validate()) {
+                                            OrdersHomeCubit.get(context).updateOrder(
+                                                orderName: OrdersHomeCubit.get(context).searchOrderBarcode!.orderName,
+                                                conservation:
+                                                OrdersHomeCubit.get(context).searchOrderBarcode!.conservation,
+                                                city: OrdersHomeCubit.get(context).searchOrderBarcode!.city,
+                                                address: OrdersHomeCubit.get(context).searchOrderBarcode!.address,
+                                                type: OrdersHomeCubit.get(context).searchOrderBarcode!.type,
+                                                barCode: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
+                                                employerName:
+                                                OrdersHomeCubit.get(context).searchOrderBarcode!.employerName,
+                                                employerPhone:
+                                                OrdersHomeCubit.get(context).searchOrderBarcode!.employerPhone,
+                                                employerEmail:
+                                                OrdersHomeCubit.get(context).searchOrderBarcode!.employerEmail,
+                                                orderPhone: OrdersHomeCubit.get(context).searchOrderBarcode!.orderPhone,
+                                                date: OrdersHomeCubit.get(context).searchOrderBarcode!.date,
+                                                number: OrdersHomeCubit.get(context).searchOrderBarcode!.number,
+                                                price: OrdersHomeCubit.get(context).searchOrderBarcode!.price,
+                                                totalPrice: OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice,
+                                                salOfCharging:
+                                                OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging,
+                                                context: context,
+                                              notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
+                                              serviceType:OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType
+                                            );
+                                          }
+                                        },
+                                        child: Text(
+                                          "Save".tr(),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 14,
+                                            color:
+                                            Theme.of(context).scaffoldBackgroundColor,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                if (OrdersHomeCubit.get(context)
-                                    .currentAdmin!
-                                    .removeOrder)
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: MaterialButton(
-                                      color: Theme.of(context).primaryColor,
-                                      onPressed: () {
-                                        OrdersHomeCubit.get(context).removeOrders(
-                                            docId: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
-                                            context: context);
-                                      },
-                                      child: Text(
-                                        "Delete".tr(),
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 14,
-                                          color: Theme.of(context).scaffoldBackgroundColor,
+                                  if (OrdersHomeCubit.get(context)
+                                      .currentAdmin!
+                                      .removeOrder)
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: MaterialButton(
+                                        color: Theme.of(context).primaryColor,
+                                        onPressed: () {
+                                          OrdersHomeCubit.get(context).removeOrders(
+                                              docId: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
+                                              context: context);
+                                        },
+                                        child: Text(
+                                          "Delete".tr(),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 14,
+                                            color: Theme.of(context).scaffoldBackgroundColor,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          //share or print order
-                          Center(
-                            child: TextButton(
-                              onPressed: () {
-                                screenShotController
-                                    .capture(delay: const Duration(milliseconds: 200))
-                                    .then((image) {
-                                  navigateToWithReturn(context, PrintOrderScreen(image!));
-                                }).catchError((onError) {
-                                  print(onError.toString());
-                                });
-                              },
-                              child: Text(
-                                'Print Or Share'.tr(),
+                                ],
                               ),
                             ),
+                            //share or print order
+                            Center(
+                              child: TextButton(
+                                onPressed: () {
+                                  screenShotController
+                                      .capture(delay: const Duration(milliseconds: 200))
+                                      .then((image) {
+                                    navigateToWithReturn(context, PrintOrderScreen(image!));
+                                  }).catchError((onError) {
+                                    print(onError.toString());
+                                  });
+                                },
+                                child: Text(
+                                  'Print Or Share'.tr(),
+                                ),
+                              ),
+                            ),
+                            ],
                           ),
-                          ],
                         ),
                       ),
                     ),
@@ -334,14 +336,5 @@ class _ScannerScreenState extends State<ScannerScreen> {
       }
     );
   }
-  void getArabic(String date)async{
-    await initializeDateFormatting('ar_SA','');
-    var formatter=DateFormat('yyyy-MM-dd hh:mm:ss','ar_SA');
-    print(formatter.locale);
-    String formatted=formatter.format(DateTime.parse(date));
-    arabicDate=formatted;
-    setState(() {
 
-    });
-  }
 }

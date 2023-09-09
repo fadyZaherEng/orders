@@ -8,12 +8,20 @@ import 'package:orders/models/category_model.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:screenshot/screenshot.dart';
 
-class ShowCategoriesScreen extends StatelessWidget {
+class ShowCategoriesScreen extends StatefulWidget {
+
+   ShowCategoriesScreen({super.key});
+
+  @override
+  State<ShowCategoriesScreen> createState() => _ShowCategoriesScreenState();
+}
+
+class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
   var quantityController=TextEditingController();
+
   var formKey=GlobalKey<FormState>();
 
   bool edit=false;
-   ShowCategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +40,9 @@ class ShowCategoriesScreen extends StatelessWidget {
                 itemCount: OrdersHomeCubit.get(context).categories.length,
                 separatorBuilder: (context, idx) => mySeparator(context),
               ),
-              fallback: (context) => const Center(
-                  child: CircularProgressIndicator(
-                color: Colors.blue,
-              )),
+              fallback: (context) =>  Center(
+                  child:Text("Not Found".tr())
+              ),
             ),
           ),
         );
@@ -55,155 +62,159 @@ class ShowCategoriesScreen extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(15))),
           child: Padding(
             padding: const EdgeInsets.all(15.0),
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "Category Name".tr(),
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              categoryModel.catName,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 10,),
-                        Row(
-                          children: [
-                            Text(
-                        "Date: ".tr(),
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              DateFormat.yMMMMd()
-                                  .format(DateTime.parse(categoryModel.date)),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "Amount: ".tr(),
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              categoryModel.amount.toString(),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 10,),
-                        Row(
-                          children: [
-                            Text(
-                        "Price: ".tr(),
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              categoryModel.price.toString(),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "Charging: ".tr(),
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              categoryModel.salOfCharging.toString(),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 10,),
-                        Row(
-                          children: [
-                            Text(
-                              "Total Price: ".tr(),
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              categoryModel.totalPrice.toString(),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Flexible(
-                    child: Text(categoryModel.notes),
-                  ),
-                  const SizedBox(height: 10,),
-                  Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children:
-                    [
-                      TextButton(onPressed: (){
-                        edit=false;
-                        OrdersHomeCubit.get(context).removeCat(docId: categoryModel.catId, context: context);
-                      }, child: Text("Delete".tr())),
-                      TextButton(onPressed: (){
-                              edit=true;
-                      }, child: Text("Edit".tr())),
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "Category Name".tr(),
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            categoryModel.catName,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 10,),
+                      Row(
+                        children: [
+                          Text(
+                      "Date: ".tr(),
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            DateFormat.yMMMMd()
+                                .format(DateTime.parse(categoryModel.date)),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  if(edit)
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  if(edit)
-                    Row(
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "Amount: ".tr(),
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            categoryModel.amount.toString(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 10,),
+                      Row(
+                        children: [
+                          Text(
+                      "Price: ".tr(),
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            categoryModel.price.toString(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "Charging: ".tr(),
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            categoryModel.salOfCharging.toString(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 10,),
+                      Row(
+                        children: [
+                          Text(
+                            "Total Price: ".tr(),
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            categoryModel.totalPrice.toString(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Flexible(
+                  child: Text(categoryModel.notes),
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children:
+                  [
+                    TextButton(onPressed: (){
+                      setState(() {
+
+                      });
+                      edit=false;
+                      OrdersHomeCubit.get(context).removeCat(docId: categoryModel.catId, context: context);
+                    }, child: Text("Delete".tr())),
+                    TextButton(onPressed: (){
+                            edit=true;
+                        setState(() {
+
+                        });
+                    }, child: Text("Edit".tr())),
+                  ],
+                ),
+                if(edit)
+                  const SizedBox(
+                    height: 10,
+                  ),
+                if(edit)
+                  Row(
                     children: [
                       Expanded(
                         child: defaultTextForm(
@@ -223,18 +234,17 @@ class ShowCategoriesScreen extends StatelessWidget {
                       const SizedBox(width: 6,),
                       TextButton(onPressed: (){
                         categoryModel.amount=int.parse(quantityController.text.toString());
-                       if(formKey.currentState!.validate()){
-                         OrdersHomeCubit.get(context).editCat(
-                             docId: categoryModel.catId,
+                        if(quantityController.text!=""){
+                          OrdersHomeCubit.get(context).editCat(
+                              docId: categoryModel.catId,
                               categoryModel:categoryModel,
-                             context: context
-                         );
-                       }
+                              context: context
+                          );
+                        }
                       }, child: Text("Edit".tr())),
                     ],
                   ),
-                ],
-              ),
+              ],
             ),
           ),
         ),

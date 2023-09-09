@@ -17,7 +17,6 @@ import 'package:orders/modules/admin_screen/search_using_barcode/scan.dart';
 import 'package:orders/modules/login/login.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
-import 'package:share/share.dart';
 import 'dart:io';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
 import 'package:path_provider/path_provider.dart';
@@ -183,7 +182,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                       ),
                       if (OrdersHomeCubit.get(context).currentAdmin != null &&
                           OrdersHomeCubit.get(context).currentAdmin!.email ==
-                              'abanobshokry9@gmail.com')
+                              'abanobshokry9@gamil.com')
                         DropdownMenuItem(
                           value: "permission",
                           child: InkWell(
