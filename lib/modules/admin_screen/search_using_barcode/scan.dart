@@ -5,12 +5,10 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbol_data_file.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/modules/admin_screen/print_order/order.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/network/local/cashe_helper.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
@@ -246,6 +244,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                                 salOfCharging:
                                                 OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging,
                                                 context: context,
+                                                waiting:OrdersHomeCubit.get(context).searchOrderBarcode!.waiting,
                                                 notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
                                                 serviceType:OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType
                                             );

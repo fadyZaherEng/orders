@@ -5,10 +5,18 @@ import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/shared/components/components.dart';
 
-class AddCityScreen extends StatelessWidget {
-  var formKey=GlobalKey<FormState>();
+class AddCityScreen extends StatefulWidget {
+  @override
+  State<AddCityScreen> createState() => _AddCityScreenState();
+}
 
-  var cityNameController=TextEditingController();
+class _AddCityScreenState extends State<AddCityScreen> {
+  var formKey = GlobalKey<FormState>();
+
+  String stateValue = "Select State".tr();
+
+  var cityNameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
@@ -17,7 +25,7 @@ class AddCityScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title:  Text("Add City".tr()),
+            title: Text("Add City".tr()),
           ),
           body: SingleChildScrollView(
             child: Padding(
@@ -28,12 +36,61 @@ class AddCityScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 30,),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DropdownButton(
+                          dropdownColor: Theme.of(context).primaryColor,
+                          focusColor: Theme.of(context).scaffoldBackgroundColor,
+                          underline: Container(),
+                          hint: Text(stateValue),
+                          icon: Icon(
+                            Icons.baby_changing_station,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          elevation: 0,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  color: Theme.of(context)
+                                      .scaffoldBackgroundColor),
+                          items: OrdersHomeCubit.get(context)
+                              .states
+                              .map(
+                                (e) => DropdownMenuItem(
+                                  value: e,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      stateValue = e;
+                                      setState(() {});
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text(e),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              stateValue = val;
+                              setState(() {});
+                            }
+                          }),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     defaultTextForm(
                         context: context,
                         Controller: cityNameController,
                         prefixIcon: const Icon(Icons.category),
-                        text:"City Name: ".tr(),
+                        text: "City Name: ".tr(),
                         validate: (val) {
                           if (val.toString().isEmpty) {
                             return "Please Enter City Name".tr();
@@ -47,13 +104,11 @@ class AddCityScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: MaterialButton(
-                        color: Theme
-                            .of(context)
-                            .primaryColor,
+                        color: Theme.of(context).primaryColor,
                         onPressed: () {
-                          if(formKey.currentState!.validate()){
-                           OrdersHomeCubit.get(context).addCites(cityNameController.text);
-                            cityNameController.text="";
+                          if (formKey.currentState!.validate()&&stateValue != "Select State".tr()) {
+                            OrdersHomeCubit.get(context).addCites(cityNameController.text,stateValue);
+                            cityNameController.text = "";
                           }
                         },
                         child: Text(

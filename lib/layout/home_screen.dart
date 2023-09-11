@@ -395,6 +395,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                         onTap: () {
                                           Navigator.pop(context);
                                           stateValue = e;
+                                          OrdersHomeCubit.get(context).getCites(stateValue);
                                           setState(() {});
                                         },
                                         child: Padding(
@@ -408,6 +409,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               onChanged: (val) {
                                 if (val != null) {
                                   stateValue = val;
+                                  OrdersHomeCubit.get(context).getCites(stateValue);
                                   setState(() {});
                                 }
                               }),
@@ -432,7 +434,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                       color: Theme.of(context)
                                           .scaffoldBackgroundColor),
                               items: OrdersHomeCubit.get(context)
-                                  .cites
+                                  .cities
                                   .map(
                                     (e) => DropdownMenuItem(
                                       value: e,
@@ -648,6 +650,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 orderName: nameClientController.text,
                                 conservation: stateValue,
                                 city: city,
+                                waiting: false,
                                 serviceType: service,
                                 notes: notesController.text,
                                 address: addressClientController.text,

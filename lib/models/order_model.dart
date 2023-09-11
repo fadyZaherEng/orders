@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:orders/shared/network/local/cashe_helper.dart';
-
 class OrderModel {
-  String orderName, conservation, city, address,
+  String orderName,
+      conservation,
+      city,
+      address,
       type,
       employerName,
       employerEmail,
@@ -13,7 +12,8 @@ class OrderModel {
       notes,
       date;
   int number;
-  bool confirm=false;
+  bool confirm = false;
+  bool waiting;
   double price, totalPrice, salOfCharging;
   dynamic barCode;
 
@@ -34,7 +34,10 @@ class OrderModel {
     required this.number,
     required this.price,
     required this.totalPrice,
-    required this.salOfCharging,this.confirm=false});
+    required this.salOfCharging,
+    this.confirm = false,
+    required this.waiting,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -52,6 +55,7 @@ class OrderModel {
       'date': date,
       'number': number,
       'confirm': confirm,
+      'waiting': waiting,
       'price': price,
       'totalPrice': totalPrice,
       'salOfCharging': salOfCharging,
@@ -65,6 +69,7 @@ class OrderModel {
       conservation: map['conservation'],
       city: map['city'],
       address: map['address'],
+      waiting: map['waiting'],
       type: map['type'],
       employerName: map['employerName'],
       employerEmail: map['employerEmail'],
@@ -73,12 +78,12 @@ class OrderModel {
       serviceType: map['serviceType'],
       notes: map['notes'],
       date: map['date'],
-      number: map['number'] ,
+      number: map['number'],
       confirm: map['confirm'],
-      price: map['price'] ,
-      totalPrice: map['totalPrice'] ,
-      salOfCharging: map['salOfCharging'] ,
-      barCode: map['barCode'] ,
+      price: map['price'],
+      totalPrice: map['totalPrice'],
+      salOfCharging: map['salOfCharging'],
+      barCode: map['barCode'],
     );
   }
 }

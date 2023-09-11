@@ -11,66 +11,72 @@ import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
 
 class DisplayOrdersScreen extends StatelessWidget {
-   DisplayOrdersScreen({super.key});
+  const DisplayOrdersScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OrdersHomeCubit,OrdersHomeStates>(
-      listener: (ctx,state){},
-      builder: (ctx,state){
-         return  Padding(
-           padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 5),
-           child: ConditionalBuilder(
-             condition: OrdersHomeCubit
-                 .get(context)
-                 .orders
-                 .isNotEmpty,
-             builder: (ctx) =>
-                 ListView.separated(
-                   itemBuilder: (ctx, idx) {
-                     return listItem(OrdersHomeCubit
-                         .get(context)
-                         .orders[idx], ctx);
-                   },
-                   itemCount: OrdersHomeCubit
-                        .get(context)
-                       .orders
-                       .length,
-                   separatorBuilder: (ctx, idx) => mySeparator(context),
-                 ),
-             fallback: (ctx) =>
-             const Center(
-                 child: CircularProgressIndicator(
-                   color: Colors.blue,
-                 )),
-           ),
-         );
+    return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
+      listener: (ctx, state) {},
+      builder: (ctx, state) {
+        return Padding(
+          padding:
+              const EdgeInsetsDirectional.symmetric(horizontal: 3, vertical: 5),
+          child: ConditionalBuilder(
+            condition: OrdersHomeCubit.get(context).orders.isNotEmpty,
+            builder: (ctx) => ListView.separated(
+              itemBuilder: (ctx, idx) {
+                return listItem(OrdersHomeCubit.get(context).orders[idx], ctx);
+              },
+              itemCount: OrdersHomeCubit.get(context).orders.length,
+              separatorBuilder: (ctx, idx) => mySeparator(context),
+            ),
+            fallback: (ctx) => const Center(
+                child: CircularProgressIndicator(
+              color: Colors.blue,
+            )),
+          ),
+        );
       },
     );
   }
-   Widget listItem(OrderModel order, ctx) {
-     return InkWell(
-       onTap: () {
-         navigateToWithReturn(ctx, UpdateOrdersScreen(order));
-       },
-       child: Center(
-         child: Padding(
-           padding: const EdgeInsets.all(10.0),
-           child: Column(
-             children: [
-               Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                 children: [
-                   Flexible(child: Text('${"Order Name: ".tr()}${order.orderName}')),
-                   Flexible(child: Text(order.confirm==true?"Confirm".tr():"Cancel".tr(),)),
-                 ],
-               ),
-               const SizedBox(height: 10,),
-               Text('${"Total Price: ".tr()}${order.totalPrice.toString()}',maxLines: 100,),
-             ],
-           ),
-         ),
-       ),
-     );
-   }
 
+  Widget listItem(OrderModel order, ctx) {
+    return InkWell(
+      onTap: () {
+        navigateToWithReturn(ctx, UpdateOrdersScreen(order));
+      },
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                      child: Text('${"Order Name: ".tr()}${order.orderName}')),
+                  Flexible(
+                    child: Text(
+                      order.confirm == true
+                          ? "Confirm".tr()
+                          : order.waiting == true
+                              ? "Waiting".tr()
+                              : "Cancel".tr(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                '${"Total Price: ".tr()}${order.totalPrice.toString()}',
+                maxLines: 100,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

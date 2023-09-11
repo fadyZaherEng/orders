@@ -228,10 +228,10 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               if (formKey.currentState!.validate()) {
                                 OrdersHomeCubit.get(context).updateOrder(
                                     orderName: widget.orderModel.orderName,
+                                    waiting: widget.orderModel.waiting,
                                     notes: widget.orderModel.notes,
                                     serviceType: widget.orderModel.serviceType,
-                                    conservation:
-                                    widget.orderModel.conservation,
+                                    conservation: widget.orderModel.conservation,
                                     city: widget.orderModel.city,
                                     address: widget.orderModel.address,
                                     type: widget.orderModel.type,

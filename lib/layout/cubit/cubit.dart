@@ -139,6 +139,40 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
+//update orders
+  void updateOrderWaiting({
+    required OrderModel orderModel,
+    required context,
+  }) async {
+    FirebaseFirestore.instance
+        .collection('orders')
+        .doc(orderModel.barCode)
+        .update(orderModel.toMap())
+        .then((value) {
+      String text = "Edited Successfully...".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.green),
+        ),
+        backgroundColor: Colors.blueGrey,
+      ));
+      print(orderModel.price);
+      emit(OrdersEditProfileSuccessStates());
+    }).catchError((onError) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          onError.toString(),
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.red),
+        ),
+        backgroundColor: Colors.pink,
+      ));
+      emit(OrdersEditProfileErrorStates());
+    });
+  }
+
   //admins
   AdminModel? currentAdmin;
   List<AdminModel> admins = [];
@@ -358,6 +392,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   List<OrderModel> orders = [];
   double totalOfAllOrders = 0;
   double totalOfAllOrdersConfirm = 0;
+
   void getOrders() {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
@@ -367,13 +402,13 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .listen((event) {
       orders = [];
       totalOfAllOrders = 0;
-      totalOfAllOrdersConfirm=0;
+      totalOfAllOrdersConfirm = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         print(orderModel.orderName);
         orders.add(orderModel);
-        if(orderModel.confirm){
-          totalOfAllOrdersConfirm+=orderModel.totalPrice;
+        if (orderModel.confirm) {
+          totalOfAllOrdersConfirm += orderModel.totalPrice;
         }
         totalOfAllOrders += orderModel.totalPrice;
         emit(ViewFileSuccessStates());
@@ -390,6 +425,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       required String conservation,
       required String city,
       required String address,
+      required bool waiting,
       required String type,
       required String barCode,
       required String employerName,
@@ -406,6 +442,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       required context}) async {
     OrderModel orderModel = OrderModel(
         employerEmail: employerEmail,
+        waiting: waiting,
         orderPhone: orderPhone,
         serviceType: serviceType,
         notes: notes,
@@ -466,26 +503,29 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       required String serviceType,
       required int number,
       required double price,
+      required bool waiting,
       required double totalPrice,
       required double salOfCharging,
       required context}) {
     OrderModel orderModel = OrderModel(
-        orderPhone: orderPhone,
-        orderName: orderName,
-        notes: notes,
-        serviceType: serviceType,
-        employerEmail: employerEmail,
-        conservation: conservation,
-        city: city,
-        address: address,
-        type: type,
-        employerName: employerName,
-        employerPhone: employerPhone,
-        date: DateTime.now().toString(),
-        number: number,
-        price: price,
-        totalPrice: totalPrice,
-        salOfCharging: salOfCharging);
+      orderPhone: orderPhone,
+      orderName: orderName,
+      notes: notes,
+      waiting: waiting,
+      serviceType: serviceType,
+      employerEmail: employerEmail,
+      conservation: conservation,
+      city: city,
+      address: address,
+      type: type,
+      employerName: employerName,
+      employerPhone: employerPhone,
+      date: DateTime.now().toString(),
+      number: number,
+      price: price,
+      totalPrice: totalPrice,
+      salOfCharging: salOfCharging,
+    );
     CollectionReference ref = FirebaseFirestore.instance.collection('orders');
     DocumentReference docRef = ref.doc();
     String docId = docRef.id;
@@ -764,17 +804,15 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 
 //search barcode
   List<OrderModel> searchOrderPhone = [];
-  double searchOrderPhonePrice=0;
-  int searchOrderPhoneNum=0;
+  double searchOrderPhonePrice = 0;
+  int searchOrderPhoneNum = 0;
+
   void searchOrdersByPhone(String phone) {
     emit(ViewFileLoadingStates()); //=order id
-    FirebaseFirestore.instance
-        .collection('orders')
-        .get()
-        .then((event) {
+    FirebaseFirestore.instance.collection('orders').get().then((event) {
       searchOrderPhone = [];
-       searchOrderPhonePrice=0;
-       searchOrderPhoneNum=0;
+      searchOrderPhonePrice = 0;
+      searchOrderPhoneNum = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         print(orderModel.orderPhone);
@@ -792,8 +830,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 
 //today order
   List<OrderModel> todayOrders = [];
-  double todayOrdersPrice=0;
-  int todayOrdersNumber=0;
+  double todayOrdersPrice = 0;
+  int todayOrdersNumber = 0;
+
   void getTodayOrders() {
     emit(ViewFileLoadingStates()); //=order id
     FirebaseFirestore.instance
@@ -802,8 +841,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .snapshots()
         .listen((event) {
       todayOrders = [];
-      todayOrdersPrice=0;
-      todayOrdersNumber=0;
+      todayOrdersPrice = 0;
+      todayOrdersNumber = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (orderModel.date.split(' ')[0] ==
@@ -861,13 +900,28 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
   //add cities and states
-  void addCites(String city) {
+  void addCites(String city, String state) {
     FirebaseFirestore.instance
-        .collection('cities')
+        .collection(state)
         .add({'city': city}).then((value) {
-          showToast(message: "تم اضافة مدينة بنجاح", state: ToastState.SUCCESS);
+      showToast(message: "تم اضافة مدينة بنجاح", state: ToastState.SUCCESS);
       emit(SocialGetUserStatusSuccessStates());
     }).catchError((onError) {
+      emit(GetVedioErrorStates());
+    });
+  }
+
+  List<String> cities = [];
+
+  void getCites(String state) {
+    FirebaseFirestore.instance.collection(state).snapshots().listen((event) {
+      cities = [];
+      event.docs.forEach((element) {
+        cities.add(element['city']);
+        emit(SocialGetUserStatusSuccessStates());
+      });
+      emit(SocialGetUserStatusSuccessStates());
+    }).onError((handleError) {
       emit(GetVedioErrorStates());
     });
   }
@@ -879,19 +933,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       showToast(message: "تم اضافة محافظة بنجاح", state: ToastState.SUCCESS);
       emit(SocialGetUserStatusSuccessStates());
     }).catchError((onError) {
-      emit(GetVedioErrorStates());
-    });
-  }
-
-  List<String> cites = [];
-
-  void getCites() {
-    FirebaseFirestore.instance.collection('cities').snapshots().listen((value) {
-      value.docs.forEach((element) {
-        cites.add(element['city']);
-      });
-      emit(SocialGetUserStatusSuccessStates());
-    }).onError((onError) {
       emit(GetVedioErrorStates());
     });
   }

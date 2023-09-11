@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +20,6 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     OrdersHomeCubit.get(context).getTodayTotalTodayOrdersOfCurrentEmp();
   }
@@ -38,25 +35,19 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
               padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: 3, vertical: 5),
               child: ConditionalBuilder(
-                condition: OrdersHomeCubit
-                    .get(context)
-                    .totalTodayOrdersOfCurrentEmpList
-                    .isNotEmpty,
-                builder: (ctx) =>
-                    ListView.separated(
-                      itemBuilder: (ctx, idx) {
-                        return listItem(
-                            OrdersHomeCubit
-                                .get(context)
-                                .totalTodayOrdersOfCurrentEmpList[idx],
-                            ctx);
-                      },
-                      itemCount: OrdersHomeCubit
-                          .get(context)
-                          .totalTodayOrdersOfCurrentEmpList
-                          .length,
-                      separatorBuilder: (ctx, idx) => mySeparator(context),
-                    ),
+                condition: OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmpList.isNotEmpty,
+                builder: (ctx) => ListView.separated(
+                  itemBuilder: (ctx, idx) {
+                    return listItem(
+                      OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmpList[idx],
+                      ctx,
+                    );
+                  },
+                  itemCount: OrdersHomeCubit.get(context)
+                      .totalTodayOrdersOfCurrentEmpList
+                      .length,
+                  separatorBuilder: (ctx, idx) => mySeparator(context),
+                ),
                 fallback: (ctx) => Center(child: Text("Not Orders ".tr())),
               ),
             ),
@@ -71,7 +62,8 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
-          children: [
+          children:
+          [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -79,8 +71,8 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
                     child: Text('${"Order Name: ".tr()}${order.orderName}')),
                 Flexible(
                     child: Text(
-                      '${"Total Price: ".tr()}${order.totalPrice.toString()}',
-                    )),
+                  '${"Total Price: ".tr()}${order.totalPrice.toString()}',
+                )),
               ],
             ),
             Row(
@@ -98,27 +90,43 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
                   child: Text(
                     "Confirm".tr(),
                     style: TextStyle(
-                      color: Theme.of(context).scaffoldBackgroundColor
-                    ),
+                        color: Theme.of(context).scaffoldBackgroundColor),
                   ),
                 ),
                 MaterialButton(
                   color: Theme.of(context).primaryColor,
                   onPressed: () {
-                    setState(() {
-                      order.confirm = false;
-                      OrdersHomeCubit.get(context).updateOrderConfirm(
-                          orderModel: order, context: context);
-                    },);
+                    setState(
+                      () {
+                        order.confirm = false;
+                        OrdersHomeCubit.get(context).updateOrderConfirm(
+                            orderModel: order, context: context);
+                      },
+                    );
                   },
                   child: Text(
                     "Cancel".tr(),
                     style: TextStyle(
-                        color: Theme.of(context).scaffoldBackgroundColor
-                    ),
+                        color: Theme.of(context).scaffoldBackgroundColor),
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 8,),
+            MaterialButton(
+              color: Theme.of(context).primaryColor,
+              onPressed: () {
+                setState(() {
+                  order.waiting = true;
+                  OrdersHomeCubit.get(context).updateOrderConfirm(
+                      orderModel: order, context: context);
+                });
+              },
+              child: Text(
+                "Waiting".tr(),
+                style: TextStyle(
+                    color: Theme.of(context).scaffoldBackgroundColor),
+              ),
             ),
           ],
         ),
