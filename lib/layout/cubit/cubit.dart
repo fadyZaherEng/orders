@@ -628,12 +628,14 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       required catName,
       required salOfCharging,
       required notes,
+      required source,
       required totalPrice,
       required price,
       required amount,
       required context}) {
     CategoryModel categoryModel = CategoryModel(
         date: date,
+        source: source,
         catName: catName,
         salOfCharging: salOfCharging,
         notes: notes,

@@ -1,5 +1,5 @@
 class CategoryModel {
-  String catName,date, notes;
+  String catName,date, notes,source;
   double totalPrice,salOfCharging, price;
   int amount;
   dynamic catId;
@@ -11,11 +11,14 @@ class CategoryModel {
       required this.notes,
       required this.totalPrice,
       required this.price,
-      required this.amount});
+      required this.amount,
+      required this.source,
+      });
 
   Map<String, dynamic> toMap() {
     return {
       'date': date,
+      'source': source,
       'catId': catId,
       'catName': catName,
       'salOfCharging': salOfCharging,
@@ -29,6 +32,7 @@ class CategoryModel {
   factory CategoryModel.fromMap(Map<String, dynamic> map) {
     return CategoryModel(
       catName: map['catName'],
+      source: map['source'],
       catId: map['catId'],
       date: map['date'],
       salOfCharging: map['salOfCharging'],

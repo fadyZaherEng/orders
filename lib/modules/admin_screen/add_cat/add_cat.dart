@@ -18,6 +18,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   var priceController = TextEditingController();
   var salOfChargingController = TextEditingController();
   var catNameController = TextEditingController();
+  var sourceController = TextEditingController();
   var catAmountController = TextEditingController();
   var notesController = TextEditingController();
   double totalPrice = 0;
@@ -31,16 +32,18 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     super.initState();
     priceController.addListener(() {
       p = priceController.text != "" ? double.parse(priceController.text) : 0;
-      s = salOfChargingController.text != "" ? double.parse(
-          salOfChargingController.text) : 0;
+      s = salOfChargingController.text != ""
+          ? double.parse(salOfChargingController.text)
+          : 0;
       totalPrice = p + s;
       setState(() {});
     });
     salOfChargingController.addListener(() {
       print(priceController.text);
       p = priceController.text != "" ? double.parse(priceController.text) : 0;
-      s = salOfChargingController.text != "" ? double.parse(
-          salOfChargingController.text) : 0;
+      s = salOfChargingController.text != ""
+          ? double.parse(salOfChargingController.text)
+          : 0;
       totalPrice = p + s;
       setState(() {});
     });
@@ -64,16 +67,16 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 30,),
+                  const SizedBox(
+                    height: 30,
+                  ),
                   defaultTextForm(
                       context: context,
                       Controller: catNameController,
                       prefixIcon: const Icon(Icons.category),
                       text: "Category Name: ".tr(),
                       validate: (val) {
-                        if (val
-                            .toString()
-                            .isEmpty) {
+                        if (val.toString().isEmpty) {
                           return "Please Enter Category Name".tr();
                         }
                         return null;
@@ -88,10 +91,23 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       prefixIcon: const Icon(Icons.numbers),
                       text: "Amount".tr(),
                       validate: (val) {
-                        if (val
-                            .toString()
-                            .isEmpty) {
+                        if (val.toString().isEmpty) {
                           return "Please Enter Amount".tr();
+                        }
+                        return null;
+                      },
+                      type: TextInputType.number),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  defaultTextForm(
+                      context: context,
+                      Controller: sourceController,
+                      prefixIcon: const Icon(Icons.numbers),
+                      text: "Source".tr(),
+                      validate: (val) {
+                        if (val.toString().isEmpty) {
+                          return "Please Enter Source".tr();
                         }
                         return null;
                       },
@@ -105,9 +121,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       prefixIcon: const Icon(Icons.price_check),
                       text: "Price".tr(),
                       validate: (val) {
-                        if (val
-                            .toString()
-                            .isEmpty) {
+                        if (val.toString().isEmpty) {
                           return "Please Enter total price".tr();
                         }
                         return null;
@@ -122,9 +136,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       prefixIcon: const Icon(Icons.charging_station),
                       text: "Charging".tr(),
                       validate: (val) {
-                        if (val
-                            .toString()
-                            .isEmpty) {
+                        if (val.toString().isEmpty) {
                           return "Please Enter Charging".tr();
                         }
                         return null;
@@ -152,20 +164,20 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: MaterialButton(
-                      color: Theme
-                          .of(context)
-                          .primaryColor,
+                      color: Theme.of(context).primaryColor,
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           OrdersHomeCubit.get(context).addCategories(
                               date: DateTime.now().toString(),
                               catName: catNameController.text,
+                              source: sourceController.text,
                               salOfCharging: s,
                               notes: notesController.text,
                               totalPrice: totalPrice,
                               price: p,
-                              amount: catAmountController.text == "" ? 0 : int
-                                  .parse(catAmountController.text),
+                              amount: catAmountController.text == ""
+                                  ? 0
+                                  : int.parse(catAmountController.text),
                               context: context);
                         }
                       },
@@ -174,10 +186,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 14,
-                          color:
-                          Theme
-                              .of(context)
-                              .scaffoldBackgroundColor,
+                          color: Theme.of(context).scaffoldBackgroundColor,
                         ),
                       ),
                     ),

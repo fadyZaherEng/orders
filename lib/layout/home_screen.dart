@@ -643,9 +643,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             cat = catsClientController.text;
                             number = 0;
                           }
-                          if (formKey.currentState!.validate() &&
-                              OrdersHomeCubit.get(context).userProfile !=
-                                  null) {
+                          if (formKey.currentState!.validate() && OrdersHomeCubit.get(context).userProfile != null) {
                             OrdersHomeCubit.get(context).addOrders(
                                 orderName: nameClientController.text,
                                 conservation: stateValue,
@@ -655,9 +653,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 notes: notesController.text,
                                 address: addressClientController.text,
                                 type: cat,
-                                employerName: OrdersHomeCubit.get(context)
-                                    .userProfile!
-                                    .name,
+                                employerName: OrdersHomeCubit.get(context).userProfile!.name,
                                 employerPhone: OrdersHomeCubit.get(context)
                                     .userProfile!
                                     .phone,
