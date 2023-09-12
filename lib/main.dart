@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Phoenix(
       child: BlocProvider(
-        create: (context) => OrdersHomeCubit()..getOrders()..getCategories()..getAdminsProfile()..getMoney()..getStates(),
+        create: (context) => OrdersHomeCubit()..getCategories()..getAdminsProfile()..getMoney()..getStates(),
         child: BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
           listener: (context, state) {},
           builder: (context, state) {

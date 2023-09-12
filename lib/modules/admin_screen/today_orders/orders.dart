@@ -21,11 +21,13 @@ class TodayOrders extends StatefulWidget {
 }
 
 class _TodayOrdersState extends State<TodayOrders> {
-  @override
-  void initState() {
-    super.initState();
-    OrdersHomeCubit.get(context).getTodayOrders();
-  }
+  String filterSelected="Select";
+  List<String>filters=[
+    "Cancel".tr(),
+    "Confirm".tr(),
+    "Waiting".tr()
+  ];
+
    @override
    Widget build(BuildContext context) {
      return BlocConsumer<OrdersHomeCubit,OrdersHomeStates>(
@@ -33,41 +35,60 @@ class _TodayOrdersState extends State<TodayOrders> {
        builder: (ctx,state){
          return  Padding(
            padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 5),
-           child: ConditionalBuilder(
-             condition: OrdersHomeCubit
-                 .get(context)
-                 .todayOrders
-                 .isNotEmpty,
-             builder: (ctx) =>
-                 Column(
-                   children: [
-                     Expanded(
-                       child: ListView.separated(
-                         itemBuilder: (ctx, idx) {
-                           return listItem(OrdersHomeCubit
-                               .get(context)
-                               .todayOrders[idx], ctx);
-                         },
-                         itemCount: OrdersHomeCubit
-                             .get(context)
-                             .todayOrders
-                             .length,
-                         separatorBuilder: (ctx, idx) => mySeparator(context),
-                       ),
+           child: Column(
+             children: [
+               DropdownButton(
+                 focusColor: Theme.of(context).primaryColor,
+                 borderRadius: BorderRadius.circular(10),
+                 hint: Text(filterSelected.tr()),
+                 items:filters.map((filter) => DropdownMenuItem(
+                   child: Text(filter),
+                   value: filter,
+                 )).toList(),
+                 onChanged: (val) {
+                   if (val != null) {
+                     filterSelected = val;
+                     OrdersHomeCubit.get(context).getTodayOrders(filterSelected);
+                   }
+                 },
+               ),
+               ConditionalBuilder(
+                 condition: OrdersHomeCubit
+                     .get(context)
+                     .todayOrders
+                     .isNotEmpty,
+                 builder: (ctx) =>
+                     Column(
+                       children: [
+                         Expanded(
+                           child: ListView.separated(
+                             itemBuilder: (ctx, idx) {
+                               return listItem(OrdersHomeCubit
+                                   .get(context)
+                                   .todayOrders[idx], ctx);
+                             },
+                             itemCount: OrdersHomeCubit
+                                 .get(context)
+                                 .todayOrders
+                                 .length,
+                             separatorBuilder: (ctx, idx) => mySeparator(context),
+                           ),
+                         ),
+                         Padding(
+                           padding: const EdgeInsets.all(0.0),
+                           child: TextButton(
+                               onPressed: () {
+                                 createExcelSheet();
+                               },
+                               child: Text("Copy".tr())),
+                         ),
+                       ],
                      ),
-                     Padding(
-                       padding: const EdgeInsets.all(0.0),
-                       child: TextButton(
-                           onPressed: () {
-                             createExcelSheet();
-                           },
-                           child: Text("Copy".tr())),
-                     ),
-                   ],
-                 ),
-             fallback: (ctx) =>
-              Center(
-                 child: Text("Not Orders Today".tr())),
+                 fallback: (ctx) =>
+                  Center(
+                     child: Text("Not Orders Today".tr())),
+               ),
+             ],
            ),
          );
        },

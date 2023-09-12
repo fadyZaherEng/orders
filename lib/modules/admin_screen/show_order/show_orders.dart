@@ -9,6 +9,7 @@ import 'package:orders/modules/admin_screen/add_cat/add_cat.dart';
 import 'package:orders/modules/admin_screen/add_city/city.dart';
 import 'package:orders/modules/admin_screen/add_states/states.dart';
 import 'package:orders/modules/admin_screen/change_password/pass.dart';
+import 'package:orders/modules/admin_screen/filter_order/filter.dart';
 import 'package:orders/modules/admin_screen/gain/gain.dart';
 import 'package:orders/modules/admin_screen/get_cat/cat.dart';
 import 'package:orders/modules/admin_screen/money/money.dart';
@@ -177,6 +178,22 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                           child: Padding(
                             padding: const EdgeInsets.only(top: 5, bottom: 5),
                             child: Text('Search By Barcode'.tr()),
+                          ),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "filter",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                              context,
+                              const FilterOrdersScreen(),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
+                            child: Text('Filter Order'.tr()),
                           ),
                         ),
                       ),

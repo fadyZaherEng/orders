@@ -9,7 +9,6 @@ import 'package:orders/shared/components/components.dart';
 
 class ShowCategoriesScreen extends StatefulWidget {
   const ShowCategoriesScreen({super.key});
-
   @override
   State<ShowCategoriesScreen> createState() => _ShowCategoriesScreenState();
 }
@@ -189,8 +188,7 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
                   height: 20,
                 ),
                 Flexible(child: Text('${"Notes".tr()} ${categoryModel.notes}')),
-                Flexible(
-                    child: Text('${"Source".tr()} ${categoryModel.source}')),
+                Flexible(child: Text('${"Source".tr()} ${categoryModel.source}')),
                 const SizedBox(
                   height: 10,
                 ),

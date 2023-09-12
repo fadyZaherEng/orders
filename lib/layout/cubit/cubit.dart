@@ -10,6 +10,7 @@ import 'package:orders/models/admin_model.dart';
 import 'package:orders/models/category_model.dart';
 import 'package:orders/models/money.dart';
 import 'package:orders/models/order_model.dart';
+import 'package:orders/models/user_orders.dart';
 import 'package:orders/models/user_profile.dart';
 import 'package:orders/modules/admin_screen/orders/orders.dart';
 import 'package:orders/modules/admin_screen/search_by_date/search.dart';
@@ -393,7 +394,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   double totalOfAllOrders = 0;
   double totalOfAllOrdersConfirm = 0;
 
-  void getOrders() {
+  void getOrders(String filter) {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
@@ -405,12 +406,19 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       totalOfAllOrdersConfirm = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        print(orderModel.orderName);
-        orders.add(orderModel);
         if (orderModel.confirm) {
           totalOfAllOrdersConfirm += orderModel.totalPrice;
         }
-        totalOfAllOrders += orderModel.totalPrice;
+        if (filter == "Confirm" && orderModel.confirm) {
+          orders.add(orderModel);
+          totalOfAllOrders += orderModel.totalPrice;
+        } else if (filter == "Waiting" && orderModel.waiting) {
+          orders.add(orderModel);
+          totalOfAllOrders += orderModel.totalPrice;
+        } else if (filter == "Cancel" && !orderModel.confirm) {
+          orders.add(orderModel);
+          totalOfAllOrders += orderModel.totalPrice;
+        }
         emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
@@ -835,13 +843,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   double todayOrdersPrice = 0;
   int todayOrdersNumber = 0;
 
-  void getTodayOrders() {
+  void getTodayOrders(String filter) {
     emit(ViewFileLoadingStates()); //=order id
-    FirebaseFirestore.instance
-        .collection('orders')
-        .where('confirm', isEqualTo: true)
-        .snapshots()
-        .listen((event) {
+    FirebaseFirestore.instance.collection('orders').snapshots().listen((event) {
       todayOrders = [];
       todayOrdersPrice = 0;
       todayOrdersNumber = 0;
@@ -849,9 +853,19 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (orderModel.date.split(' ')[0] ==
             DateTime.now().toString().split(' ')[0]) {
-          print("today ${DateTime.now().toString()}");
-          print("today1 ${event.docs.length}");
-          todayOrders.add(orderModel);
+          if (filter == "Confirm" && orderModel.confirm) {
+            todayOrders.add(orderModel);
+            todayOrdersPrice += orderModel.totalPrice;
+            todayOrdersNumber++;
+          } else if (filter == "Waiting" && orderModel.waiting) {
+            todayOrders.add(orderModel);
+            todayOrdersPrice += orderModel.totalPrice;
+            todayOrdersNumber++;
+          } else if (filter == "Cancel" && !orderModel.confirm) {
+            todayOrders.add(orderModel);
+            todayOrdersPrice += orderModel.totalPrice;
+            todayOrdersNumber++;
+          }
         }
         emit(ViewFileSuccessStates());
       });
@@ -950,5 +964,39 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     }).onError((onError) {
       emit(GetVedioErrorStates());
     });
+  }
+
+  ////////////////////////////////////////////////////
+  List<UserOrders> userFilterOrders = [];
+
+  void userOrdersFilter() {
+    FirebaseFirestore.instance.collection('users').snapshots().listen((event) {
+      event.docs.forEach((element) async {
+        String email = element['email'];
+        String name = element['name'];
+        int numToday = 0;
+        int numAll = 0;
+        FirebaseFirestore.instance.collection('orders').get().then((orders) {
+          orders.docs.forEach((order) {
+            OrderModel orderModel = OrderModel.fromMap(order.data());
+            if (orderModel.employerEmail == email) {
+              numAll++;
+              if (orderModel.date.split(' ')[0] ==
+                  DateTime.now().toString().split(' ')[0]) {
+                numToday++;
+              }
+            }
+          });
+          userFilterOrders.add(
+            UserOrders(
+              email: email,
+              numOfAllOrders: numAll,
+              numOfTodayOrders: numToday,
+              name: name,
+            ),
+          );
+        }).catchError((handleError) {});
+      });
+    }).onError((handleError) {});
   }
 }
