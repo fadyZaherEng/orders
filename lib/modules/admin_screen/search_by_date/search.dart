@@ -18,7 +18,8 @@ class SearchByDateScreen extends StatefulWidget {
 }
 
 class _SearchByDateScreenState extends State<SearchByDateScreen> {
-  DateTime _date = DateTime.now();
+  DateTime firstDate = DateTime.now();
+  DateTime endDate = DateTime.now();
 
   TimeOfDay firstTime = TimeOfDay.now();
 
@@ -40,49 +41,80 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      TextButton(
-                          onPressed: () {
-                            _selectDate(context);
-                          },
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.date_range),
-                                  const SizedBox(width: 2,),
-                                  Text('Date'.tr()),
-                                ],
-                              ),
-                              const SizedBox(height: 5,),
-                              Text(_date.toString().split(" ")[0]),
-                            ],
-                          )),
-                      TextButton(
-                          onPressed: () {
-                            _selectFirstTime(context);
-                          },
-                          child:  Column(
-                            children: [
-                              Text("First Time".tr()),
-                              const SizedBox(height: 5,),
-                              Text('${firstTime.hour>12?(firstTime.hour-12).toString():firstTime.hour.toString()}:${firstTime.minute.toString()}'),
-                            ],
-                          )),
-                      TextButton(
-                          onPressed: () {
-                            _selectLastTime(context);
-                          },
-                          child:  Column(
-                            children: [
-                              Text("Last Time".tr()),
-                              const SizedBox(height: 5,),
-                              Text('${lastTime.hour>12?(lastTime.hour-12).toString():lastTime.hour.toString()}:${lastTime.minute.toString()}'),
-                            ],
-                          )),
+                     Expanded(
+                       child: SingleChildScrollView(
+                         scrollDirection: Axis.horizontal,
+                         child: Row(
+                           children: 
+                           [
+                             TextButton(
+                                 onPressed: () {
+                                   _selectFirstDate(context);
+                                 },
+                                 child: Column(
+                                   children: [
+                                     Row(
+                                       children: [
+                                         const Icon(Icons.date_range),
+                                         const SizedBox(width: 2,),
+                                         Text('Date'.tr()),
+                                       ],
+                                     ),
+                                     const SizedBox(height: 5,),
+                                     Text(firstDate.toString().split(" ")[0]),
+                                   ],
+                                 )),
+                             TextButton(
+                                 onPressed: () {
+                                   _selectEndDate(context);
+                                 },
+                                 child: Column(
+                                   children: [
+                                     Row(
+                                       children: [
+                                         const Icon(Icons.date_range),
+                                         const SizedBox(width: 2,),
+                                         Text('Date'.tr()),
+                                       ],
+                                     ),
+                                     const SizedBox(height: 5,),
+                                     Text(endDate.toString().split(" ")[0]),
+                                   ],
+                                 )),
+                             TextButton(
+                                 onPressed: () {
+                                   _selectFirstTime(context);
+                                 },
+                                 child:  Column(
+                                   children: [
+                                     Text("First Time".tr()),
+                                     const SizedBox(height: 5,),
+                                     Text('${firstTime.hour>12?(firstTime.hour-12).toString():firstTime.hour.toString()}:${firstTime.minute.toString()}'),
+                                   ],
+                                 )),
+                             TextButton(
+                                 onPressed: () {
+                                   _selectLastTime(context);
+                                 },
+                                 child:  Column(
+                                   children: [
+                                     Text("Last Time".tr()),
+                                     const SizedBox(height: 5,),
+                                     Text('${lastTime.hour>12?(lastTime.hour-12).toString():lastTime.hour.toString()}:${lastTime.minute.toString()}'),
+                                   ],
+                                 )),
+                           ],
+                         ),
+                       ),
+                     ),
                       TextButton(
                           onPressed: () {
                             OrdersHomeCubit.get(context).searchOrdersByDate(
-                                _date.toString(), firstTime, lastTime);
+                              endDate: endDate.toString(),
+                              firstTime: firstTime,
+                              lastTime: lastTime,
+                              startDate: firstDate.toString(),    
+                            );
                           },
                           child: Container(
                             padding: const EdgeInsets.all(10),
@@ -146,24 +178,40 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
     );
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectFirstDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       locale: const Locale('en', 'US'),
-      initialDate: _date,
+      initialDate: firstDate,
       fieldLabelText: 'yyyy-MM-dd hh:mm:ss',
       firstDate: DateTime(2023),
       lastDate: DateTime(3000),
     );
-    if (picked != null && picked != _date) {
-      _date = picked;
+    if (picked != null && picked != firstDate) {
+      firstDate = picked;
       setState(() {
 
       });
-      print("data $_date");
+      print("data $firstDate");
     }
   }
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      locale: const Locale('en', 'US'),
+      initialDate: endDate,
+      fieldLabelText: 'yyyy-MM-dd hh:mm:ss',
+      firstDate: DateTime(2023),
+      lastDate: DateTime(3000),
+    );
+    if (picked != null && picked != endDate) {
+      endDate = picked;
+      setState(() {
 
+      });
+      print("data $endDate");
+    }
+  }
   Future<void> _selectFirstTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -178,7 +226,6 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
       print("first ${firstTime.hour} ${firstTime.minute}");
     }
   }
-
   Future<void> _selectLastTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,

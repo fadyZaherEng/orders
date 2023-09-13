@@ -95,7 +95,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (orderModel.date.split(' ')[0] ==
-                DateTime.now().toString().split(' ')[0] &&
+            DateTime.now().toString().split(' ')[0] &&
             orderModel.employerName == userProfile!.name) {
           totalTodayOrdersOfCurrentEmp++;
           totalTodayOrdersOfCurrentEmpList.add(orderModel);
@@ -199,8 +199,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
   //admin permission
-  void adminShowOrdersPermission(
-      bool showOrders, AdminModel adminModel, context) {
+  void adminShowOrdersPermission(bool showOrders, AdminModel adminModel,
+      context) {
     emit(GetFileLoadingStates());
     FirebaseFirestore.instance.collection("admins").get().then((value) {
       String docId = "";
@@ -221,7 +221,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           content: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+            style: TextStyle(color: Theme
+                .of(context)
+                .scaffoldBackgroundColor),
           ),
           backgroundColor: Colors.pink,
         ));
@@ -238,8 +240,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-  void adminShowCategoriesPermission(
-      bool showCategories, AdminModel adminModel, context) {
+  void adminShowCategoriesPermission(bool showCategories, AdminModel adminModel,
+      context) {
     emit(GetFileLoadingStates());
     FirebaseFirestore.instance.collection("admins").get().then((value) {
       String docId = "";
@@ -260,7 +262,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           content: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+            style: TextStyle(color: Theme
+                .of(context)
+                .scaffoldBackgroundColor),
           ),
           backgroundColor: Colors.pink,
         ));
@@ -297,7 +301,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           content: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+            style: TextStyle(color: Theme
+                .of(context)
+                .scaffoldBackgroundColor),
           ),
           backgroundColor: Colors.pink,
         ));
@@ -313,8 +319,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-  void adminSaveOrderPermission(
-      bool saveOrder, AdminModel adminModel, context) {
+  void adminSaveOrderPermission(bool saveOrder, AdminModel adminModel,
+      context) {
     emit(GetFileLoadingStates());
     FirebaseFirestore.instance.collection("admins").get().then((value) {
       String docId = "";
@@ -335,7 +341,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           content: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+            style: TextStyle(color: Theme
+                .of(context)
+                .scaffoldBackgroundColor),
           ),
           backgroundColor: Colors.pink,
         ));
@@ -351,8 +359,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-  void adminRemoveOrderPermission(
-      bool removeOrder, AdminModel adminModel, context) {
+  void adminRemoveOrderPermission(bool removeOrder, AdminModel adminModel,
+      context) {
     emit(GetFileLoadingStates());
     FirebaseFirestore.instance.collection("admins").get().then((value) {
       String docId = "";
@@ -373,7 +381,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           content: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+            style: TextStyle(color: Theme
+                .of(context)
+                .scaffoldBackgroundColor),
           ),
           backgroundColor: Colors.pink,
         ));
@@ -428,26 +438,25 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
 //update orders
-  void updateOrder(
-      {required String orderName,
-      required String conservation,
-      required String city,
-      required String address,
-      required bool waiting,
-      required String type,
-      required String barCode,
-      required String employerName,
-      required String employerPhone,
-      required String employerEmail,
-      required String orderPhone,
-      required String serviceType,
-      required String notes,
-      required String date,
-      required int number,
-      required double price,
-      required double totalPrice,
-      required double salOfCharging,
-      required context}) async {
+  void updateOrder({required String orderName,
+    required String conservation,
+    required String city,
+    required String address,
+    required bool waiting,
+    required String type,
+    required String barCode,
+    required String employerName,
+    required String employerPhone,
+    required String employerEmail,
+    required String orderPhone,
+    required String serviceType,
+    required String notes,
+    required String date,
+    required int number,
+    required double price,
+    required double totalPrice,
+    required double salOfCharging,
+    required context}) async {
     OrderModel orderModel = OrderModel(
         employerEmail: employerEmail,
         waiting: waiting,
@@ -497,24 +506,23 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
   //add orders
-  void addOrders(
-      {required String orderName,
-      required String conservation,
-      required String city,
-      required String address,
-      required String type,
-      required String employerName,
-      required String employerPhone,
-      required String employerEmail,
-      required String orderPhone,
-      required String notes,
-      required String serviceType,
-      required int number,
-      required double price,
-      required bool waiting,
-      required double totalPrice,
-      required double salOfCharging,
-      required context}) {
+  void addOrders({required String orderName,
+    required String conservation,
+    required String city,
+    required String address,
+    required String type,
+    required String employerName,
+    required String employerPhone,
+    required String employerEmail,
+    required String orderPhone,
+    required String notes,
+    required String serviceType,
+    required int number,
+    required double price,
+    required bool waiting,
+    required double totalPrice,
+    required double salOfCharging,
+    required context}) {
     OrderModel orderModel = OrderModel(
       orderPhone: orderPhone,
       orderName: orderName,
@@ -562,7 +570,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         content: Text(
           text,
           textAlign: TextAlign.center,
-          style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+          style: TextStyle(color: Theme
+              .of(context)
+              .scaffoldBackgroundColor),
         ),
         backgroundColor: Colors.pink,
       ));
@@ -631,16 +641,15 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
 //add categories
-  void addCategories(
-      {required date,
-      required catName,
-      required salOfCharging,
-      required notes,
-      required source,
-      required totalPrice,
-      required price,
-      required amount,
-      required context}) {
+  void addCategories({required date,
+    required catName,
+    required salOfCharging,
+    required notes,
+    required source,
+    required totalPrice,
+    required price,
+    required amount,
+    required context}) {
     CategoryModel categoryModel = CategoryModel(
         date: date,
         source: source,
@@ -651,7 +660,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         price: price,
         amount: amount);
     CollectionReference ref =
-        FirebaseFirestore.instance.collection('categories');
+    FirebaseFirestore.instance.collection('categories');
     DocumentReference docRef = ref.doc();
     String docId = docRef.id;
     categoryModel.catId = docId;
@@ -678,7 +687,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         content: Text(
           text,
           textAlign: TextAlign.center,
-          style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+          style: TextStyle(color: Theme
+              .of(context)
+              .scaffoldBackgroundColor),
         ),
         backgroundColor: Colors.pink,
       ));
@@ -689,10 +700,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-  void editCat(
-      {required String docId,
-      required CategoryModel categoryModel,
-      required context}) {
+  void editCat({required String docId,
+    required CategoryModel categoryModel,
+    required context}) {
     if (categoryModel.amount == 0) {
       removeCat(docId: docId, context: context);
     } else {
@@ -707,7 +717,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           content: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+            style: TextStyle(color: Theme
+                .of(context)
+                .scaffoldBackgroundColor),
           ),
           backgroundColor: Colors.pink,
         ));
@@ -746,8 +758,12 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 //search date
   List<OrderModel> searchOrdersDate = [];
 
-  void searchOrdersByDate(
-      String date, TimeOfDay firstTime, TimeOfDay lastTime) {
+  void searchOrdersByDate({
+    required String startDate,
+    required String endDate,
+    required TimeOfDay firstTime,
+    required TimeOfDay lastTime,
+  }) {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
@@ -755,25 +771,26 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .get()
         .then((event) {
       searchOrdersDate = [];
-      int tempHourTime = 0, tempHourLastTime = 0, tempHourFirstTime = 0;
+      int tempHourTime = 0,
+          tempHourLastTime = 0,
+          tempHourFirstTime = 0;
+      DateTime firstDate= DateTime.parse(startDate.split(' ')[0]);
+      DateTime finishDate= DateTime.parse(endDate.split(' ')[0]);
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        if (orderModel.date.split(' ')[0] == date.split(' ')[0]) {
-          TimeOfDay time =
-              TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+        DateTime orderDate= DateTime.parse(orderModel.date.split(' ')[0]);
+        if (orderDate.isAfter(finishDate)&&orderDate.isBefore(firstDate)||
+            orderDate.isAtSameMomentAs(firstDate)||orderDate.isAtSameMomentAs(finishDate)) {
+          TimeOfDay time = TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
           tempHourTime = time.hour;
-          print(tempHourTime);
           tempHourFirstTime = firstTime.hour;
           tempHourLastTime = lastTime.hour;
-          print(tempHourFirstTime);
-          print(tempHourLastTime);
           if (tempHourTime > tempHourFirstTime &&
               (tempHourTime >= 1 && tempHourTime <= 12) &&
               (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
               (tempHourLastTime >= 1 && tempHourLastTime <= 12) &&
               tempHourTime < tempHourLastTime) {
             searchOrdersDate.add(orderModel);
-            print(orderModel.orderName);
           }
           if (tempHourTime > tempHourFirstTime &&
               (tempHourTime >= 13 && tempHourTime <= 23) &&
@@ -781,28 +798,24 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
               (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
               tempHourTime < tempHourLastTime) {
             searchOrdersDate.add(orderModel);
-            print(orderModel.orderName);
           }
           if ((tempHourTime >= 13 && tempHourTime <= 23) &&
-                  (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
-                  (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
-                  tempHourTime < tempHourLastTime ||
+              (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
+              (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
+              tempHourTime < tempHourLastTime ||
               (tempHourTime >= 13 && tempHourTime <= 23) &&
                   (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
                   tempHourTime > tempHourFirstTime &&
                   (tempHourLastTime >= 1 && tempHourLastTime <= 12)) {
             searchOrdersDate.add(orderModel);
-            print(orderModel.orderName);
           }
           if (tempHourTime == tempHourFirstTime &&
               time.minute >= firstTime.minute) {
             searchOrdersDate.add(orderModel);
-            print(orderModel.orderName);
           }
           if (tempHourTime == tempHourLastTime &&
               time.minute <= lastTime.minute) {
             searchOrdersDate.add(orderModel);
-            print(orderModel.orderName);
           }
         }
       });
@@ -881,7 +894,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     DocumentReference docRef = ref.doc();
     String docId = docRef.id;
     MoneyModel moneyModel =
-        MoneyModel(type: type, value: double.parse(value), docId: docId);
+    MoneyModel(type: type, value: double.parse(value), docId: docId);
     String text = "Money Uploaded Successfully".tr();
     docRef.set(moneyModel.toMap()).then((value) {
       showToast(message: text, state: ToastState.SUCCESS);
