@@ -8,7 +8,7 @@ import 'package:orders/modules/admin_screen/change_password/bloc/cubit.dart';
 import 'package:orders/modules/admin_screen/change_password/bloc/states.dart';
 import 'package:orders/modules/login/bloc/cubit.dart';
 import 'package:orders/shared/components/components.dart';
-
+//checked
 class ChangeAdminPasswordScreen extends StatelessWidget {
   var emailController = TextEditingController();
   var oldPasswordController = TextEditingController();
@@ -27,8 +27,7 @@ class ChangeAdminPasswordScreen extends StatelessWidget {
           OrdersAppChangeAdminPasswordStates>(
         listener: (context, state) {
           if (state is OrdersAppChangeAdminPasswordSuccessStates) {
-            showToast(
-                message: "Change Successfully".tr(), state: ToastState.SUCCESS);
+            showToast(message: "Change Successfully".tr(), state: ToastState.SUCCESS);
           }
           if (state is OrdersAppChangeAdminPasswordErrorStates) {
             showToast(message: state.error.toString(), state: ToastState.ERROR);
@@ -45,7 +44,7 @@ class ChangeAdminPasswordScreen extends StatelessWidget {
                         key: formKey,
                         child: Column(
                           children: [
-                            const Center(child: Text("Change Admin Password",)),
+                             Center(child: Text("Change Admin Password".tr(),)),
                             const SizedBox(
                               height: 30,
                             ),

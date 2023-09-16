@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
-
+//checked
 class SearchOrderPhoneScreen extends StatelessWidget {
   var searchController = TextEditingController();
 
@@ -23,8 +23,14 @@ class SearchOrderPhoneScreen extends StatelessWidget {
         builder: (ctx, state) {
           return Scaffold(
             appBar: AppBar(
-              leading: Text('${"Total Price: ".tr()} ${OrdersHomeCubit.get(context).searchOrderPhonePrice}'),
-              title: Text('${"Total num: ".tr()} ${OrdersHomeCubit.get(context).searchOrderPhoneNum}'),
+              leading: Text(
+                  '${"Total Price: ".tr()} ${OrdersHomeCubit
+                      .get(context)
+                      .searchOrderPhonePrice}'),
+              title: Text(
+                  '${"Total num: ".tr()} ${OrdersHomeCubit
+                      .get(context)
+                      .searchOrderPhoneNum}'),
               centerTitle: true,
               titleSpacing: 0,
             ),
@@ -41,19 +47,30 @@ class SearchOrderPhoneScreen extends StatelessWidget {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: Colors.grey.withOpacity(0.25)
+                        ),
+                      ),
                     ),
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyText2,
                     validator: (val) {
-                      if (val.toString().isEmpty) {
+                      if (val
+                          .toString()
+                          .isEmpty) {
                         return "Please Enter phone number".tr();
                       }
                       return null;
                     },
                     keyboardType: TextInputType.number,
-                    onChanged: (phone){
+                    onChanged: (phone) {
                       OrdersHomeCubit.get(context).searchOrdersByPhone(phone);
                     },
-                    onFieldSubmitted: (phone){
+                    onFieldSubmitted: (phone) {
                       OrdersHomeCubit.get(context).searchOrdersByPhone(phone);
                     },
                   ),
@@ -64,26 +81,30 @@ class SearchOrderPhoneScreen extends StatelessWidget {
                 ),
                 Expanded(
                   child: ConditionalBuilder(
-                    condition: OrdersHomeCubit.get(context)
+                    condition: OrdersHomeCubit
+                        .get(context)
                         .searchOrderPhone
                         .isNotEmpty,
-                    builder: (ctx) => ListView.separated(
-                        itemBuilder: (context, idx) {
-                        return listItem(
-                            OrdersHomeCubit.get(context)
-                                .searchOrderPhone[idx],
-                            context);
-                      },
-                      itemCount: OrdersHomeCubit.get(context)
-                          .searchOrderPhone
-                          .length,
-                      separatorBuilder: (context, idx) => const SizedBox(
-                        height: 20,
-                      ),
-                    ),
-                    fallback: (ctx) => Center(
-                      child: Text( "Not Orders ".tr())
-                    ),
+                    builder: (ctx) =>
+                        ListView.separated(
+                          itemBuilder: (context, idx) {
+                            return listItem(
+                                OrdersHomeCubit
+                                    .get(context)
+                                    .searchOrderPhone[idx],
+                                context);
+                          },
+                          itemCount:
+                          OrdersHomeCubit
+                              .get(context)
+                              .searchOrderPhone
+                              .length,
+                          separatorBuilder: (context, idx) =>
+                          const SizedBox(
+                            height: 30,
+                          ),
+                        ),
+                    fallback: (ctx) => Center(child: Text("Not Orders ".tr())),
                   ),
                 ),
               ],
@@ -95,83 +116,87 @@ class SearchOrderPhoneScreen extends StatelessWidget {
   listItem(OrderModel orderModel, context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text('${"Order Name: ".tr()}${orderModel.orderName}'),
-          const SizedBox(
-            height: 10,
+      child: Card(
+        color: Colors.black12,
+        elevation: 10,
+        margin: const EdgeInsets.all(5),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text('${"Order Name: ".tr()}${orderModel.orderName}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Order Phone: ".tr()}${orderModel.orderPhone}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Order City: ".tr()}${orderModel.conservation}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Order Area: ".tr()}${orderModel.city}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Order Address: ".tr()} ${orderModel.address}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Item Name: ".tr()}${orderModel.type}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Employer Name: ".tr()}${orderModel.employerName}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Employer Email: ".tr()}${orderModel.employerEmail}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Employer Phone: ".tr()}${orderModel.employerPhone}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(orderModel.number != 0
+                  ? '${"Order Number: ".tr()}${orderModel.number.toString()}'
+                  : ""),
+              const SizedBox(
+                height: 10,
+              ),
+              //barcode
+              Center(
+                child: BarcodeWidget(
+                  data: orderModel.barCode,
+                  barcode: Barcode.qrCode(
+                      errorCorrectLevel: BarcodeQRCorrectionLevel.high),
+                  width: 200,
+                  height: 200,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Date: ".tr()}${DateTime.parse(orderModel.date)}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Price".tr()} ${orderModel.price}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text('${"Charging".tr()} ${orderModel.salOfCharging}'),
+              const SizedBox(
+                height: 10,
+              ),
+              Text("${"Total Price: ".tr()}${orderModel.totalPrice}"),
+            ],
           ),
-          Text('${"Order Phone: ".tr()}${orderModel.orderPhone}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Order City: ".tr()}${orderModel.conservation}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Order Area: ".tr()}${orderModel.city}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Order Address: ".tr()} ${orderModel.address}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Order Barcode: ".tr()}${orderModel.barCode}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Item Name: ".tr()}${orderModel.type}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Employer Name: ".tr()}${orderModel.employerName}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Employer Email: ".tr()}${orderModel.employerEmail}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Employer Phone: ".tr()}${orderModel.employerPhone}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(orderModel.number != 0
-              ? '${"Order Number: ".tr()}${orderModel.number.toString()}'
-              : ""),
-          const SizedBox(
-            height: 10,
-          ),
-          //barcode
-          Center(
-            child: BarcodeWidget(
-              data: orderModel.barCode,
-              barcode: Barcode.qrCode(
-                  errorCorrectLevel: BarcodeQRCorrectionLevel.high),
-              width: 200,
-              height: 200,
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Date: ".tr()}${DateTime.parse(orderModel.date)}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Price".tr()} ${orderModel.price}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('${"Charging".tr()} ${orderModel.salOfCharging}'),
-          const SizedBox(
-            height: 10,
-          ),
-          Text("${"Total Price: ".tr()}${orderModel.totalPrice}"),
-        ],
+        ),
       ),
     );
   }

@@ -12,7 +12,7 @@ import 'package:orders/modules/login/login.dart';
 import 'package:orders/modules/search_phone/search.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
-
+//checked
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -47,61 +47,61 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       totalPrice = p + s;
       setState(() {});
     });
-    print(SharedHelper.get(key: "min"));
-    Timer.periodic(const Duration(hours: 24), (timer) {
-      //update time all 24 in firestore
-      //make it 0
-    });
-    WidgetsBinding.instance.addObserver(this);
+    // print(SharedHelper.get(key: "min"));
+    // Timer.periodic(const Duration(hours: 24), (timer) {
+    //   //update time all 24 in firestore
+    //   //make it 0
+    // });
+    // WidgetsBinding.instance.addObserver(this);
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed ||
-        state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.hidden) {
-      //get shared difference
-      if (SharedHelper.get(key: "min") != null) {
-        Duration diff = DateTime.now()
-            .difference(DateTime.parse(SharedHelper.get(key: "min")));
-        Duration saveDiff = Duration(
-            hours: diff.inHours,
-            minutes: diff.inMinutes,
-            seconds: diff.inSeconds);
-        //save diff in shared
-        if (SharedHelper.get(key: 'duration') == null) {
-          SharedHelper.save(value: saveDiff.toString(), key: 'duration');
-        } else {
-          // compare with diff then update diff with large
-          //DateTime dt=DateTime.parse(SharedHelper.get(key: 'duration'));
-          // Duration d=Duration(hours: dt.hour,minutes: dt.minute,seconds: dt.second);
-          int res = saveDiff
-              .toString()
-              .compareTo(SharedHelper.get(key: 'duration').toString());
-          if (!res.isNegative) {
-            SharedHelper.save(value: saveDiff.toString(), key: 'duration');
-          }
-        }
-        //update shared by large diff
-        showToast(
-            message: SharedHelper.get(key: 'duration').toString(),
-            state: ToastState.SUCCESS);
-        print(SharedHelper.get(key: 'duration').toString());
-      }
-    } else {
-      SharedHelper.save(value: DateTime.now().toString(), key: "min");
-      print("closed");
-      showToast(message: 'Closed', state: ToastState.SUCCESS);
-    }
-  }
+  //
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   WidgetsBinding.instance.removeObserver(this);
+  // }
+  //
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   super.didChangeAppLifecycleState(state);
+  //   if (state == AppLifecycleState.resumed ||
+  //       state == AppLifecycleState.paused ||
+  //       state == AppLifecycleState.inactive ||
+  //       state == AppLifecycleState.hidden) {
+  //     //get shared difference
+  //     if (SharedHelper.get(key: "min") != null) {
+  //       Duration diff = DateTime.now()
+  //           .difference(DateTime.parse(SharedHelper.get(key: "min")));
+  //       Duration saveDiff = Duration(
+  //           hours: diff.inHours,
+  //           minutes: diff.inMinutes,
+  //           seconds: diff.inSeconds);
+  //       //save diff in shared
+  //       if (SharedHelper.get(key: 'duration') == null) {
+  //         SharedHelper.save(value: saveDiff.toString(), key: 'duration');
+  //       } else {
+  //         // compare with diff then update diff with large
+  //         //DateTime dt=DateTime.parse(SharedHelper.get(key: 'duration'));
+  //         // Duration d=Duration(hours: dt.hour,minutes: dt.minute,seconds: dt.second);
+  //         int res = saveDiff
+  //             .toString()
+  //             .compareTo(SharedHelper.get(key: 'duration').toString());
+  //         if (!res.isNegative) {
+  //           SharedHelper.save(value: saveDiff.toString(), key: 'duration');
+  //         }
+  //       }
+  //       //update shared by large diff
+  //       showToast(
+  //           message: SharedHelper.get(key: 'duration').toString(),
+  //           state: ToastState.SUCCESS);
+  //       print(SharedHelper.get(key: 'duration').toString());
+  //     }
+  //   } else {
+  //     SharedHelper.save(value: DateTime.now().toString(), key: "min");
+  //     print("closed");
+  //     showToast(message: 'Closed', state: ToastState.SUCCESS);
+  //   }
+  // }
 
   List<String> serviceType = ['تسليم وتحصيل', 'جلب مرتجعات', 'استبدال'];
   var service = "Select Service".tr();
@@ -294,18 +294,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(
                       height: 10,
                     ),
-                    defaultTextForm(
-                        context: context,
-                        Controller: phoneClientController,
-                        prefixIcon: const Icon(Icons.phone),
-                        text: "Client Phone".tr(),
-                        validate: (val) {
-                          if (val.toString().isEmpty) {
-                            return "Please Enter Client Phone".tr();
-                          }
-                          return null;
-                        },
-                        type: TextInputType.phone),
+                    TextFormField(
+                      controller: phoneClientController,
+                      decoration: InputDecoration(
+                        errorText: state is OrdersHomeValidtePhoneOrderStates?state.validate:null,
+                        prefixIcon: const Icon(Icons.search),
+                        label: Text( "Client Phone".tr()),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.grey.withOpacity(0.25)
+                          ),
+                        ),
+                      ),
+                      style: Theme.of(context).textTheme.bodyText2,
+                      validator: (val) {
+                        if (val.toString().isEmpty) {
+                          return "Please Enter Client Phone".tr();
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.phone,
+                      onChanged: (phone){
+                        OrdersHomeCubit.get(context).validateOrdersByPhone(phone);
+                      },
+                      onFieldSubmitted: (phone){
+                        OrdersHomeCubit.get(context).validateOrdersByPhone(phone);
+                      },
+                    ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -393,6 +412,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                       value: e,
                                       child: InkWell(
                                         onTap: () {
+                                          city = "Select City".tr();
                                           Navigator.pop(context);
                                           stateValue = e;
                                           OrdersHomeCubit.get(context).getCites(stateValue);
@@ -577,6 +597,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           label: Text("Categories".tr()),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: Colors.grey.withOpacity(0.25)
+                            ),
                           ),
                         ),
                         style: Theme.of(context).textTheme.bodyText2,

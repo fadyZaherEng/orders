@@ -15,9 +15,7 @@ import 'package:screenshot/screenshot.dart';
 
 class UpdateOrdersScreen extends StatefulWidget {
   OrderModel orderModel;
-
   UpdateOrdersScreen(this.orderModel, {super.key});
-
   @override
   State<UpdateOrdersScreen> createState() => _UpdateOrdersScreenState();
 }
@@ -32,7 +30,6 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState(); //theme logout lang
     if (SharedHelper.get(key: 'lang') == 'arabic') {
       getArabic(widget.orderModel.date);
@@ -228,7 +225,9 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               if (formKey.currentState!.validate()) {
                                 OrdersHomeCubit.get(context).updateOrder(
                                     orderName: widget.orderModel.orderName,
+                                    charging: widget.orderModel.charging,
                                     waiting: widget.orderModel.waiting,
+                                    confirm: widget.orderModel.confirm,
                                     notes: widget.orderModel.notes,
                                     serviceType: widget.orderModel.serviceType,
                                     conservation: widget.orderModel.conservation,

@@ -13,6 +13,7 @@ class OrderModel {
       date;
   int number;
   bool confirm = false;
+  bool charging = false;
   bool waiting;
   double price, totalPrice, salOfCharging;
   dynamic barCode;
@@ -36,6 +37,7 @@ class OrderModel {
     required this.totalPrice,
     required this.salOfCharging,
     this.confirm = false,
+    this.charging = false,
     required this.waiting,
   });
 
@@ -55,6 +57,7 @@ class OrderModel {
       'date': date,
       'number': number,
       'confirm': confirm,
+      'charging': charging,
       'waiting': waiting,
       'price': price,
       'totalPrice': totalPrice,
@@ -68,6 +71,7 @@ class OrderModel {
       orderName: map['orderName'],
       conservation: map['conservation'],
       city: map['city'],
+      charging: map['charging'],
       address: map['address'],
       waiting: map['waiting'],
       type: map['type'],

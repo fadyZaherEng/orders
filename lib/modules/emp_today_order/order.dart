@@ -6,7 +6,7 @@ import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
 import 'package:orders/shared/components/components.dart';
-
+//checked
 class EmployerTodayOrdersScreen extends StatefulWidget {
   EmployerTodayOrdersScreen({super.key});
 
@@ -83,6 +83,7 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
                   onPressed: () {
                     setState(() {
                       order.confirm = true;
+                      order.waiting=false;
                       OrdersHomeCubit.get(context).updateOrderConfirm(
                           orderModel: order, context: context);
                     });
@@ -99,6 +100,7 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
                     setState(
                       () {
                         order.confirm = false;
+                        order.waiting=false;
                         OrdersHomeCubit.get(context).updateOrderConfirm(
                             orderModel: order, context: context);
                       },
@@ -118,7 +120,8 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
               onPressed: () {
                 setState(() {
                   order.waiting = true;
-                  OrdersHomeCubit.get(context).updateOrderConfirm(
+                  order.confirm=false;
+                  OrdersHomeCubit.get(context).updateOrderWaiting(
                       orderModel: order, context: context);
                 });
               },

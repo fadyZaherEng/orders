@@ -2,14 +2,11 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/models/admin_model.dart';
 import 'package:orders/modules/admin_screen/add_admins/bloc/states.dart';
-import 'package:orders/modules/admin_screen/show_order/show_orders.dart';
 import 'package:orders/shared/components/components.dart';
-import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class OrdersAppAddAdminCubit extends Cubit<OrdersAppAddAdminStates> {
   OrdersAppAddAdminCubit() : super(OrdersAppAddAdminInitialStates());

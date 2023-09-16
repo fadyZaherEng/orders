@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/shared/components/components.dart';
-
+//checked
 class AddCityScreen extends StatefulWidget {
   @override
   State<AddCityScreen> createState() => _AddCityScreenState();
@@ -94,6 +94,9 @@ class _AddCityScreenState extends State<AddCityScreen> {
                         validate: (val) {
                           if (val.toString().isEmpty) {
                             return "Please Enter City Name".tr();
+                          }
+                          if(stateValue == "Select State".tr()){
+                            return "Please Enter State Name".tr();
                           }
                           return null;
                         },

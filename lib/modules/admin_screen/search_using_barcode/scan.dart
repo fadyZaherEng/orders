@@ -5,13 +5,15 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/modules/admin_screen/print_order/order.dart';
 import 'package:orders/shared/components/components.dart';
+import 'package:orders/shared/network/local/cashe_helper.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-
+//checked
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
 
@@ -32,6 +34,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   void initState() {
     super.initState();
+   initMethod();
+  }
+ void initMethod(){
+    if (SharedHelper.get(key: 'lang') == 'arabic') {
+      if(OrdersHomeCubit.get(context).searchOrderBarcode!=null){
+        getArabic(OrdersHomeCubit.get(context).searchOrderBarcode!.date);
+      }
+    }
     priceController.addListener(() {
       if(OrdersHomeCubit.get(context).searchOrderBarcode!=null){
         print(priceController.text);
@@ -43,14 +53,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
       }
     });
     salOfChargingController.addListener(() {
-     if(OrdersHomeCubit.get(context).searchOrderBarcode!=null){
-       print(priceController.text);
-       double p = priceController.text != "" ? double.parse(priceController.text) : 0;
-       double s = salOfChargingController.text != "" ? double.parse(salOfChargingController.text) : 0;
-       totalPrice = p + s;
-       OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging = s;
-       OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice = totalPrice;
-     }
+      if(OrdersHomeCubit.get(context).searchOrderBarcode!=null){
+        print(priceController.text);
+        double p = priceController.text != "" ? double.parse(priceController.text) : 0;
+        double s = salOfChargingController.text != "" ? double.parse(salOfChargingController.text) : 0;
+        totalPrice = p + s;
+        OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging = s;
+        OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice = totalPrice;
+      }
     });
   }
 
@@ -171,7 +181,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                     const SizedBox(
                                       height: 5,
                                     ),
-                        Text(
+                                   Text(
                                   '${"Date: ".tr()}${DateTime.parse(OrdersHomeCubit.get(context).searchOrderBarcode!.date)}'),
                                     const SizedBox(
                                       height: 5,
@@ -183,9 +193,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                         text: "Price".tr(),
                                         validate: (val) {
                                           if (val.toString().isEmpty) {
-                                            return "Please Enter total price".tr();
+                                            return "Please Enter  price".tr();
                                           }
                                           return null;
+                                        },
+                                        onChanged: (String val){
+                                          setState(() {
+
+                                          });
                                         },
                                         type: TextInputType.number),
                                     const SizedBox(
@@ -202,6 +217,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                             return "Please Enter Charging".tr();
                                           }
                                           return null;
+                                        },
+                                        onChanged: (String value){
+                                          setState(() {
+
+                                          });
                                         },
                                         type: TextInputType.number),
                                     const SizedBox(
@@ -221,34 +241,41 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                       child: MaterialButton(
                                         color: Theme.of(context).primaryColor,
                                         onPressed: () {
-                                          if (formKey.currentState!.validate()) {
-                                            OrdersHomeCubit.get(context).updateOrder(
-                                                orderName: OrdersHomeCubit.get(context).searchOrderBarcode!.orderName,
-                                                conservation:
-                                                OrdersHomeCubit.get(context).searchOrderBarcode!.conservation,
-                                                city: OrdersHomeCubit.get(context).searchOrderBarcode!.city,
-                                                address: OrdersHomeCubit.get(context).searchOrderBarcode!.address,
-                                                type: OrdersHomeCubit.get(context).searchOrderBarcode!.type,
-                                                barCode: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
-                                                employerName:
-                                                OrdersHomeCubit.get(context).searchOrderBarcode!.employerName,
-                                                employerPhone:
-                                                OrdersHomeCubit.get(context).searchOrderBarcode!.employerPhone,
-                                                employerEmail:
-                                                OrdersHomeCubit.get(context).searchOrderBarcode!.employerEmail,
-                                                orderPhone: OrdersHomeCubit.get(context).searchOrderBarcode!.orderPhone,
-                                                date: OrdersHomeCubit.get(context).searchOrderBarcode!.date,
-                                                number: OrdersHomeCubit.get(context).searchOrderBarcode!.number,
-                                                price: OrdersHomeCubit.get(context).searchOrderBarcode!.price,
-                                                totalPrice: OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice,
-                                                salOfCharging:
-                                                OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging,
-                                                context: context,
-                                                waiting:OrdersHomeCubit.get(context).searchOrderBarcode!.waiting,
-                                                notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
-                                                serviceType:OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType
-                                            );
-                                          }
+                                         setState(() {
+
+                                         });
+                                          Future.delayed(const Duration(seconds: 1))
+                                             .then((value) {
+                                           if (formKey.currentState!.validate()) {
+                                             OrdersHomeCubit.get(context).updateOrder(
+                                                 orderName: OrdersHomeCubit.get(context).searchOrderBarcode!.orderName,
+                                                 conservation: OrdersHomeCubit.get(context).searchOrderBarcode!.conservation,
+                                                 city: OrdersHomeCubit.get(context).searchOrderBarcode!.city,
+                                                 charging: OrdersHomeCubit.get(context).searchOrderBarcode!.charging,
+                                                 address: OrdersHomeCubit.get(context).searchOrderBarcode!.address,
+                                                 type: OrdersHomeCubit.get(context).searchOrderBarcode!.type,
+                                                 confirm: OrdersHomeCubit.get(context).searchOrderBarcode!.confirm,
+                                                 barCode: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
+                                                 employerName:
+                                                 OrdersHomeCubit.get(context).searchOrderBarcode!.employerName,
+                                                 employerPhone:
+                                                 OrdersHomeCubit.get(context).searchOrderBarcode!.employerPhone,
+                                                 employerEmail:
+                                                 OrdersHomeCubit.get(context).searchOrderBarcode!.employerEmail,
+                                                 orderPhone: OrdersHomeCubit.get(context).searchOrderBarcode!.orderPhone,
+                                                 date: OrdersHomeCubit.get(context).searchOrderBarcode!.date,
+                                                 number: OrdersHomeCubit.get(context).searchOrderBarcode!.number,
+                                                 price: OrdersHomeCubit.get(context).searchOrderBarcode!.price,
+                                                 totalPrice: OrdersHomeCubit.get(context).searchOrderBarcode!.totalPrice,
+                                                 salOfCharging:
+                                                 OrdersHomeCubit.get(context).searchOrderBarcode!.salOfCharging,
+                                                 context: context,
+                                                 waiting:OrdersHomeCubit.get(context).searchOrderBarcode!.waiting,
+                                                 notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
+                                                 serviceType:OrdersHomeCubit.get(context).searchOrderBarcode!.serviceType
+                                             );
+                                           }
+                                         });
                                         },
                                         child: Text(
                                           "Save".tr(),
@@ -266,9 +293,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                       child: MaterialButton(
                                         color: Theme.of(context).primaryColor,
                                         onPressed: () {
-                                          OrdersHomeCubit.get(context).removeOrders(
-                                              docId: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
-                                              context: context);
+                                        setState(() {
+                                          Future.delayed(const Duration(seconds: 1))
+                                              .then((value) {
+                                            OrdersHomeCubit.get(context).removeOrders(
+                                                docId: OrdersHomeCubit.get(context).searchOrderBarcode!.barCode,
+                                                context: context);
+                                          });
+                                        });
                                         },
                                         child: Text(
                                           "Delete".tr(),
@@ -318,6 +350,16 @@ class _ScannerScreenState extends State<ScannerScreen> {
         );
       }
     );
+  }
+  void getArabic(String date) async {
+    await initializeDateFormatting('ar_SA', '');
+    var formatter = DateFormat('yyyy-MM-dd hh:mm:ss', 'ar_SA');
+    print(formatter.locale);
+    String formatted = formatter.format(DateTime.parse(date));
+    arabicDate = formatted;
+    setState(() {
+
+    });
   }
 
 }

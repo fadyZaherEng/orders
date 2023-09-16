@@ -15,7 +15,7 @@ class MoneyScreen extends StatefulWidget {
 }
 
 class _MoneyScreenState extends State<MoneyScreen> {
-  String menuSelected = "Select";
+  String menuSelected = "Select".tr();
 
   var typeController = TextEditingController();
   var formKey = GlobalKey<FormState>();
@@ -205,6 +205,8 @@ class _MoneyScreenState extends State<MoneyScreen> {
                                 type: typeController.text,
                                 value: moneyController.text,
                                 context: context);
+                            moneyController.text="";
+                            typeController.text="";
                           }
                         },
                         child: Text(

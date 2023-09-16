@@ -8,7 +8,7 @@ import 'package:orders/modules/admin_screen/add_admins/bloc/cubit.dart';
 import 'package:orders/modules/admin_screen/add_admins/bloc/states.dart';
 import 'package:orders/modules/login/bloc/cubit.dart';
 import 'package:orders/shared/components/components.dart';
-
+//checked
 class AddAdminScreen extends StatelessWidget {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
@@ -39,7 +39,7 @@ class AddAdminScreen extends StatelessWidget {
                         key: formKey,
                         child: Column(
                           children: [
-                            const Center(child:  Text("Add Admin",)),
+                            Center(child:  Text("Add Admin".tr(),)),
                             const SizedBox(
                               height: 30,
                             ),

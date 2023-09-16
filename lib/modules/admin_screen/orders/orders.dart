@@ -10,14 +10,22 @@ import 'package:orders/models/order_model.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
 
-class DisplayOrdersScreen extends StatelessWidget {
-  String filterSelected="Select";
-  List<String>filters=[
-    "Cancel".tr(),
-    "Confirm".tr(),
-    "Waiting".tr()
-  ];
+class DisplayOrdersScreen extends StatefulWidget {
+
    DisplayOrdersScreen({super.key});
+
+  @override
+  State<DisplayOrdersScreen> createState() => _DisplayOrdersScreenState();
+}
+
+class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
+  String filterSelected="Select".tr();
+
+  List<String>filters=[
+    "Cancel",
+    "Confirm",
+    "Waiting"
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +41,18 @@ class DisplayOrdersScreen extends StatelessWidget {
               DropdownButton(
                 focusColor: Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.circular(10),
-                hint: Text(filterSelected.tr()),
+                hint: Text(filterSelected),
                 items:filters.map((filter) => DropdownMenuItem(
-                  child: Text(filter),
-                  value: filter,
+                  child: Text(filter.tr()),
+                  value: filter.tr(),
                 )).toList(),
                 onChanged: (val) {
                   if (val != null) {
+                    print(val);
                     filterSelected = val;
+                    setState(() {
+
+                    });
                     OrdersHomeCubit.get(context).getOrders(filterSelected);
                   }
                 },

@@ -416,19 +416,23 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       totalOfAllOrdersConfirm = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        if (orderModel.confirm) {
-          totalOfAllOrdersConfirm += orderModel.totalPrice;
-        }
-        if (filter == "Confirm" && orderModel.confirm) {
-          orders.add(orderModel);
-          totalOfAllOrders += orderModel.totalPrice;
-        } else if (filter == "Waiting" && orderModel.waiting) {
-          orders.add(orderModel);
-          totalOfAllOrders += orderModel.totalPrice;
-        } else if (filter == "Cancel" && !orderModel.confirm) {
-          orders.add(orderModel);
-          totalOfAllOrders += orderModel.totalPrice;
-        }
+       if(!orderModel.charging){
+         if (orderModel.confirm) {
+           totalOfAllOrdersConfirm += orderModel.totalPrice;
+         }
+         if (filter ==  "Confirm".tr() && orderModel.confirm) {
+           orders.add(orderModel);
+           totalOfAllOrders += orderModel.totalPrice;
+         }
+         else if (filter == "Waiting".tr() && orderModel.waiting) {
+           orders.add(orderModel);
+           totalOfAllOrders += orderModel.totalPrice;
+         }
+         else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting) {
+           orders.add(orderModel);
+           totalOfAllOrders += orderModel.totalPrice;
+         }
+       }
         emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
@@ -438,11 +442,14 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
 //update orders
-  void updateOrder({required String orderName,
+  void updateOrder({
+    required String orderName,
     required String conservation,
     required String city,
     required String address,
     required bool waiting,
+    required bool confirm,
+    required bool charging,
     required String type,
     required String barCode,
     required String employerName,
@@ -467,7 +474,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         conservation: conservation,
         city: city,
         address: address,
+        confirm: confirm,
         type: type,
+        charging: charging,
         barCode: barCode,
         employerName: employerName,
         employerPhone: employerPhone,
@@ -475,7 +484,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         number: number,
         price: price,
         totalPrice: totalPrice,
-        salOfCharging: salOfCharging);
+        salOfCharging: salOfCharging,
+    );
     FirebaseFirestore.instance
         .collection('orders')
         .doc(barCode)
@@ -755,19 +765,36 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-//search date
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //search date
   List<OrderModel> searchOrdersDate = [];
 
   void searchOrdersByDate({
     required String startDate,
     required String endDate,
+    required String filter,
     required TimeOfDay firstTime,
     required TimeOfDay lastTime,
   }) {
+    print('fffffffffffffffffff$filter');
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
-        .where('confirm', isEqualTo: true)
         .get()
         .then((event) {
       searchOrdersDate = [];
@@ -778,46 +805,78 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       DateTime finishDate= DateTime.parse(endDate.split(' ')[0]);
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        DateTime orderDate= DateTime.parse(orderModel.date.split(' ')[0]);
-        if (orderDate.isAfter(finishDate)&&orderDate.isBefore(firstDate)||
-            orderDate.isAtSameMomentAs(firstDate)||orderDate.isAtSameMomentAs(finishDate)) {
-          TimeOfDay time = TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
-          tempHourTime = time.hour;
-          tempHourFirstTime = firstTime.hour;
-          tempHourLastTime = lastTime.hour;
-          if (tempHourTime > tempHourFirstTime &&
-              (tempHourTime >= 1 && tempHourTime <= 12) &&
-              (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
-              (tempHourLastTime >= 1 && tempHourLastTime <= 12) &&
-              tempHourTime < tempHourLastTime) {
-            searchOrdersDate.add(orderModel);
-          }
-          if (tempHourTime > tempHourFirstTime &&
-              (tempHourTime >= 13 && tempHourTime <= 23) &&
-              (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
-              (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
-              tempHourTime < tempHourLastTime) {
-            searchOrdersDate.add(orderModel);
-          }
-          if ((tempHourTime >= 13 && tempHourTime <= 23) &&
-              (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
-              (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
-              tempHourTime < tempHourLastTime ||
-              (tempHourTime >= 13 && tempHourTime <= 23) &&
-                  (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
-                  tempHourTime > tempHourFirstTime &&
-                  (tempHourLastTime >= 1 && tempHourLastTime <= 12)) {
-            searchOrdersDate.add(orderModel);
-          }
-          if (tempHourTime == tempHourFirstTime &&
-              time.minute >= firstTime.minute) {
-            searchOrdersDate.add(orderModel);
-          }
-          if (tempHourTime == tempHourLastTime &&
-              time.minute <= lastTime.minute) {
-            searchOrdersDate.add(orderModel);
-          }
-        }
+       if(!orderModel.charging){
+         DateTime orderDate= DateTime.parse(orderModel.date.split(' ')[0]);
+         if (orderDate.isAfter(firstDate)&&orderDate.isBefore(finishDate)||
+             orderDate.isAtSameMomentAs(firstDate)||orderDate.isAtSameMomentAs(finishDate)) {
+           TimeOfDay time = TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+           tempHourTime = time.hour;
+           tempHourFirstTime = firstTime.hour;
+           tempHourLastTime = lastTime.hour;
+           if (tempHourTime > tempHourFirstTime &&
+               (tempHourTime >= 1 && tempHourTime <= 12) &&
+               (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
+               (tempHourLastTime >= 1 && tempHourLastTime <= 12) &&
+               tempHourTime < tempHourLastTime) {
+             if (filter ==  "Confirm".tr() && orderModel.confirm) {
+                searchOrdersDate.add(orderModel);
+              }else if (filter == "Waiting".tr() && orderModel.waiting){
+                searchOrdersDate.add(orderModel);
+              }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
+                searchOrdersDate.add(orderModel);
+              }
+           }
+           if (tempHourTime > tempHourFirstTime &&
+               (tempHourTime >= 13 && tempHourTime <= 23) &&
+               (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
+               (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
+               tempHourTime < tempHourLastTime) {
+             if (filter ==  "Confirm".tr() && orderModel.confirm) {
+               searchOrdersDate.add(orderModel);
+             }else if (filter == "Waiting".tr() && orderModel.waiting){
+               searchOrdersDate.add(orderModel);
+             }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
+               searchOrdersDate.add(orderModel);
+             }
+           }
+           if ((tempHourTime >= 13 && tempHourTime <= 23) &&
+               (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
+               (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
+               tempHourTime < tempHourLastTime ||
+               (tempHourTime >= 13 && tempHourTime <= 23) &&
+                   (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
+                   tempHourTime > tempHourFirstTime &&
+                   (tempHourLastTime >= 1 && tempHourLastTime <= 12)) {
+             if (filter ==  "Confirm".tr() && orderModel.confirm) {
+               searchOrdersDate.add(orderModel);
+             }else if (filter == "Waiting".tr() && orderModel.waiting){
+               searchOrdersDate.add(orderModel);
+             }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
+               searchOrdersDate.add(orderModel);
+             }
+           }
+           if (tempHourTime == tempHourFirstTime &&
+               time.minute >= firstTime.minute) {
+             if (filter ==  "Confirm".tr() && orderModel.confirm) {
+               searchOrdersDate.add(orderModel);
+             }else if (filter == "Waiting".tr() && orderModel.waiting){
+               searchOrdersDate.add(orderModel);
+             }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
+               searchOrdersDate.add(orderModel);
+             }
+           }
+           if (tempHourTime == tempHourLastTime &&
+               time.minute <= lastTime.minute) {
+             if (filter ==  "Confirm".tr() && orderModel.confirm) {
+               searchOrdersDate.add(orderModel);
+             }else if (filter == "Waiting".tr() && orderModel.waiting){
+               searchOrdersDate.add(orderModel);
+             }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
+               searchOrdersDate.add(orderModel);
+             }
+           }
+         }
+       }
       });
       emit(ViewFileSuccessStates());
     }).catchError((handleError) {
@@ -829,7 +888,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   List<OrderModel> searchOrderPhone = [];
   double searchOrderPhonePrice = 0;
   int searchOrderPhoneNum = 0;
-
   void searchOrdersByPhone(String phone) {
     emit(ViewFileLoadingStates()); //=order id
     FirebaseFirestore.instance.collection('orders').get().then((event) {
@@ -838,14 +896,45 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       searchOrderPhoneNum = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        print(orderModel.orderPhone);
-        print(phone);
         if (orderModel.orderPhone == phone) {
           searchOrderPhone.add(orderModel);
+          searchOrderPhonePrice+=orderModel.totalPrice;
+          searchOrderPhoneNum++;
           emit(ViewFileSuccessStates());
         }
       });
       emit(ViewFileSuccessStates());
+    }).catchError((handleError) {
+      emit(ViewFileErrorStates());
+    });
+  }
+
+  //validate phone
+
+  void validateOrdersByPhone(String phone) {
+    emit(ViewFileLoadingStates()); //=order id
+    FirebaseFirestore.instance
+        .collection('orders')
+        .get()
+        .then((event) {
+          int num=0;
+          String date="";
+          bool found=false;
+      event.docs.forEach((element) {
+        OrderModel orderModel = OrderModel.fromMap(element.data());
+        if (orderModel.orderPhone == phone) {
+          num++;
+          date=orderModel.date;
+          found=true;
+        }
+      });
+          String? validateOrder;
+      if(found) {
+        validateOrder="number orders".tr()+num.toString()+"\n"+"last order".tr()+" :$date";
+      }else{
+        validateOrder=null;
+      }
+      emit(OrdersHomeValidtePhoneOrderStates(validate: validateOrder));
     }).catchError((handleError) {
       emit(ViewFileErrorStates());
     });
@@ -864,23 +953,27 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       todayOrdersNumber = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        if (orderModel.date.split(' ')[0] ==
-            DateTime.now().toString().split(' ')[0]) {
-          if (filter == "Confirm" && orderModel.confirm) {
-            todayOrders.add(orderModel);
-            todayOrdersPrice += orderModel.totalPrice;
-            todayOrdersNumber++;
-          } else if (filter == "Waiting" && orderModel.waiting) {
-            todayOrders.add(orderModel);
-            todayOrdersPrice += orderModel.totalPrice;
-            todayOrdersNumber++;
-          } else if (filter == "Cancel" && !orderModel.confirm) {
-            todayOrders.add(orderModel);
-            todayOrdersPrice += orderModel.totalPrice;
-            todayOrdersNumber++;
+        if(!orderModel.charging){
+          if (orderModel.date.split(' ')[0] ==
+              DateTime.now().toString().split(' ')[0]) {
+            print(filter);
+            print(orderModel.confirm);
+            if (filter ==  "Confirm".tr() && orderModel.confirm) {
+              todayOrders.add(orderModel);
+              todayOrdersPrice += orderModel.totalPrice;
+              todayOrdersNumber++;
+            } else if (filter == "Waiting".tr() && orderModel.waiting) {
+              todayOrders.add(orderModel);
+              todayOrdersPrice += orderModel.totalPrice;
+              todayOrdersNumber++;
+            } else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting) {
+              todayOrders.add(orderModel);
+              todayOrdersPrice += orderModel.totalPrice;
+              todayOrdersNumber++;
+            }
           }
+          emit(ViewFileSuccessStates());
         }
-        emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
     }).onError((handleError) {
@@ -931,7 +1024,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   //add cities and states
   void addCites(String city, String state) {
     FirebaseFirestore.instance
-        .collection(state)
+        .collection("cities")
+        .doc(state)
+         .collection('values')
         .add({'city': city}).then((value) {
       showToast(message: "تم اضافة مدينة بنجاح", state: ToastState.SUCCESS);
       emit(SocialGetUserStatusSuccessStates());
@@ -943,7 +1038,10 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   List<String> cities = [];
 
   void getCites(String state) {
-    FirebaseFirestore.instance.collection(state).snapshots().listen((event) {
+    FirebaseFirestore.instance
+        .collection('cities')
+       .doc(state)
+        .collection('values').snapshots().listen((event) {
       cities = [];
       event.docs.forEach((element) {
         cities.add(element['city']);
@@ -970,6 +1068,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 
   void getStates() {
     FirebaseFirestore.instance.collection('states').snapshots().listen((value) {
+      states = [];
       value.docs.forEach((element) {
         states.add(element['state']);
       });
@@ -983,19 +1082,26 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   List<UserOrders> userFilterOrders = [];
 
   void userOrdersFilter() {
-    FirebaseFirestore.instance.collection('users').snapshots().listen((event) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .get()
+        .then((event) {
+      userFilterOrders = [];
       event.docs.forEach((element) async {
         String email = element['email'];
         String name = element['name'];
         int numToday = 0;
         int numAll = 0;
-        FirebaseFirestore.instance.collection('orders').get().then((orders) {
+
+        FirebaseFirestore.instance.
+        collection('orders')
+            .get()
+            .then((orders) {
           orders.docs.forEach((order) {
             OrderModel orderModel = OrderModel.fromMap(order.data());
             if (orderModel.employerEmail == email) {
-              numAll++;
-              if (orderModel.date.split(' ')[0] ==
-                  DateTime.now().toString().split(' ')[0]) {
+                 numAll++;
+              if (orderModel.date.split(' ')[0] == DateTime.now().toString().split(' ')[0]) {
                 numToday++;
               }
             }
@@ -1010,6 +1116,30 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           );
         }).catchError((handleError) {});
       });
-    }).onError((handleError) {});
+    }).catchError((handleError) {});
+  }
+
+  ////////////////////////////////////////////////////////
+
+  List<OrderModel> chargingOrders = [];
+  void getChargingOrders() {
+    emit(ViewFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('orders')
+        .orderBy('date')
+        .snapshots()
+        .listen((event) {
+      chargingOrders = [];
+      event.docs.forEach((element) {
+        OrderModel orderModel = OrderModel.fromMap(element.data());
+        if(orderModel.charging){
+          chargingOrders.add(orderModel);
+        }
+        emit(ViewFileSuccessStates());
+      });
+      emit(ViewFileSuccessStates());
+    }).onError((handleError) {
+      emit(ViewFileErrorStates());
+    });
   }
 }

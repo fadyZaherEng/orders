@@ -12,9 +12,11 @@ class ShowCategoriesScreen extends StatefulWidget {
   @override
   State<ShowCategoriesScreen> createState() => _ShowCategoriesScreenState();
 }
-
+//checked
 class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
   var quantityController = TextEditingController();
+  var priceController = TextEditingController();
+  var chargingController = TextEditingController();
 
   var formKey = GlobalKey<FormState>();
 
@@ -208,7 +210,7 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
                           edit = true;
                           setState(() {});
                         },
-                        child: Text("Edit".tr())),
+                        child: Text("Update".tr())),
                   ],
                 ),
                 if (edit)
@@ -216,38 +218,75 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
                     height: 10,
                   ),
                 if (edit)
-                  Row(
+                  Column(
                     children: [
-                      Expanded(
-                        child: defaultTextForm(
-                            context: context,
-                            Controller: quantityController,
-                            prefixIcon:
+                      Row(
+                        children: [
+                          Expanded(
+                            child: defaultTextForm(
+                                context: context,
+                                Controller: quantityController,
+                                prefixIcon:
+                                    const Icon(Icons.production_quantity_limits),
+                                text: "Quantity".tr(),
+                                validate: (val) {
+                                  if (val.toString().isEmpty) {
+                                    return "Please Enter Quantity".tr();
+                                  }
+                                  return null;
+                                },
+                                type: TextInputType.text),
+                          ),
+                          const SizedBox(width: 5,),
+                          Expanded(
+                            child: defaultTextForm(
+                                context: context,
+                                Controller: priceController,
+                                prefixIcon:
                                 const Icon(Icons.production_quantity_limits),
-                            text: "Quantity".tr(),
-                            validate: (val) {
-                              if (val.toString().isEmpty) {
-                                return "Please Enter Quantity".tr();
+                                text: "Price".tr(),
+                                validate: (val) {
+                                  if (val.toString().isEmpty) {
+                                    return "Please Enter Price".tr();
+                                  }
+                                  return null;
+                                },
+                                type: TextInputType.text),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10,),
+                      Row(children: [
+                        Expanded(
+                          child: defaultTextForm(
+                              context: context,
+                              Controller: chargingController,
+                              prefixIcon:
+                              const Icon(Icons.production_quantity_limits),
+                              text: "Charging".tr(),
+                              validate: (val) {
+                                if (val.toString().isEmpty) {
+                                  return "Please Enter Charging".tr();
+                                }
+                                return null;
+                              },
+                              type: TextInputType.text),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              categoryModel.amount = int.parse(quantityController.text.toString());
+                              categoryModel.price = double.parse(priceController.text.toString());
+                              categoryModel.salOfCharging = double.parse(chargingController.text.toString());
+                              categoryModel.totalPrice=categoryModel.price+categoryModel.salOfCharging;
+                              if (quantityController.text != "") {
+                                OrdersHomeCubit.get(context).editCat(
+                                    docId: categoryModel.catId,
+                                    categoryModel: categoryModel,
+                                    context: context);
                               }
-                              return null;
                             },
-                            type: TextInputType.text),
-                      ),
-                      const SizedBox(
-                        width: 6,
-                      ),
-                      TextButton(
-                          onPressed: () {
-                            categoryModel.amount =
-                                int.parse(quantityController.text.toString());
-                            if (quantityController.text != "") {
-                              OrdersHomeCubit.get(context).editCat(
-                                  docId: categoryModel.catId,
-                                  categoryModel: categoryModel,
-                                  context: context);
-                            }
-                          },
-                          child: Text("Edit".tr())),
+                            child: Text("Update".tr())),
+                      ],)
                     ],
                   ),
               ],

@@ -86,6 +86,8 @@
   "Filter Order": "Filter Order",
   "Number Of All Orders: ": "Number Of All Orders: ",
   "Number Of Today Orders: ": "Number Of Today Orders: ",
+  "number orders": "number orders",
+  "last order": "last order",
   "Waiting": "Waiting",
   "Source": "Source",
   "Please Enter Source": "Please Enter Source",
@@ -159,5 +161,8 @@
   "Notes": "Notes",
   "today num": "Today num",
   "all num": "All num",
-  "Search Phone": "Search Phone"
+  "Search Phone": "Search Phone",
+  "Not Found Order": "Not Found Order",
+  "Update": "Update",
+  "Charging Orders": "Charging Orders"
 }

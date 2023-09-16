@@ -32,8 +32,6 @@ void main() async {
   if (SharedHelper.get(key: 'lang') == null) {
     SharedHelper.save(value: 'arabic', key: 'lang');
   }
-
-
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(

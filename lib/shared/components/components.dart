@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names, deprecated_member_use, non_constant_identifier_names
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -21,6 +23,7 @@ Widget defaultTextForm({
   required context,
   required TextEditingController Controller,
   Widget? suffixIcon,
+  void Function(String value)? onChanged,
   required Widget prefixIcon,
   required String text,
   required FormFieldValidator validate,
@@ -36,11 +39,18 @@ Widget defaultTextForm({
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
     ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(
+        color: Colors.grey.withOpacity(0.25)
+      ),
+    ),
   ),
   style:Theme.of(context).textTheme.bodyText2,
   validator: validate,
   obscureText:obscure ,
   keyboardType: type,
+  onFieldSubmitted: onChanged,
 );
 enum ToastState {SUCCESS,ERROR,WARNING}
 Future<bool?> showToast({

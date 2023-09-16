@@ -13,7 +13,7 @@ import 'dart:io';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
-import 'package:share/share.dart';
+//checked
 class TodayOrders extends StatefulWidget {
    const TodayOrders({super.key});
   @override
@@ -21,11 +21,11 @@ class TodayOrders extends StatefulWidget {
 }
 
 class _TodayOrdersState extends State<TodayOrders> {
-  String filterSelected="Select";
+  String filterSelected="Select".tr();
   List<String>filters=[
-    "Cancel".tr(),
-    "Confirm".tr(),
-    "Waiting".tr()
+    "Cancel",
+    "Confirm",
+    "Waiting"
   ];
 
    @override
@@ -34,16 +34,16 @@ class _TodayOrdersState extends State<TodayOrders> {
        listener: (ctx,state){},
        builder: (ctx,state){
          return  Padding(
-           padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 5),
+           padding: const EdgeInsetsDirectional.symmetric(horizontal: 10,vertical: 5),
            child: Column(
              children: [
                DropdownButton(
                  focusColor: Theme.of(context).primaryColor,
                  borderRadius: BorderRadius.circular(10),
-                 hint: Text(filterSelected.tr()),
+                 hint: Text(filterSelected),
                  items:filters.map((filter) => DropdownMenuItem(
-                   child: Text(filter),
-                   value: filter,
+                   child: Text(filter.tr()),
+                   value: filter.tr(),
                  )).toList(),
                  onChanged: (val) {
                    if (val != null) {
@@ -58,36 +58,33 @@ class _TodayOrdersState extends State<TodayOrders> {
                      .todayOrders
                      .isNotEmpty,
                  builder: (ctx) =>
-                     Column(
-                       children: [
-                         Expanded(
-                           child: ListView.separated(
-                             itemBuilder: (ctx, idx) {
-                               return listItem(OrdersHomeCubit
-                                   .get(context)
-                                   .todayOrders[idx], ctx);
-                             },
-                             itemCount: OrdersHomeCubit
-                                 .get(context)
-                                 .todayOrders
-                                 .length,
-                             separatorBuilder: (ctx, idx) => mySeparator(context),
-                           ),
-                         ),
-                         Padding(
-                           padding: const EdgeInsets.all(0.0),
-                           child: TextButton(
-                               onPressed: () {
-                                 createExcelSheet();
-                               },
-                               child: Text("Copy".tr())),
-                         ),
-                       ],
+                     Expanded(
+                       child: ListView.separated(
+                         itemBuilder: (ctx, idx) {
+                           return listItem(OrdersHomeCubit
+                               .get(context)
+                               .todayOrders[idx], ctx);
+                         },
+                         itemCount: OrdersHomeCubit
+                             .get(context)
+                             .todayOrders
+                             .length,
+                         separatorBuilder: (ctx, idx) => mySeparator(context),
+                       ),
                      ),
                  fallback: (ctx) =>
                   Center(
                      child: Text("Not Orders Today".tr())),
                ),
+               if(filterSelected=="Confirm".tr())
+                 Padding(
+                   padding: const EdgeInsets.all(0.0),
+                   child: TextButton(
+                       onPressed: () {
+                         createExcelSheet();
+                       },
+                       child: Text("Copy".tr())),
+                 ),
              ],
            ),
          );
@@ -132,6 +129,28 @@ class _TodayOrdersState extends State<TodayOrders> {
     sheet.getRangeByIndex(1, 16).setText("notes");
 
     for (int i = 0; i < OrdersHomeCubit.get(context).todayOrders.length; i++) {
+      OrdersHomeCubit.get(context).updateOrder(
+          orderName: OrdersHomeCubit.get(context).todayOrders[i].orderName,
+          charging: true,
+          conservation: OrdersHomeCubit.get(context).todayOrders[i].conservation,
+          city: OrdersHomeCubit.get(context).todayOrders[i].city,
+          address: OrdersHomeCubit.get(context).todayOrders[i].address,
+          waiting: OrdersHomeCubit.get(context).todayOrders[i].waiting,
+          confirm: OrdersHomeCubit.get(context).todayOrders[i].confirm,
+          type: OrdersHomeCubit.get(context).todayOrders[i].type,
+          barCode: OrdersHomeCubit.get(context).todayOrders[i].barCode,
+          employerName: OrdersHomeCubit.get(context).todayOrders[i].employerName,
+          employerPhone: OrdersHomeCubit.get(context).todayOrders[i].employerPhone,
+          employerEmail: OrdersHomeCubit.get(context).todayOrders[i].employerEmail,
+          orderPhone: OrdersHomeCubit.get(context).todayOrders[i].orderPhone,
+          serviceType: OrdersHomeCubit.get(context).todayOrders[i].serviceType,
+          notes: OrdersHomeCubit.get(context).todayOrders[i].notes,
+          date: OrdersHomeCubit.get(context).todayOrders[i].date,
+          number: OrdersHomeCubit.get(context).todayOrders[i].number,
+          price: OrdersHomeCubit.get(context).todayOrders[i].price,
+          totalPrice: OrdersHomeCubit.get(context).todayOrders[i].totalPrice,
+          salOfCharging: OrdersHomeCubit.get(context).todayOrders[i].salOfCharging,
+          context: context);
       sheet.getRangeByIndex(i + 2, 1).setText(OrdersHomeCubit.get(context).todayOrders[i].orderName);
       sheet.getRangeByIndex(i + 2, 2).setText(OrdersHomeCubit.get(context).todayOrders[i].conservation);
       sheet.getRangeByIndex(i + 2, 3).setText(OrdersHomeCubit.get(context).todayOrders[i].city);
@@ -159,6 +178,5 @@ class _TodayOrdersState extends State<TodayOrders> {
     final File file=File(fileName);
     await file.writeAsBytes(bytes,flush: true);
     OpenFile.open(fileName);
-     //Share.share(fileName);
   }
 }

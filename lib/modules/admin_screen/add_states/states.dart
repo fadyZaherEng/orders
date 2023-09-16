@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/shared/components/components.dart';
-
+//checked
 class AddStatesScreen extends StatelessWidget {
   var formKey=GlobalKey<FormState>();
 

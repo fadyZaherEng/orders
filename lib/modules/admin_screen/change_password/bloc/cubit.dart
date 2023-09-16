@@ -28,7 +28,7 @@ class OrdersAppChangeAdminPassCubit extends Cubit<OrdersAppChangeAdminPasswordSt
           .doc(adminModel.id)
           .update(adminModel.toMap()).then((value) {
             emit(OrdersAppChangeAdminPasswordChangeEyeStates());
-            showToast(message: "Success", state: ToastState.SUCCESS);
+            showToast(message: "Success".tr(), state: ToastState.SUCCESS);
           }).catchError((onError){
             emit(OrdersAppChangeAdminPasswordErrorStates(onError.toString()));
           });

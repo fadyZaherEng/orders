@@ -61,7 +61,8 @@ dependencies:
   easy_localization:
   flutter_phoenix:
   syncfusion_flutter_xlsio:
-  share:
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

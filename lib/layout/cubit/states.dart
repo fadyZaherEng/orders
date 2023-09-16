@@ -9,6 +9,10 @@ class OrdersHomeGetUserProfileLoadingStates extends OrdersHomeStates {}
 class OrdersHomeGetUserProfileSuccessStates extends OrdersHomeStates {}
 
 class OrdersHomeGetUserProfileErrorStates extends OrdersHomeStates {}
+class OrdersHomeValidtePhoneOrderStates extends OrdersHomeStates {
+  String? validate;
+  OrdersHomeValidtePhoneOrderStates({required this.validate});
+}
 
 class OrdersUpdateProfileDataWaitingImageToFinishUploadStates
     extends OrdersHomeStates {}

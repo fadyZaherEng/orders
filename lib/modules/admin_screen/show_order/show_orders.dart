@@ -9,6 +9,7 @@ import 'package:orders/modules/admin_screen/add_cat/add_cat.dart';
 import 'package:orders/modules/admin_screen/add_city/city.dart';
 import 'package:orders/modules/admin_screen/add_states/states.dart';
 import 'package:orders/modules/admin_screen/change_password/pass.dart';
+import 'package:orders/modules/admin_screen/charging_orders/charging.dart';
 import 'package:orders/modules/admin_screen/filter_order/filter.dart';
 import 'package:orders/modules/admin_screen/gain/gain.dart';
 import 'package:orders/modules/admin_screen/get_cat/cat.dart';
@@ -22,6 +23,7 @@ import 'dart:io';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+//checked
 class AdminShowOrders extends StatefulWidget {
   const AdminShowOrders({super.key});
 
@@ -49,24 +51,33 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                 padding: const EdgeInsets.all(2.0),
                 child: Row(
                   children: [
-                    if (OrdersHomeCubit.get(context).currentIndex == 0)
+                    if (OrdersHomeCubit
+                        .get(context)
+                        .currentIndex == 0)
                       Text(
                         "Total Price: ".tr(),
                         style: TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize: 12,
-                            color: Theme.of(context).primaryColor),
+                            color: Theme
+                                .of(context)
+                                .primaryColor),
                       ),
-                    if (OrdersHomeCubit.get(context).currentIndex == 0)
+                    if (OrdersHomeCubit
+                        .get(context)
+                        .currentIndex == 0)
                       SingleChildScrollView(
                         child: Text(
-                          OrdersHomeCubit.get(context)
+                          OrdersHomeCubit
+                              .get(context)
                               .totalOfAllOrders
                               .toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
-                              color: Theme.of(context).primaryColor),
+                              color: Theme
+                                  .of(context)
+                                  .primaryColor),
                         ),
                       ),
                   ],
@@ -79,19 +90,36 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                 child: Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 3, 0),
                   child: DropdownButton(
-                    dropdownColor: Theme.of(context).primaryColor,
-                    focusColor: Theme.of(context).scaffoldBackgroundColor,
+                    dropdownColor: Theme
+                        .of(context)
+                        .primaryColor,
+                    focusColor: Theme
+                        .of(context)
+                        .scaffoldBackgroundColor,
                     underline: Container(),
                     icon: Icon(
                       Icons.reorder,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme
+                          .of(context)
+                          .primaryColor,
                     ),
                     elevation: 0,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).scaffoldBackgroundColor),
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(
+                        color: Theme
+                            .of(context)
+                            .scaffoldBackgroundColor),
                     items: [
-                      if (OrdersHomeCubit.get(context).currentAdmin != null &&
-                          OrdersHomeCubit.get(context).currentAdmin!.addCat)
+                      if (OrdersHomeCubit
+                          .get(context)
+                          .currentAdmin != null &&
+                          OrdersHomeCubit
+                              .get(context)
+                              .currentAdmin!
+                              .addCat)
                         DropdownMenuItem(
                           value: "money",
                           child: InkWell(
@@ -132,8 +160,11 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                           ),
                         ),
                       ),
-                      if (OrdersHomeCubit.get(context).currentAdmin != null &&
-                          OrdersHomeCubit.get(context)
+                      if (OrdersHomeCubit
+                          .get(context)
+                          .currentAdmin != null &&
+                          OrdersHomeCubit
+                              .get(context)
                               .currentAdmin!
                               .showCategories)
                         DropdownMenuItem(
@@ -150,8 +181,13 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             ),
                           ),
                         ),
-                      if (OrdersHomeCubit.get(context).currentAdmin != null &&
-                          OrdersHomeCubit.get(context).currentAdmin!.showOrders)
+                      if (OrdersHomeCubit
+                          .get(context)
+                          .currentAdmin != null &&
+                          OrdersHomeCubit
+                              .get(context)
+                              .currentAdmin!
+                              .showOrders)
                         DropdownMenuItem(
                           value: "copy",
                           child: InkWell(
@@ -165,6 +201,19 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             ),
                           ),
                         ),
+                      DropdownMenuItem(
+                        value: "copy",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(context,ChargingOrdersScreen());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
+                            child: Text("Charging Orders".tr()),
+                          ),
+                        ),
+                      ),
                       DropdownMenuItem(
                         value: "today",
                         child: InkWell(
@@ -197,8 +246,13 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                           ),
                         ),
                       ),
-                      if (OrdersHomeCubit.get(context).currentAdmin != null &&
-                          OrdersHomeCubit.get(context).currentAdmin!.email ==
+                      if (OrdersHomeCubit
+                          .get(context)
+                          .currentAdmin != null &&
+                          OrdersHomeCubit
+                              .get(context)
+                              .currentAdmin!
+                              .email ==
                               'abanobshokry9@gamil.com')
                         DropdownMenuItem(
                           value: "permission",
@@ -213,8 +267,13 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             ),
                           ),
                         ),
-                      if (OrdersHomeCubit.get(context).currentAdmin != null &&
-                          OrdersHomeCubit.get(context).currentAdmin!.email ==
+                      if (OrdersHomeCubit
+                          .get(context)
+                          .currentAdmin != null &&
+                          OrdersHomeCubit
+                              .get(context)
+                              .currentAdmin!
+                              .email ==
                               'abanobshokry9@gamil.com')
                         DropdownMenuItem(
                           value: "add Admin",
@@ -304,14 +363,19 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                   icon: Text(
                     "States".tr(),
                     style: TextStyle(
-                        color: Theme.of(context).primaryColor,
+                        color: Theme
+                            .of(context)
+                            .primaryColor,
                         fontSize: 9,
                         fontWeight: FontWeight.normal),
                   )),
             ],
           ),
-          body: OrdersHomeCubit.get(context)
-              .screens[OrdersHomeCubit.get(context).currentIndex],
+          body: OrdersHomeCubit
+              .get(context)
+              .screens[OrdersHomeCubit
+              .get(context)
+              .currentIndex],
           bottomNavigationBar: BottomNavigationBar(
             items: [
               BottomNavigationBarItem(
@@ -321,7 +385,9 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
               BottomNavigationBarItem(
                   icon: const Icon(Icons.search), label: 'Search By Date'.tr()),
             ],
-            currentIndex: OrdersHomeCubit.get(context).currentIndex,
+            currentIndex: OrdersHomeCubit
+                .get(context)
+                .currentIndex,
             type: BottomNavigationBarType.fixed,
             onTap: (idx) {
               OrdersHomeCubit.get(context).changeNav(idx);
@@ -331,7 +397,8 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
       },
     );
   }
-  void createExcelSheet()async {
+
+  void createExcelSheet() async {
     excel.Workbook workbook = excel.Workbook();
     excel.Worksheet sheet = workbook.worksheets[0];
     sheet.getRangeByIndex(1, 1).setText("Consignee_Name");
@@ -352,33 +419,74 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
     sheet.getRangeByIndex(1, 16).setText("notes");
 
     for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
-      sheet.getRangeByIndex(i + 2, 1).setText(OrdersHomeCubit.get(context).orders[i].orderName);
-      sheet.getRangeByIndex(i + 2, 2).setText(OrdersHomeCubit.get(context).orders[i].conservation);
-      sheet.getRangeByIndex(i + 2, 3).setText(OrdersHomeCubit.get(context).orders[i].city);
-      sheet.getRangeByIndex(i + 2, 4).setText(OrdersHomeCubit.get(context).orders[i].address);
-      sheet.getRangeByIndex(i + 2, 5).setText(OrdersHomeCubit.get(context).orders[i].orderPhone);
-      sheet.getRangeByIndex(i + 2, 6).setText(OrdersHomeCubit.get(context).orders[i].employerName);
+        OrdersHomeCubit.get(context).updateOrder(
+          orderName: OrdersHomeCubit.get(context).orders[i].orderName,
+          charging: true,
+          conservation: OrdersHomeCubit.get(context).orders[i].conservation,
+          city: OrdersHomeCubit.get(context).orders[i].city,
+          address: OrdersHomeCubit.get(context).orders[i].address,
+          waiting: OrdersHomeCubit.get(context).orders[i].waiting,
+          confirm: OrdersHomeCubit.get(context).orders[i].confirm,
+          type: OrdersHomeCubit.get(context).orders[i].type,
+          barCode: OrdersHomeCubit.get(context).orders[i].barCode,
+          employerName: OrdersHomeCubit.get(context).orders[i].employerName,
+          employerPhone: OrdersHomeCubit.get(context).orders[i].employerPhone,
+          employerEmail: OrdersHomeCubit.get(context).orders[i].employerEmail,
+          orderPhone: OrdersHomeCubit.get(context).orders[i].orderPhone,
+          serviceType: OrdersHomeCubit.get(context).orders[i].serviceType,
+          notes: OrdersHomeCubit.get(context).orders[i].notes,
+          date: OrdersHomeCubit.get(context).orders[i].date,
+          number: OrdersHomeCubit.get(context).orders[i].number,
+          price: OrdersHomeCubit.get(context).orders[i].price,
+          totalPrice: OrdersHomeCubit.get(context).orders[i].totalPrice,
+          salOfCharging: OrdersHomeCubit.get(context).orders[i].salOfCharging,
+          context: context);
+      sheet.getRangeByIndex(i + 2, 1).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].orderName);
+      sheet.getRangeByIndex(i + 2, 2).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].conservation);
+      sheet.getRangeByIndex(i + 2, 3).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].city);
+      sheet.getRangeByIndex(i + 2, 4).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].address);
+      sheet.getRangeByIndex(i + 2, 5).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].orderPhone);
+      sheet.getRangeByIndex(i + 2, 6).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].employerName);
       sheet.getRangeByIndex(i + 2, 7).setValue("");
       sheet.getRangeByIndex(i + 2, 8).setText(" ");
       sheet.getRangeByIndex(i + 2, 9).setText(" ");
-      sheet.getRangeByIndex(i + 2, 10).setText(OrdersHomeCubit.get(context).orders[i].type);
+      sheet.getRangeByIndex(i + 2, 10).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].type);
       sheet.getRangeByIndex(i + 2, 11).setText(" ");
-      sheet.getRangeByIndex(i + 2, 12).setNumber(OrdersHomeCubit.get(context).orders[i].totalPrice);
+      sheet.getRangeByIndex(i + 2, 12).setNumber(OrdersHomeCubit
+          .get(context)
+          .orders[i].totalPrice);
       sheet.getRangeByIndex(i + 2, 13).setText(" ");
       sheet.getRangeByIndex(i + 2, 14).setText(" ");
-      sheet.getRangeByIndex(i + 2, 15).setText(OrdersHomeCubit.get(context).orders[i].serviceType);
-      sheet.getRangeByIndex(i + 2, 16).setText(OrdersHomeCubit.get(context).orders[i].notes);
+      sheet.getRangeByIndex(i + 2, 15).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].serviceType);
+      sheet.getRangeByIndex(i + 2, 16).setText(OrdersHomeCubit
+          .get(context)
+          .orders[i].notes);
     }
     //save
     final List<int>bytes = workbook.saveAsStream();
     ///File('orders.xlsx').writeAsBytes(bytes);
     await workbook.save();
     workbook.dispose();
-    final String path=(await getApplicationCacheDirectory()).path;
-    final String fileName='$path/orders.xlsx';
-    final File file=File(fileName);
-    await file.writeAsBytes(bytes,flush: true);
+    final String path = (await getApplicationCacheDirectory()).path;
+    final String fileName = '$path/orders.xlsx';
+    final File file = File(fileName);
+    await file.writeAsBytes(bytes, flush: true,);
     OpenFile.open(fileName);
-    //Share.share(fileName);
   }
 }

@@ -25,22 +25,22 @@ class _FilterOrdersScreenState extends State<FilterOrdersScreen> {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
-        return Padding(
-          padding:
-          const EdgeInsetsDirectional.symmetric(horizontal: 3, vertical: 5),
-          child: ConditionalBuilder(
-            condition: OrdersHomeCubit.get(context).orders.isNotEmpty,
-            builder: (ctx) => Expanded(
-              child: ListView.separated(
-                itemBuilder: (ctx, idx) {
-                  return listItem(OrdersHomeCubit.get(context).userFilterOrders[idx], ctx);
-                },
-                itemCount: OrdersHomeCubit.get(context).orders.length,
-                separatorBuilder: (ctx, idx) => mySeparator(context),
-              ),
-            ),
-            fallback: (ctx) => const Center(child:CircularProgressIndicator()) ),
-          );
+        return Scaffold(
+          body: SafeArea(child: Padding(
+            padding:
+            const EdgeInsetsDirectional.symmetric(horizontal: 3, vertical: 5),
+            child: ConditionalBuilder(
+                condition: OrdersHomeCubit.get(context).userFilterOrders.isNotEmpty,
+                builder: (ctx) => ListView.separated(
+                  itemBuilder: (ctx, idx) {
+                    return listItem(OrdersHomeCubit.get(context).userFilterOrders[idx], ctx);
+                  },
+                  itemCount: OrdersHomeCubit.get(context).userFilterOrders.length,
+                  separatorBuilder: (ctx, idx) => mySeparator(context),
+                ),
+                fallback: (ctx) => Center(child:Text("Not Found Order".tr())) ),
+          )),
+        );
       },
     );
   }
@@ -50,7 +50,8 @@ class _FilterOrdersScreenState extends State<FilterOrdersScreen> {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Wrap(
-          children: [Column(
+          children: [
+            Column(
             children: [
               Text(userOrders.name,maxLines: 100,),
               const SizedBox(

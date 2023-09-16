@@ -23,6 +23,8 @@
   "Waiting": "غير مؤكد",
   "Pleaser Entre Your Choice": "من فضلك ادخل اختيارك",
   "Source": "المورد",
+  "number orders": "عدد الطلبات",
+  "last order": "تاريخ اخر طلب",
   "Number Of All Orders: ": "عدد كل الطلبات: ",
   "Number Of Today Orders: ": "عدد طلبات اليوم: ",
   "Please Enter Source": "من فضلك ادخل المورد",
@@ -156,5 +158,8 @@
   "Select State": "اختار المحافظة",
   "Select City": "اختار المدينة",
   "Select Service": "اختار نوع الخدمة",
-  "Notes": "ملاحظات"
+  "Notes": "ملاحظات",
+  "Not Found Order": "لا يوجد طلبات حتى الان",
+  "Update": "تحديث",
+  "Charging Orders": "جاري الشحن"
 }
