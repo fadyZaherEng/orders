@@ -15,11 +15,7 @@ class FilterOrdersScreen extends StatefulWidget {
 }
 
 class _FilterOrdersScreenState extends State<FilterOrdersScreen> {
-  @override
-  void initState() {
-    super.initState();
-    OrdersHomeCubit.get(context).userOrdersFilter();
-  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
@@ -33,7 +29,7 @@ class _FilterOrdersScreenState extends State<FilterOrdersScreen> {
                 condition: OrdersHomeCubit.get(context).userFilterOrders.isNotEmpty,
                 builder: (ctx) => ListView.separated(
                   itemBuilder: (ctx, idx) {
-                    return listItem(OrdersHomeCubit.get(context).userFilterOrders[idx], ctx);
+                    return listItem(OrdersHomeCubit.get(context).userFilterOrders.elementAt(idx), ctx);
                   },
                   itemCount: OrdersHomeCubit.get(context).userFilterOrders.length,
                   separatorBuilder: (ctx, idx) => mySeparator(context),

@@ -4,25 +4,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
+import 'package:orders/modules/admin_remove/remove_cat/remove_cat.dart';
+import 'package:orders/modules/admin_remove/remove_import/remove_import.dart';
+import 'package:orders/modules/admin_remove/remove_money/remove_money.dart';
+import 'package:orders/modules/admin_remove/remove_page/remove_page.dart';
+import 'package:orders/modules/admin_remove/remove_user/remove_user.dart';
+import 'package:orders/modules/admin_screen/add%20papers/papers.dart';
 import 'package:orders/modules/admin_screen/add_admins/add_admin.dart';
 import 'package:orders/modules/admin_screen/add_cat/add_cat.dart';
 import 'package:orders/modules/admin_screen/add_city/city.dart';
+import 'package:orders/modules/admin_screen/add_source/source.dart';
 import 'package:orders/modules/admin_screen/add_states/states.dart';
 import 'package:orders/modules/admin_screen/change_password/pass.dart';
-import 'package:orders/modules/admin_screen/charging_orders/charging.dart';
+import 'package:orders/modules/admin_screen/edit_status/edit.dart';
 import 'package:orders/modules/admin_screen/filter_order/filter.dart';
 import 'package:orders/modules/admin_screen/gain/gain.dart';
 import 'package:orders/modules/admin_screen/get_cat/cat.dart';
 import 'package:orders/modules/admin_screen/money/money.dart';
 import 'package:orders/modules/admin_screen/permission/permission.dart';
 import 'package:orders/modules/admin_screen/search_using_barcode/scan.dart';
+import 'package:orders/modules/admin_screen/showPapers/papers.dart';
+import 'package:orders/modules/admin_screen/users/permision.dart';
+import 'package:orders/modules/admin_screen/users_block/user.dart';
+import 'package:orders/modules/admin_screen/work/work.dart';
 import 'package:orders/modules/login/login.dart';
+import 'package:orders/modules/search_phone/search.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
-import 'dart:io';
-import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
-import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
+
 //checked
 class AdminShowOrders extends StatefulWidget {
   const AdminShowOrders({super.key});
@@ -45,41 +54,145 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
       builder: (ctx, state) {
         return Scaffold(
           appBar: AppBar(
-            title: SingleChildScrollView(
+            automaticallyImplyLeading: false,
+            title: OrdersHomeCubit.get(context).currentIndex == 0
+                ? SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Row(
+                        children: [
+                          if (OrdersHomeCubit.get(context).currentIndex == 0)
+                            Text(
+                              "Total Price: ".tr(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 12,
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                          if (OrdersHomeCubit.get(context).currentIndex == 0)
+                            Text(
+                              OrdersHomeCubit.get(context)
+                                  .totalOfAllOrders
+                                  .toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          if (OrdersHomeCubit.get(context).currentIndex == 0)
+                            Text(
+                              "Total Number: ".tr(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 12,
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                          if (OrdersHomeCubit.get(context).currentIndex == 0)
+                            Text(
+                              OrdersHomeCubit.get(context)
+                                  .orders
+                                  .length
+                                  .toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                        ],
+                      ),
+                    ),
+                  )
+                : OrdersHomeCubit.get(context).currentIndex == 1
+                    ? SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Row(
+                            children: [
+                              Text(
+                                "Total Price: ".tr(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 12,
+                                    color: Theme.of(context).primaryColor),
+                              ),
+                              Text(
+                                OrdersHomeCubit.get(context)
+                                    .todayOrdersPrice
+                                    .toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: Theme.of(context).primaryColor),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "Total Number: ".tr(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 12,
+                                    color: Theme.of(context).primaryColor),
+                              ),
+                              Text(
+                                OrdersHomeCubit.get(context)
+                                    .todayOrdersNumber
+                                    .toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: Theme.of(context).primaryColor),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Padding(
                 padding: const EdgeInsets.all(2.0),
                 child: Row(
                   children: [
-                    if (OrdersHomeCubit
-                        .get(context)
-                        .currentIndex == 0)
-                      Text(
-                        "Total Price: ".tr(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 12,
-                            color: Theme
-                                .of(context)
-                                .primaryColor),
-                      ),
-                    if (OrdersHomeCubit
-                        .get(context)
-                        .currentIndex == 0)
-                      SingleChildScrollView(
-                        child: Text(
-                          OrdersHomeCubit
-                              .get(context)
-                              .totalOfAllOrders
-                              .toString(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Theme
-                                  .of(context)
-                                  .primaryColor),
-                        ),
-                      ),
+                    Text(
+                      "Total Price: ".tr(),
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 12,
+                          color: Theme.of(context).primaryColor),
+                    ),
+                    Text(
+                      OrdersHomeCubit.get(context)
+                          .priceSearchOrdersDate
+                          .toString(),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Theme.of(context).primaryColor),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "Total Number: ".tr(),
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 12,
+                          color: Theme.of(context).primaryColor),
+                    ),
+                    Text(
+                      OrdersHomeCubit.get(context)
+                          .numSearchOrdersDate
+                          .toString(),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Theme.of(context).primaryColor),
+                    ),
                   ],
                 ),
               ),
@@ -88,38 +201,21 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
             actions: [
               Center(
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 3, 0),
+                  padding: const EdgeInsets.only(left: 4.0),
                   child: DropdownButton(
-                    dropdownColor: Theme
-                        .of(context)
-                        .primaryColor,
-                    focusColor: Theme
-                        .of(context)
-                        .scaffoldBackgroundColor,
+                    dropdownColor: Theme.of(context).primaryColor,
+                    focusColor: Theme.of(context).scaffoldBackgroundColor,
                     underline: Container(),
                     icon: Icon(
                       Icons.reorder,
-                      color: Theme
-                          .of(context)
-                          .primaryColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                     elevation: 0,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(
-                        color: Theme
-                            .of(context)
-                            .scaffoldBackgroundColor),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).scaffoldBackgroundColor),
                     items: [
-                      if (OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin != null &&
-                          OrdersHomeCubit
-                              .get(context)
-                              .currentAdmin!
-                              .addCat)
+                      // if (OrdersHomeCubit.get(context).currentAdmin != null &&
+                      //     OrdersHomeCubit.get(context).currentAdmin!.addCat)
                         DropdownMenuItem(
                           value: "money",
                           child: InkWell(
@@ -127,12 +223,67 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               Navigator.pop(context);
                               navigateToWithReturn(context, MoneyScreen());
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 5, bottom: 5),
-                              child: Text("Add Money".tr()),
-                            ),
+                            child: Text("Add Money".tr()),
                           ),
                         ),
+                      DropdownMenuItem(
+                        value: "block",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(context, const UserBlockScreen());
+                          },
+                          child: Text("Block User".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "source",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(context, const AddSourceScreen());
+                          },
+                          child: Text("Add Source".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "get source",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(context, const ShowSourceScreen());
+                          },
+                          child: Text("Show Source".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "لل",
+                        child: TextButton(
+                          onPressed: () {
+                            navigateToWithReturn(context, AddCityScreen());
+                          },
+                          child:  Text(
+                            "Add City".tr(),
+                            style: TextStyle(
+                                color: Theme.of(context).scaffoldBackgroundColor,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "kjh",
+                        child: TextButton(
+                          onPressed: () {
+                            navigateToWithReturn(context, AddStatesScreen());
+                          },
+                          child: Text(
+                            "States".tr(),
+                            style: TextStyle(
+                                color: Theme.of(context).scaffoldBackgroundColor,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
                       DropdownMenuItem(
                         value: "gain",
                         child: InkWell(
@@ -140,10 +291,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             Navigator.pop(context);
                             navigateToWithReturn(context, const GainScreen());
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text("Calculate The Gain".tr()),
-                          ),
+                          child: Text("Calculate The Gain".tr()),
                         ),
                       ),
                       DropdownMenuItem(
@@ -154,80 +302,71 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             navigateToWithReturn(
                                 context, const AddCategoryScreen());
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text("Add Category".tr()),
-                          ),
+                          child: Text("Add Category".tr()),
                         ),
                       ),
-                      if (OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin != null &&
-                          OrdersHomeCubit
-                              .get(context)
-                              .currentAdmin!
-                              .showCategories)
+                      DropdownMenuItem(
+                        value: "admin",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                                context, UserPermissionScreen());
+                          },
+                          child: Text("User Permission".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "edit",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(context, EditOrdersScreen());
+                          },
+                          child: Text("Edit Status".tr()),
+                        ),
+                      ),
+                      // if (OrdersHomeCubit.get(context).currentAdmin != null &&
+                      //     OrdersHomeCubit.get(context)
+                      //         .currentAdmin!
+                      //         .showCategories)
                         DropdownMenuItem(
                           value: "Show get",
                           child: InkWell(
                             onTap: () {
                               Navigator.pop(context);
                               navigateToWithReturn(
-                                  context, ShowCategoriesScreen());
+                                  context, const ShowCategoriesScreen());
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 5, bottom: 5),
-                              child: Text("Show Categories".tr()),
-                            ),
+                            child: Text("Show Categories".tr()),
                           ),
                         ),
-                      if (OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin != null &&
-                          OrdersHomeCubit
-                              .get(context)
-                              .currentAdmin!
-                              .showOrders)
+                      // if (OrdersHomeCubit.get(context).currentAdmin != null &&
+                      //     OrdersHomeCubit.get(context).currentAdmin!.showOrders)
                         DropdownMenuItem(
-                          value: "copy",
+                          value: "today",
                           child: InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              createExcelSheet();
+                              navigateToWithReturn(
+                                context,
+                                const ScannerScreen(),
+                              );
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 5, bottom: 5),
-                              child: Text("Share Orders".tr()),
-                            ),
+                            child: Text('Search By Barcode'.tr()),
                           ),
                         ),
                       DropdownMenuItem(
-                        value: "copy",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            navigateToWithReturn(context,ChargingOrdersScreen());
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text("Charging Orders".tr()),
-                          ),
-                        ),
-                      ),
-                      DropdownMenuItem(
-                        value: "today",
+                        value: "phone",
                         child: InkWell(
                           onTap: () {
                             Navigator.pop(context);
                             navigateToWithReturn(
                               context,
-                              const ScannerScreen(),
+                              SearchOrderPhoneScreen(),
                             );
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text('Search By Barcode'.tr()),
-                          ),
+                          child: Text("Search Phone".tr()),
                         ),
                       ),
                       DropdownMenuItem(
@@ -240,54 +379,50 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                               const FilterOrdersScreen(),
                             );
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text('Filter Order'.tr()),
-                          ),
+                          child: Text('Filter Order'.tr()),
                         ),
                       ),
-                      if (OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin != null &&
-                          OrdersHomeCubit
-                              .get(context)
-                              .currentAdmin!
-                              .email ==
-                              'abanobshokry9@gamil.com')
-                        DropdownMenuItem(
-                          value: "permission",
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              navigateToWithReturn(context, PermissionScreen());
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 5, bottom: 5),
-                              child: Text("Permission".tr()),
-                            ),
-                          ),
+                      // DropdownMenuItem(
+                      //   value: "permission",
+                      //   child: InkWell(
+                      //     onTap: () {
+                      //       Navigator.pop(context);
+                      //       navigateToWithReturn(context, PermissionScreen());
+                      //     },
+                      //     child: Text("Permission".tr()),
+                      //   ),
+                      // ),
+                      DropdownMenuItem(
+                        value: "add Page",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(context, AddPapersScreen());
+                          },
+                          child: Text("Add Page".tr()),
                         ),
-                      if (OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin != null &&
-                          OrdersHomeCubit
-                              .get(context)
-                              .currentAdmin!
-                              .email ==
-                              'abanobshokry9@gamil.com')
-                        DropdownMenuItem(
-                          value: "add Admin",
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              navigateToWithReturn(context, AddAdminScreen());
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 5, bottom: 5),
-                              child: Text("Add Admin".tr()),
-                            ),
-                          ),
+                      ),
+                      DropdownMenuItem(
+                        value: "get Page",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                                context, const ShowPapersDetailsScreen());
+                          },
+                          child: Text("Show Pages".tr()),
                         ),
+                      ),
+                      DropdownMenuItem(
+                        value: "add Admin",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(context, AddAdminScreen());
+                          },
+                          child: Text("Add Admin".tr()),
+                        ),
+                      ),
                       DropdownMenuItem(
                         value: "settings",
                         child: InkWell(
@@ -296,10 +431,84 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             navigateToWithReturn(
                                 context, ChangeAdminPasswordScreen());
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text("Change Password".tr()),
-                          ),
+                          child: Text("Change Password".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "removeCat",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                                context, RemoveCategoriesScreen());
+                          },
+                          child: Text("Remove Category".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "removeIm",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                                context, RemoveImportsScreen());
+                          },
+                          child: Text("Remove Imports".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "removeMoney",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                                context, RemoveMoneyScreen());
+                          },
+                          child: Text("Remove Money".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "removeO",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    content: InkWell(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        OrdersHomeCubit.get(context).removeAllOrders();
+                                      },
+                                      child: Text("Remove All Orders".tr()),
+                                    ),
+                                  );
+                                });
+                          },
+                          child: Text("Remove All Orders".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "removePage",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                                context, RemovePageScreen());
+                          },
+                          child: Text("Remove Pages".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "removeUser",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                                context, RemoveUserScreen());
+                          },
+                          child: Text("Remove Users".tr()),
                         ),
                       ),
                       DropdownMenuItem(
@@ -309,10 +518,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             Navigator.pop(context);
                             OrdersHomeCubit.get(context).modeChange();
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text("Change Theme".tr()),
-                          ),
+                          child: Text("Change Theme".tr()),
                         ),
                       ),
                       DropdownMenuItem(
@@ -322,10 +528,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             Navigator.pop(context);
                             OrdersHomeCubit.get(context).langChange(context);
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text("Change lang".tr()),
-                          ),
+                          child: Text("Change lang".tr()),
                         ),
                       ),
                       DropdownMenuItem(
@@ -337,10 +540,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             SharedHelper.remove(key: 'uid');
                             navigateToWithoutReturn(context, LogInScreen());
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Text("Log Out".tr()),
-                          ),
+                          child: Text("Log Out".tr()),
                         ),
                       ),
                     ],
@@ -348,34 +548,10 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                   ),
                 ),
               ),
-              IconButton(
-                  onPressed: () {
-                    navigateToWithReturn(context, AddCityScreen());
-                  },
-                  icon: const Icon(
-                    Icons.location_city,
-                    size: 20,
-                  )),
-              IconButton(
-                  onPressed: () {
-                    navigateToWithReturn(context, AddStatesScreen());
-                  },
-                  icon: Text(
-                    "States".tr(),
-                    style: TextStyle(
-                        color: Theme
-                            .of(context)
-                            .primaryColor,
-                        fontSize: 9,
-                        fontWeight: FontWeight.normal),
-                  )),
             ],
           ),
-          body: OrdersHomeCubit
-              .get(context)
-              .screens[OrdersHomeCubit
-              .get(context)
-              .currentIndex],
+          body: OrdersHomeCubit.get(context)
+              .screens[OrdersHomeCubit.get(context).currentIndex],
           bottomNavigationBar: BottomNavigationBar(
             items: [
               BottomNavigationBarItem(
@@ -385,9 +561,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
               BottomNavigationBarItem(
                   icon: const Icon(Icons.search), label: 'Search By Date'.tr()),
             ],
-            currentIndex: OrdersHomeCubit
-                .get(context)
-                .currentIndex,
+            currentIndex: OrdersHomeCubit.get(context).currentIndex,
             type: BottomNavigationBarType.fixed,
             onTap: (idx) {
               OrdersHomeCubit.get(context).changeNav(idx);
@@ -396,97 +570,5 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
         );
       },
     );
-  }
-
-  void createExcelSheet() async {
-    excel.Workbook workbook = excel.Workbook();
-    excel.Worksheet sheet = workbook.worksheets[0];
-    sheet.getRangeByIndex(1, 1).setText("Consignee_Name");
-    sheet.getRangeByIndex(1, 2).setText("City");
-    sheet.getRangeByIndex(1, 3).setText("Area");
-    sheet.getRangeByIndex(1, 4).setText("Address");
-    sheet.getRangeByIndex(1, 5).setText("Phone_1");
-    sheet.getRangeByIndex(1, 6).setText("Employee_Name");
-    sheet.getRangeByIndex(1, 7).setText("Number");
-    sheet.getRangeByIndex(1, 8).setText("Once");
-    sheet.getRangeByIndex(1, 9).setText("Cell");
-    sheet.getRangeByIndex(1, 10).setText("Item_Name");
-    sheet.getRangeByIndex(1, 11).setText("Item_Description");
-    sheet.getRangeByIndex(1, 12).setText("COD");
-    sheet.getRangeByIndex(1, 13).setText("Weight");
-    sheet.getRangeByIndex(1, 14).setText("Size");
-    sheet.getRangeByIndex(1, 15).setText("Service_Type");
-    sheet.getRangeByIndex(1, 16).setText("notes");
-
-    for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
-        OrdersHomeCubit.get(context).updateOrder(
-          orderName: OrdersHomeCubit.get(context).orders[i].orderName,
-          charging: true,
-          conservation: OrdersHomeCubit.get(context).orders[i].conservation,
-          city: OrdersHomeCubit.get(context).orders[i].city,
-          address: OrdersHomeCubit.get(context).orders[i].address,
-          waiting: OrdersHomeCubit.get(context).orders[i].waiting,
-          confirm: OrdersHomeCubit.get(context).orders[i].confirm,
-          type: OrdersHomeCubit.get(context).orders[i].type,
-          barCode: OrdersHomeCubit.get(context).orders[i].barCode,
-          employerName: OrdersHomeCubit.get(context).orders[i].employerName,
-          employerPhone: OrdersHomeCubit.get(context).orders[i].employerPhone,
-          employerEmail: OrdersHomeCubit.get(context).orders[i].employerEmail,
-          orderPhone: OrdersHomeCubit.get(context).orders[i].orderPhone,
-          serviceType: OrdersHomeCubit.get(context).orders[i].serviceType,
-          notes: OrdersHomeCubit.get(context).orders[i].notes,
-          date: OrdersHomeCubit.get(context).orders[i].date,
-          number: OrdersHomeCubit.get(context).orders[i].number,
-          price: OrdersHomeCubit.get(context).orders[i].price,
-          totalPrice: OrdersHomeCubit.get(context).orders[i].totalPrice,
-          salOfCharging: OrdersHomeCubit.get(context).orders[i].salOfCharging,
-          context: context);
-      sheet.getRangeByIndex(i + 2, 1).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].orderName);
-      sheet.getRangeByIndex(i + 2, 2).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].conservation);
-      sheet.getRangeByIndex(i + 2, 3).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].city);
-      sheet.getRangeByIndex(i + 2, 4).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].address);
-      sheet.getRangeByIndex(i + 2, 5).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].orderPhone);
-      sheet.getRangeByIndex(i + 2, 6).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].employerName);
-      sheet.getRangeByIndex(i + 2, 7).setValue("");
-      sheet.getRangeByIndex(i + 2, 8).setText(" ");
-      sheet.getRangeByIndex(i + 2, 9).setText(" ");
-      sheet.getRangeByIndex(i + 2, 10).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].type);
-      sheet.getRangeByIndex(i + 2, 11).setText(" ");
-      sheet.getRangeByIndex(i + 2, 12).setNumber(OrdersHomeCubit
-          .get(context)
-          .orders[i].totalPrice);
-      sheet.getRangeByIndex(i + 2, 13).setText(" ");
-      sheet.getRangeByIndex(i + 2, 14).setText(" ");
-      sheet.getRangeByIndex(i + 2, 15).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].serviceType);
-      sheet.getRangeByIndex(i + 2, 16).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].notes);
-    }
-    //save
-    final List<int>bytes = workbook.saveAsStream();
-    ///File('orders.xlsx').writeAsBytes(bytes);
-    await workbook.save();
-    workbook.dispose();
-    final String path = (await getApplicationCacheDirectory()).path;
-    final String fileName = '$path/orders.xlsx';
-    final File file = File(fileName);
-    await file.writeAsBytes(bytes, flush: true,);
-    OpenFile.open(fileName);
   }
 }

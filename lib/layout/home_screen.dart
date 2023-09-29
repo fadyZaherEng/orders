@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print, deprecated_member_use
 
-import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +11,7 @@ import 'package:orders/modules/login/login.dart';
 import 'package:orders/modules/search_phone/search.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
+
 //checked
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     OrdersHomeCubit.get(context).getUserProfile();
-    OrdersHomeCubit.get(context).getTodayTotalTodayOrdersOfCurrentEmp();
     OrdersHomeCubit.get(context).getTotalAllOrdersOfCurrentEmp();
     priceController.addListener(() {
       p = priceController.text != "" ? double.parse(priceController.text) : 0;
@@ -54,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // });
     // WidgetsBinding.instance.addObserver(this);
   }
+
   //
   // @override
   // void dispose() {
@@ -103,9 +103,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   //   }
   // }
 
-  List<String> serviceType = ['تسليم وتحصيل', 'جلب مرتجعات', 'استبدال'];
-  var service = "Select Service".tr();
-  var city = "Select City".tr();
   var nameClientController = TextEditingController();
   var notesController = TextEditingController();
   var addressClientController = TextEditingController();
@@ -114,12 +111,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   var priceController = TextEditingController();
   var phoneClientController = TextEditingController();
   var salOfChargingController = TextEditingController();
+  var city = "Select City".tr();
+  var paper = "Select Paper".tr();
   String stateValue = "Select State".tr();
+  String statusValue = "Select Status".tr();
   String catSelected = "Select".tr();
   int quantityForMultiCats = 0;
   double totalPrice = 0;
   String radioSelected = "";
   var formKey = GlobalKey<FormState>();
+  List<String> serviceType = ['تسليم وتحصيل', 'جلب مرتجعات', 'استبدال'];
+  var service = "Select Service".tr();
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             Navigator.pop(context);
                             navigateToWithReturn(
                               context,
-                               EmployerTodayOrdersScreen(),
+                              EmployerTodayOrdersScreen(),
                             );
                           },
                           child: Padding(
@@ -211,19 +213,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         ),
                       ),
-                      DropdownMenuItem(
-                        value: "tod",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                                '${"today num".tr()} ${OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmp}'),
+                      if (OrdersHomeCubit.get(context)
+                              .totalTodayOrdersOfCurrentEmp !=
+                          0)
+                        DropdownMenuItem(
+                          value: "tod",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                  '${"today num".tr()} ${OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmp}'),
+                            ),
                           ),
                         ),
-                      ),
                       DropdownMenuItem(
                         value: "theme",
                         child: InkWell(
@@ -297,17 +302,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     TextFormField(
                       controller: phoneClientController,
                       decoration: InputDecoration(
-                        errorText: state is OrdersHomeValidtePhoneOrderStates?state.validate:null,
+                        errorText: state is OrdersHomeValidtePhoneOrderStates
+                            ? state.validate
+                            : null,
                         prefixIcon: const Icon(Icons.search),
-                        label: Text( "Client Phone".tr()),
+                        label: Text("Client Phone".tr()),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                              color: Colors.grey.withOpacity(0.25)
-                          ),
+                          borderSide:
+                              BorderSide(color: Colors.grey.withOpacity(0.25)),
                         ),
                       ),
                       style: Theme.of(context).textTheme.bodyText2,
@@ -318,11 +324,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         return null;
                       },
                       keyboardType: TextInputType.phone,
-                      onChanged: (phone){
-                        OrdersHomeCubit.get(context).validateOrdersByPhone(phone);
+                      onChanged: (phone) {
+                        OrdersHomeCubit.get(context)
+                            .validateOrdersByPhone(phone);
                       },
-                      onFieldSubmitted: (phone){
-                        OrdersHomeCubit.get(context).validateOrdersByPhone(phone);
+                      onFieldSubmitted: (phone) {
+                        OrdersHomeCubit.get(context)
+                            .validateOrdersByPhone(phone);
                       },
                     ),
                     const SizedBox(
@@ -378,108 +386,163 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(
                       height: 10,
                     ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DropdownButton(
+                          dropdownColor: Theme.of(context).primaryColor,
+                          focusColor: Theme.of(context).scaffoldBackgroundColor,
+                          underline: Container(),
+                          hint: Text(statusValue),
+                          icon: Icon(
+                            Icons.medical_services_sharp,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          elevation: 0,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  color: Theme.of(context)
+                                      .scaffoldBackgroundColor),
+                          items: OrdersHomeCubit.get(context)
+                              .status
+                              .map(
+                                (e) => DropdownMenuItem(
+                                  value: e,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      statusValue = e;
+                                      setState(() {});
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text(e),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              statusValue = val;
+                              setState(() {});
+                            }
+                          }),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Text("Country:Egypt".tr()),
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DropdownButton(
-                              dropdownColor: Theme.of(context).primaryColor,
-                              focusColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              underline: Container(),
-                              hint: Text(stateValue),
-                              //      value: stateValue,
-                              icon: Icon(
-                                Icons.baby_changing_station,
-                                color: Theme.of(context).primaryColor,
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: MediaQuery.sizeOf(context).width*0.7,
+                        child: DropdownButton(
+                            dropdownColor: Theme.of(context).primaryColor,
+                            focusColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                            underline: Container(),
+                            hint: Text(stateValue),
+                            //      value: stateValue,
+                            icon: Icon(
+                              Icons.baby_changing_station,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            elevation: 0,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor),
+                            items: OrdersHomeCubit.get(context)
+                                .states
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                value: e.state,
+                                child: InkWell(
+                                  onTap: () {
+                                    city = "Select City".tr();
+                                    Navigator.pop(context);
+                                    stateValue = e.state;
+                                    OrdersHomeCubit.get(context)
+                                        .getCites(stateValue);
+                                    setState(() {});
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(e.state),
+                                  ),
+                                ),
                               ),
-                              elevation: 0,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .scaffoldBackgroundColor),
-                              items: OrdersHomeCubit.get(context)
-                                  .states
-                                  .map(
-                                    (e) => DropdownMenuItem(
-                                      value: e,
-                                      child: InkWell(
-                                        onTap: () {
-                                          city = "Select City".tr();
-                                          Navigator.pop(context);
-                                          stateValue = e;
-                                          OrdersHomeCubit.get(context).getCites(stateValue);
-                                          setState(() {});
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Text(e),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (val) {
-                                if (val != null) {
-                                  stateValue = val;
-                                  OrdersHomeCubit.get(context).getCites(stateValue);
-                                  setState(() {});
-                                }
-                              }),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DropdownButton(
-                              dropdownColor: Theme.of(context).primaryColor,
-                              focusColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              underline: Container(),
-                              hint: Text(city),
-                              icon: Icon(
-                                Icons.location_city,
-                                color: Theme.of(context).primaryColor,
+                            )
+                                .toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                stateValue = val;
+                                OrdersHomeCubit.get(context)
+                                    .getCites(stateValue);
+                                setState(() {});
+                              }
+                            }),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: MediaQuery.sizeOf(context).width*0.7,
+                        child: DropdownButton(
+                            dropdownColor: Theme.of(context).primaryColor,
+                            focusColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                            underline: Container(),
+                            isDense: false,
+                            // alignment: AlignmentDirectional.center,
+                            hint: Text(city),
+                            icon: Icon(
+                              Icons.location_city,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            elevation: 0,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor),
+                            items: OrdersHomeCubit.get(context)
+                                .cities
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                value: e,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    city = e;
+                                    setState(() {});
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(e),
+                                  ),
+                                ),
                               ),
-                              elevation: 0,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .scaffoldBackgroundColor),
-                              items: OrdersHomeCubit.get(context)
-                                  .cities
-                                  .map(
-                                    (e) => DropdownMenuItem(
-                                      value: e,
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          city = e;
-                                          setState(() {});
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Text(e),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (val) {
-                                if (val != null) {
-                                  city = val;
-                                  setState(() {});
-                                }
-                              }),
-                        ),
-                      ],
+                            )
+                                .toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                city = val;
+                                setState(() {});
+                              }
+                            }),
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
@@ -508,6 +571,50 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           return null;
                         },
                         type: TextInputType.text),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    DropdownButton(
+                        dropdownColor: Theme.of(context).primaryColor,
+                        focusColor: Theme.of(context).scaffoldBackgroundColor,
+                        underline: Container(),
+                        hint: Text(paper),
+                        icon: const Icon(
+                          Icons.newspaper,
+                          color: Colors.grey,
+                        ),
+                        elevation: 0,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor),
+                        items: OrdersHomeCubit.get(context)
+                            .papers
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    paper = e;
+                                    setState(() {});
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(e),
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            paper = val;
+                            setState(() {});
+                          }
+                        }),
                     const SizedBox(
                       height: 10,
                     ),
@@ -584,35 +691,54 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 }
                                 return null;
                               },
-                              type: TextInputType.text),
+                              type: TextInputType.number),
                         ],
                       ),
                     if (radioSelected == "Multi Category".tr())
-                      TextFormField(
-                        controller: catsClientController,
-                        maxLines: 1000,
-                        minLines: 1,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.category_outlined),
-                          label: Text("Categories".tr()),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                                color: Colors.grey.withOpacity(0.25)
+                      Column(
+                        children: [
+                          TextFormField(
+                            controller: catsClientController,
+                            maxLines: 1000,
+                            minLines: 1,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.category_outlined),
+                              label: Text("Categories".tr()),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                    color: Colors.grey.withOpacity(0.25)),
+                              ),
                             ),
+                            style: Theme.of(context).textTheme.bodyText2,
+                            validator: (val) {
+                              if (val.toString().isEmpty) {
+                                return "Please Enter Client Category".tr();
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.text,
                           ),
-                        ),
-                        style: Theme.of(context).textTheme.bodyText2,
-                        validator: (val) {
-                          if (val.toString().isEmpty) {
-                            return "Please Enter Client Category".tr();
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.text,
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          defaultTextForm(
+                              context: context,
+                              Controller: quantityController,
+                              prefixIcon:
+                                  const Icon(Icons.production_quantity_limits),
+                              text: "Quantity".tr(),
+                              validate: (val) {
+                                if (val.toString().isEmpty) {
+                                  return "Please Enter Quantity".tr();
+                                }
+                                return null;
+                              },
+                              type: TextInputType.number),
+                        ],
                       ),
                     const SizedBox(
                       height: 10,
@@ -667,19 +793,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           }
                           if (radioSelected == "Multi Category".tr()) {
                             cat = catsClientController.text;
-                            number = 0;
+                            number = quantityController.text != ""
+                                ? int.parse(quantityController.text)
+                                : 0;
                           }
-                          if (formKey.currentState!.validate() && OrdersHomeCubit.get(context).userProfile != null) {
+                          if (formKey.currentState!.validate() &&
+                              OrdersHomeCubit.get(context).userProfile !=
+                                  null &&
+                              paper != "Select Paper".tr()) {
                             OrdersHomeCubit.get(context).addOrders(
                                 orderName: nameClientController.text,
                                 conservation: stateValue,
+                                paper: paper,
                                 city: city,
-                                waiting: false,
                                 serviceType: service,
+                                statusOrder: statusValue,
                                 notes: notesController.text,
                                 address: addressClientController.text,
                                 type: cat,
-                                employerName: OrdersHomeCubit.get(context).userProfile!.name,
+                                employerName: OrdersHomeCubit.get(context)
+                                    .userProfile!
+                                    .name,
                                 employerPhone: OrdersHomeCubit.get(context)
                                     .userProfile!
                                     .phone,
@@ -693,7 +827,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 salOfCharging:
                                     double.parse(salOfChargingController.text),
                                 context: context);
-
                             nameClientController.text = "";
                             addressClientController.text = "";
                             notesController.text = "";

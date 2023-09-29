@@ -35,11 +35,11 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(
-        supportedLocales:const  [ Locale('en', 'US'), Locale('ar', 'SA')],
-        path: 'assets/translations', // <-- change the path of the translation files
+        supportedLocales: const [Locale('en', 'US'), Locale('ar', 'SA')],
+        path: 'assets/translations',
+        // <-- change the path of the translation files
         fallbackLocale: const Locale('ar', 'SA'),
-        child: MyApp()
-    ),
+        child: MyApp()),
   );
 }
 
@@ -50,6 +50,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool isOffline = true;
+
   @override
   void initState() {
     super.initState();
@@ -76,15 +77,24 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Phoenix(
       child: BlocProvider(
-        create: (context) => OrdersHomeCubit()..getCategories()..getAdminsProfile()..getMoney()..getStates(),
+        create: (context) => OrdersHomeCubit()
+          ..getUsers()
+          ..getCategories()
+          ..getAdminsProfile()
+          ..getMoney()
+          ..getStates()
+          ..userOrdersFilter()
+          ..getPapers()
+          ..userOrdersFilter()
+        ..getImport(),
         child: BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
           listener: (context, state) {},
           builder: (context, state) {
             return Sizer(
               builder: (a, b, c) => MaterialApp(
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: context.locale,
+                localizationsDelegates: context.localizationDelegates,
+                supportedLocales: context.supportedLocales,
+                locale: context.locale,
                 debugShowCheckedModeBanner: false,
                 darkTheme: darkTheme(),
                 theme: lightTheme(),
@@ -119,9 +129,14 @@ class _MyAppState extends State<MyApp> {
 
   Widget startScreen() {
     String? signIn = SharedHelper.get(key: 'uid');
-    if (signIn != null) {
-      return SplashScreen('home');
+    String? email = SharedHelper.get(key: 'adminEmail');
+    if (email != null) {
+      return SplashScreen("Admin");
+    } else {
+      if (signIn != null) {
+        return SplashScreen('home');
+      }
+      return SplashScreen('logIn');
     }
-    return SplashScreen('logIn');
   }
 }

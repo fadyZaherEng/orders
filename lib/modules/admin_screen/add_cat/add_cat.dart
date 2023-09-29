@@ -16,39 +16,10 @@ class AddCategoryScreen extends StatefulWidget {
 
 class _AddCategoryScreenState extends State<AddCategoryScreen> {
   var priceController = TextEditingController();
-  var salOfChargingController = TextEditingController();
   var catNameController = TextEditingController();
-  var sourceController = TextEditingController();
-  var catAmountController = TextEditingController();
-  var notesController = TextEditingController();
-  double totalPrice = 0;
-  double p = 0;
-  double s = 0;
 
   var formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-    priceController.addListener(() {
-      p = priceController.text != "" ? double.parse(priceController.text) : 0;
-      s = salOfChargingController.text != ""
-          ? double.parse(salOfChargingController.text)
-          : 0;
-      totalPrice = p + s;
-      setState(() {});
-    });
-    salOfChargingController.addListener(() {
-      print(priceController.text);
-      p = priceController.text != "" ? double.parse(priceController.text) : 0;
-      s = salOfChargingController.text != ""
-          ? double.parse(salOfChargingController.text)
-          : 0;
-      totalPrice = p + s;
-      setState(() {});
-    });
-    totalPrice = 0;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,36 +60,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     ),
                     defaultTextForm(
                         context: context,
-                        Controller: catAmountController,
-                        prefixIcon: const Icon(Icons.numbers),
-                        text: "Amount".tr(),
-                        validate: (val) {
-                          if (val.toString().isEmpty) {
-                            return "Please Enter Amount".tr();
-                          }
-                          return null;
-                        },
-                        type: TextInputType.number),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    defaultTextForm(
-                        context: context,
-                        Controller: sourceController,
-                        prefixIcon: const Icon(Icons.numbers),
-                        text: "Source".tr(),
-                        validate: (val) {
-                          if (val.toString().isEmpty) {
-                            return "Please Enter Source".tr();
-                          }
-                          return null;
-                        },
-                        type: TextInputType.text),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    defaultTextForm(
-                        context: context,
                         Controller: priceController,
                         prefixIcon: const Icon(Icons.price_check),
                         text: "Price".tr(),
@@ -129,37 +70,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           return null;
                         },
                         type: TextInputType.number),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    defaultTextForm(
-                        context: context,
-                        Controller: salOfChargingController,
-                        prefixIcon: const Icon(Icons.charging_station),
-                        text: "Charging".tr(),
-                        validate: (val) {
-                          if (val.toString().isEmpty) {
-                            return "Please Enter Charging".tr();
-                          }
-                          return null;
-                        },
-                        type: TextInputType.number),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    defaultTextForm(
-                        context: context,
-                        Controller: notesController,
-                        prefixIcon: const Icon(Icons.notes),
-                        text: "Notes".tr(),
-                        validate: (val) {
-                          return null;
-                        },
-                        type: TextInputType.text),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text("${"Total Price:".tr()} $totalPrice"),
                     const SizedBox(
                       height: 10,
                     ),
@@ -172,21 +82,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                             OrdersHomeCubit.get(context).addCategories(
                                 date: DateTime.now().toString(),
                                 catName: catNameController.text,
-                                source: sourceController.text,
-                                salOfCharging: s,
-                                notes: notesController.text,
-                                totalPrice: totalPrice,
-                                price: p,
-                                amount: catAmountController.text == ""
-                                    ? 0
-                                    : int.parse(catAmountController.text),
+                                price: double.parse(priceController.text),
                                 context: context);
                             priceController.text="";
-                            salOfChargingController.text="";
                             catNameController.text="";
-                            sourceController.text="";
-                            catAmountController.text="";
-                            notesController.text="";
                           }
                         },
                         child: Text(

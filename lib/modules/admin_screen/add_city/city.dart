@@ -61,16 +61,16 @@ class _AddCityScreenState extends State<AddCityScreen> {
                               .states
                               .map(
                                 (e) => DropdownMenuItem(
-                                  value: e,
+                                  value: e.state,
                                   child: InkWell(
                                     onTap: () {
                                       Navigator.pop(context);
-                                      stateValue = e;
+                                      stateValue = e.state;
                                       setState(() {});
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.all(10.0),
-                                      child: Text(e),
+                                      child: Text(e.state),
                                     ),
                                   ),
                                 ),

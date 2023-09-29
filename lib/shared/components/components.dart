@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-
+//da el moshkla
 void navigateToWithoutReturn(context,Widget screen)
 => Navigator.pushAndRemoveUntil(
     context,
     MaterialPageRoute(
         builder: (context)=>screen
-    ),
-        (Route<dynamic>route) => false);
+    ), (Route<dynamic>route) => false);
 void navigateToWithReturn(context,Widget screen)
 => Navigator.push(
     context,

@@ -9,9 +9,11 @@ import 'package:orders/shared/components/components.dart';
 
 class ShowCategoriesScreen extends StatefulWidget {
   const ShowCategoriesScreen({super.key});
+
   @override
   State<ShowCategoriesScreen> createState() => _ShowCategoriesScreenState();
 }
+
 //checked
 class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
   var quantityController = TextEditingController();
@@ -46,7 +48,6 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
       },
     );
   }
-
   Widget listItem(CategoryModel categoryModel, context) {
     return Center(
       child: Padding(
@@ -55,8 +56,7 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
           color: Theme.of(context).scaffoldBackgroundColor,
           shadowColor: Theme.of(context).primaryColor,
           elevation: 10,
-          shape: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15))),
+          shape: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: Column(
@@ -105,94 +105,22 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Amount: ".tr(),
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            categoryModel.amount.toString(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "Price: ".tr(),
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            categoryModel.price.toString(),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      "Price: ".tr(),
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      categoryModel.price.toString(),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Charging: ".tr(),
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            categoryModel.salOfCharging.toString(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "Total Price: ".tr(),
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            categoryModel.totalPrice.toString(),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Flexible(child: Text('${"Notes".tr()} ${categoryModel.notes}')),
-                Flexible(child: Text('${"Source".tr()} ${categoryModel.source}')),
-                const SizedBox(
-                  height: 10,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -220,73 +148,32 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
                 if (edit)
                   Column(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: defaultTextForm(
-                                context: context,
-                                Controller: quantityController,
-                                prefixIcon:
-                                    const Icon(Icons.production_quantity_limits),
-                                text: "Quantity".tr(),
-                                validate: (val) {
-                                  if (val.toString().isEmpty) {
-                                    return "Please Enter Quantity".tr();
-                                  }
-                                  return null;
-                                },
-                                type: TextInputType.text),
-                          ),
-                          const SizedBox(width: 5,),
-                          Expanded(
-                            child: defaultTextForm(
-                                context: context,
-                                Controller: priceController,
-                                prefixIcon:
-                                const Icon(Icons.production_quantity_limits),
-                                text: "Price".tr(),
-                                validate: (val) {
-                                  if (val.toString().isEmpty) {
-                                    return "Please Enter Price".tr();
-                                  }
-                                  return null;
-                                },
-                                type: TextInputType.text),
-                          ),
-                        ],
-                      ),
+                      defaultTextForm(
+                          context: context,
+                          Controller: priceController,
+                          prefixIcon:
+                          const Icon(Icons.production_quantity_limits),
+                          text: "Price".tr(),
+                          validate: (val) {
+                            if (val.toString().isEmpty) {
+                              return "Please Enter Price".tr();
+                            }
+                            return null;
+                          },
+                          type: TextInputType.text),
                       const SizedBox(height: 10,),
-                      Row(children: [
-                        Expanded(
-                          child: defaultTextForm(
-                              context: context,
-                              Controller: chargingController,
-                              prefixIcon:
-                              const Icon(Icons.production_quantity_limits),
-                              text: "Charging".tr(),
-                              validate: (val) {
-                                if (val.toString().isEmpty) {
-                                  return "Please Enter Charging".tr();
-                                }
-                                return null;
-                              },
-                              type: TextInputType.text),
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              categoryModel.amount = int.parse(quantityController.text.toString());
-                              categoryModel.price = double.parse(priceController.text.toString());
-                              categoryModel.salOfCharging = double.parse(chargingController.text.toString());
-                              categoryModel.totalPrice=categoryModel.price+categoryModel.salOfCharging;
-                              if (quantityController.text != "") {
-                                OrdersHomeCubit.get(context).editCat(
-                                    docId: categoryModel.catId,
-                                    categoryModel: categoryModel,
-                                    context: context);
-                              }
-                            },
-                            child: Text("Update".tr())),
-                      ],)
+                      TextButton(
+                          onPressed: () {
+                            categoryModel.price = double.parse(priceController.text.toString());
+                            if (priceController.text != "") {
+                              OrdersHomeCubit.get(context).editCat(
+                                  docId: categoryModel.catId,
+                                  categoryModel: categoryModel,
+                                  context: context);
+                            }
+                            priceController.text="";
+                          },
+                          child: Text("Update".tr()))
                     ],
                   ),
               ],

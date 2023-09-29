@@ -6,6 +6,8 @@ import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
 import 'package:orders/shared/components/components.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 //checked
 class EmployerTodayOrdersScreen extends StatefulWidget {
   EmployerTodayOrdersScreen({super.key});
@@ -16,13 +18,9 @@ class EmployerTodayOrdersScreen extends StatefulWidget {
 }
 
 class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
-  String radioSelected = "";
-
-  @override
-  void initState() {
-    super.initState();
-    OrdersHomeCubit.get(context).getTodayTotalTodayOrdersOfCurrentEmp();
-  }
+  //String statusValue = "Select Status".tr();
+  List<String> serviceType = ['تسليم وتحصيل', 'جلب مرتجعات', 'استبدال'];
+  String filterSelected = "Select".tr();
 
   @override
   Widget build(BuildContext context) {
@@ -31,25 +29,75 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
       builder: (ctx, state) {
         return Scaffold(
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: 3, vertical: 5),
-              child: ConditionalBuilder(
-                condition: OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmpList.isNotEmpty,
-                builder: (ctx) => ListView.separated(
-                  itemBuilder: (ctx, idx) {
-                    return listItem(
-                      OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmpList[idx],
-                      ctx,
-                    );
-                  },
-                  itemCount: OrdersHomeCubit.get(context)
-                      .totalTodayOrdersOfCurrentEmpList
-                      .length,
-                  separatorBuilder: (ctx, idx) => mySeparator(context),
+            child: Column(
+              children: [
+                DropdownButton(
+                    dropdownColor: Theme.of(context).primaryColor,
+                    focusColor: Theme.of(context).primaryColor,
+                    underline: Container(),
+                    hint: Text(
+                      filterSelected,
+                    ),
+                    elevation: 0,
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).scaffoldBackgroundColor),
+                    items: OrdersHomeCubit.get(context)
+                        .status
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                                setState(() {});
+                                filterSelected = e;
+                                OrdersHomeCubit.get(context)
+                                    .getTodayTotalTodayOrdersOfCurrentEmp(
+                                        filterSelected);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Text(e),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (val) {
+                      if (val.toString().isNotEmpty) {
+                        filterSelected = val.toString();
+                        OrdersHomeCubit.get(context)
+                            .getTodayTotalTodayOrdersOfCurrentEmp(
+                            filterSelected);
+                        setState(() {});
+                      }
+                    }),
+                const SizedBox(
+                  height: 10,
                 ),
-                fallback: (ctx) => Center(child: Text("Not Orders ".tr())),
-              ),
+                ConditionalBuilder(
+                  condition: OrdersHomeCubit.get(context)
+                      .totalTodayOrdersOfCurrentEmpList
+                      .isNotEmpty,
+                  builder: (ctx) => Expanded(
+                    child: ListView.separated(
+                      itemBuilder: (ctx, idx) {
+                        return listItem(
+                          OrdersHomeCubit.get(context)
+                              .totalTodayOrdersOfCurrentEmpList[idx],
+                          idx,
+                          ctx,
+                        );
+                      },
+                      itemCount: OrdersHomeCubit.get(context)
+                          .totalTodayOrdersOfCurrentEmpList
+                          .length,
+                      separatorBuilder: (ctx, idx) => mySeparator(context),
+                    ),
+                  ),
+                  fallback: (ctx) => Center(child: Text("Not Orders ".tr())),
+                ),
+              ],
             ),
           ),
         );
@@ -57,15 +105,14 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
     );
   }
 
-  Widget listItem(OrderModel order, ctx) {
+  Widget listItem(OrderModel order, idx, ctx) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
-          children:
-          [
+          children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Flexible(
                     child: Text('${"Order Name: ".tr()}${order.orderName}')),
@@ -75,65 +122,98 @@ class _EmployerTodayOrdersScreenState extends State<EmployerTodayOrdersScreen> {
                 )),
               ],
             ),
+            const SizedBox(
+              height: 8,
+            ),
+            DropdownButton(
+                dropdownColor: Theme.of(context).primaryColor,
+                focusColor: Theme.of(context).primaryColor,
+                underline: Container(),
+                hint: Text(
+                  OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmpList[idx].statusOrder,
+                ),
+                elevation: 0,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(color: Theme.of(context).scaffoldBackgroundColor),
+                items: OrdersHomeCubit.get(context)
+                    .status
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            OrdersHomeCubit.get(context)
+                                .totalTodayOrdersOfCurrentEmpList[idx]
+                                .statusOrder = e;
+                            setState(() {});
+                            order.statusOrder = e;
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(e),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (val) {
+                  print('eeeeeeeeeeeeee');
+                  OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmpList[idx].statusOrder =
+                      val;
+                  order.statusOrder = val;
+                  OrdersHomeCubit.get(context)
+                      .updateOrderStatus(orderModel: order, context: context);
+                  setState(() {});
+                }),
+            const SizedBox(
+              height: 8,
+            ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                MaterialButton(
-                  color: Theme.of(context).primaryColor,
-                  onPressed: () {
-                    setState(() {
-                      order.confirm = true;
-                      order.waiting=false;
-                      OrdersHomeCubit.get(context).updateOrderConfirm(
-                          orderModel: order, context: context);
-                    });
-                  },
-                  child: Text(
-                    "Confirm".tr(),
-                    style: TextStyle(
-                        color: Theme.of(context).scaffoldBackgroundColor),
-                  ),
-                ),
-                MaterialButton(
-                  color: Theme.of(context).primaryColor,
-                  onPressed: () {
-                    setState(
-                      () {
-                        order.confirm = false;
-                        order.waiting=false;
-                        OrdersHomeCubit.get(context).updateOrderConfirm(
-                            orderModel: order, context: context);
-                      },
-                    );
-                  },
-                  child: Text(
-                    "Cancel".tr(),
-                    style: TextStyle(
-                        color: Theme.of(context).scaffoldBackgroundColor),
-                  ),
-                ),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children:
+              [
+                Flexible(
+                    child: Text(
+                  '${"Item Name: ".tr()}${order.type}',
+                )),
+                IconButton(
+                    onPressed: () {
+                      makingPhoneCall(order.orderPhone);
+                    },
+                    icon: const Icon(Icons.phone)),
               ],
             ),
-            const SizedBox(height: 8,),
             MaterialButton(
               color: Theme.of(context).primaryColor,
               onPressed: () {
                 setState(() {
-                  order.waiting = true;
-                  order.confirm=false;
-                  OrdersHomeCubit.get(context).updateOrderWaiting(
-                      orderModel: order, context: context);
+                  order.editEmail =
+                      OrdersHomeCubit.get(context).userProfile!.name;
+                  OrdersHomeCubit.get(context)
+                      .updateOrderStatus(orderModel: order, context: context);
                 });
               },
               child: Text(
-                "Waiting".tr(),
-                style: TextStyle(
-                    color: Theme.of(context).scaffoldBackgroundColor),
+                "Update".tr(),
+                style:
+                    TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> makingPhoneCall(phone) async {
+    var url = Uri.parse("tel:$phone");
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      showToast(message: 'Could not launch $url', state: ToastState.WARNING);
+    }
   }
 }

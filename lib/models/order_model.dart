@@ -1,5 +1,5 @@
 class OrderModel {
-  String orderName,
+  dynamic orderName,
       conservation,
       city,
       address,
@@ -9,18 +9,21 @@ class OrderModel {
       employerPhone,
       orderPhone,
       serviceType,
+      statusOrder,
       notes,
+    paper,
+  editEmail,
       date;
   int number;
-  bool confirm = false;
-  bool charging = false;
-  bool waiting;
   double price, totalPrice, salOfCharging;
   dynamic barCode;
+  bool isSelected;
 
   OrderModel({
     required this.serviceType,
     required this.notes,
+    required this.editEmail,
+    required this.statusOrder,
     required this.employerPhone,
     required this.employerEmail,
     required this.orderName,
@@ -36,18 +39,21 @@ class OrderModel {
     required this.price,
     required this.totalPrice,
     required this.salOfCharging,
-    this.confirm = false,
-    this.charging = false,
-    required this.waiting,
+    required this.isSelected,
+    required this.paper,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'orderName': orderName,
+      'editEmail': editEmail,
+      'statusOrder': statusOrder,
       'conservation': conservation,
       'city': city,
+      'isSelected': isSelected,
       'address': address,
       'type': type,
+      'paper': paper,
       'employerName': employerName,
       'employerEmail': employerEmail,
       'employerPhone': employerPhone,
@@ -56,9 +62,6 @@ class OrderModel {
       'notes': notes,
       'date': date,
       'number': number,
-      'confirm': confirm,
-      'charging': charging,
-      'waiting': waiting,
       'price': price,
       'totalPrice': totalPrice,
       'salOfCharging': salOfCharging,
@@ -71,10 +74,12 @@ class OrderModel {
       orderName: map['orderName'],
       conservation: map['conservation'],
       city: map['city'],
-      charging: map['charging'],
+      paper: map['paper'],
+      statusOrder: map['statusOrder'],
+      editEmail: map['editEmail'],
       address: map['address'],
-      waiting: map['waiting'],
       type: map['type'],
+      isSelected: map['isSelected'],
       employerName: map['employerName'],
       employerEmail: map['employerEmail'],
       employerPhone: map['employerPhone'],
@@ -83,7 +88,6 @@ class OrderModel {
       notes: map['notes'],
       date: map['date'],
       number: map['number'],
-      confirm: map['confirm'],
       price: map['price'],
       totalPrice: map['totalPrice'],
       salOfCharging: map['salOfCharging'],

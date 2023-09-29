@@ -8,14 +8,19 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/admin_model.dart';
 import 'package:orders/models/category_model.dart';
+import 'package:orders/models/import.dart';
 import 'package:orders/models/money.dart';
 import 'package:orders/models/order_model.dart';
+import 'package:orders/models/page_model.dart';
+import 'package:orders/models/source_model.dart';
+import 'package:orders/models/state_model.dart';
 import 'package:orders/models/user_orders.dart';
 import 'package:orders/models/user_profile.dart';
 import 'package:orders/modules/admin_screen/orders/orders.dart';
 import 'package:orders/modules/admin_screen/search_by_date/search.dart';
 import 'package:orders/modules/admin_screen/show_order/show_orders.dart';
 import 'package:orders/modules/admin_screen/today_orders/orders.dart';
+import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 
@@ -25,7 +30,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 
   static OrdersHomeCubit get(context) => BlocProvider.of(context);
   List<Widget> screens = [
-    DisplayOrdersScreen(),
+    const DisplayOrdersScreen(),
     const TodayOrders(),
     SearchByDateScreen(),
   ];
@@ -48,9 +53,35 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .doc(SharedHelper.get(key: 'uid'))
         .snapshots()
         .listen((event) {
-      userProfile = UserProfile.fromJson(event.data());
+      userProfile = UserProfile.fromMap(event.data()!);
       emit(OrdersHomeGetUserProfileSuccessStates());
     }).onError((handleError) {
+      emit(OrdersHomeGetUserProfileErrorStates());
+    });
+  }
+
+  void removeUserProfile({required String docId}) {
+    emit(OrdersHomeGetUserProfileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(docId)
+        .delete()
+        .then((event) {
+      emit(OrdersHomeGetUserProfileSuccessStates());
+    }).catchError((handleError) {
+      emit(OrdersHomeGetUserProfileErrorStates());
+    });
+  }
+
+  void acceptUserProfile({required UserProfile user}) {
+    emit(OrdersHomeGetUserProfileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .update(user.toMap())
+        .then((event) {
+      emit(OrdersHomeGetUserProfileSuccessStates());
+    }).catchError((handleError) {
       emit(OrdersHomeGetUserProfileErrorStates());
     });
   }
@@ -62,19 +93,21 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
-        .orderBy('date')
+        .orderBy('date',descending: true)
         .snapshots()
         .listen((event) {
       totalAllOrdersOfCurrentEmp = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        if (orderModel.employerName == userProfile!.name) {
+        if (userProfile != null &&
+            orderModel.employerName == userProfile!.name) {
           totalAllOrdersOfCurrentEmp++;
         }
         emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
     }).onError((handleError) {
+      print(handleError.toString());
       emit(ViewFileErrorStates());
     });
   }
@@ -83,11 +116,11 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   int totalTodayOrdersOfCurrentEmp = 0;
   List<OrderModel> totalTodayOrdersOfCurrentEmpList = [];
 
-  void getTodayTotalTodayOrdersOfCurrentEmp() {
+  void getTodayTotalTodayOrdersOfCurrentEmp(String filter) {
     emit(ViewFileLoadingStates()); //=order id
     FirebaseFirestore.instance
         .collection('orders')
-        .orderBy('date')
+        .orderBy('date',descending: true)
         .snapshots()
         .listen((event) {
       totalTodayOrdersOfCurrentEmp = 0;
@@ -98,7 +131,14 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
             DateTime.now().toString().split(' ')[0] &&
             orderModel.employerName == userProfile!.name) {
           totalTodayOrdersOfCurrentEmp++;
-          totalTodayOrdersOfCurrentEmpList.add(orderModel);
+          print(filter);
+          if (filter == "كل الطلبات") {
+            totalTodayOrdersOfCurrentEmpList.add(orderModel);
+          }
+         else if (filter == orderModel.statusOrder) {
+            totalTodayOrdersOfCurrentEmpList.add(orderModel);
+           print(orderModel.statusOrder);
+          }
         }
         emit(ViewFileSuccessStates());
       });
@@ -107,9 +147,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(ViewFileErrorStates());
     });
   }
-
   //update orders
-  void updateOrderConfirm(
+  void updateOrderStatus(
       {required OrderModel orderModel, required context}) async {
     FirebaseFirestore.instance
         .collection('orders')
@@ -117,48 +156,15 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .update(orderModel.toMap())
         .then((value) {
       String text = "Edited Successfully...".tr();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.green),
-        ),
-        backgroundColor: Colors.blueGrey,
-      ));
-      print(orderModel.price);
-      emit(OrdersEditProfileSuccessStates());
-    }).catchError((onError) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          onError.toString(),
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.red),
-        ),
-        backgroundColor: Colors.pink,
-      ));
-      emit(OrdersEditProfileErrorStates());
-    });
-  }
-
-//update orders
-  void updateOrderWaiting({
-    required OrderModel orderModel,
-    required context,
-  }) async {
-    FirebaseFirestore.instance
-        .collection('orders')
-        .doc(orderModel.barCode)
-        .update(orderModel.toMap())
-        .then((value) {
-      String text = "Edited Successfully...".tr();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.green),
-        ),
-        backgroundColor: Colors.blueGrey,
-      ));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //   content: Text(
+      //     text,
+      //     textAlign: TextAlign.center,
+      //     style: const TextStyle(color: Colors.green),
+      //   ),
+      //   backgroundColor: Colors.blueGrey,
+      // ));
+      showToast(message: text, state: ToastState.SUCCESS);
       print(orderModel.price);
       emit(OrdersEditProfileSuccessStates());
     }).catchError((onError) {
@@ -180,7 +186,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 
   void getAdminsProfile() {
     emit(GetFileLoadingStates());
-    FirebaseFirestore.instance.collection("admins").snapshots().listen((value) {
+    FirebaseFirestore.instance.collection("admins")
+        .snapshots().listen((value) {
       admins = [];
       for (var admin in value.docs) {
         if (admin['email'] == SharedHelper.get(key: 'adminEmail')) {
@@ -193,6 +200,154 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       }
       emit(GetFileSuccessStates());
     }).onError((onError) {
+      showToast(message: onError.toString(), state: ToastState.ERROR);
+      emit(GetUserWaitingErrorStates());
+    });
+  }
+
+  List<UserProfile> users = [];
+
+  void getUsers() {
+    emit(GetFileLoadingStates());
+    FirebaseFirestore.instance.collection("users").snapshots().listen((value) {
+      users = [];
+      for (var user in value.docs) {
+        users.add(UserProfile.fromMap(user.data()));
+        emit(GetFileSuccessStates());
+      }
+      emit(GetFileSuccessStates());
+    }).onError((onError) {
+      showToast(message: onError.toString(), state: ToastState.ERROR);
+      emit(GetUserWaitingErrorStates());
+    });
+  }
+
+//add admin
+  void addAdmin({
+    required String email,
+    required String password,
+    required context,
+  }) {
+    CollectionReference ref = FirebaseFirestore.instance.collection('admins');
+    DocumentReference docRef = ref.doc();
+    String docId = docRef.id;
+    AdminModel adminModel = AdminModel(
+        email: email,
+        showOrders: true,
+        showCategories: true,
+        id: docId,
+        addCat: true,
+        saveOrder: true,
+        removeOrder: true,
+        password: password);
+    emit(GetFileLoadingStates());
+    docRef.set(adminModel.toMap()).then((value) {
+      showToast(
+          message: "Create Account Success ....".tr(),
+          state: ToastState.SUCCESS);
+      emit(GetFileSuccessStates());
+    }).catchError((onError) {
+      showToast(message: onError.toString(), state: ToastState.ERROR);
+      emit(GetUserWaitingErrorStates());
+    });
+  }
+
+  void removeAdmin({
+    required String email,
+    required context,
+  }) {
+    emit(GetFileLoadingStates());
+    FirebaseFirestore.instance.collection("admins").get().then((value) {
+      String docId = "";
+      for (var admin in value.docs) {
+        if (admin['email'] == email) {
+          docId = admin["id"];
+          break;
+        }
+      }
+      FirebaseFirestore.instance
+          .collection("admins")
+          .doc(docId)
+          .delete()
+          .then((value) {
+        emit(GetFileSuccessStates());
+      }).catchError((onError) {
+        emit(GetUserWaitingErrorStates());
+      });
+    });
+  }
+
+  void removePaper({
+    required String paper,
+    required context,
+  }) {
+    emit(GetFileLoadingStates());
+    FirebaseFirestore.instance.
+    collection("papers")
+        .get()
+        .then((value) {
+      String docId = "";
+      for (var page in value.docs) {
+        if (page['paper'] == paper) {
+          docId = page.id;
+          break;
+        }
+      }
+      FirebaseFirestore.instance
+          .collection("papers")
+          .doc(docId)
+          .delete()
+          .then((value) {
+        //emit(GetFileSuccessStates());
+      }).catchError((onError) {
+        emit(GetUserWaitingErrorStates());
+      });
+    });
+  }
+
+  void userIsAdminPermission(bool isAdmin, UserProfile userProfile, context) {
+    emit(GetFileLoadingStates());
+    FirebaseFirestore.instance.collection("users").get().then((value) {
+      String docId = "";
+      for (var user in value.docs) {
+        if (user['email'] == userProfile.email) {
+          docId = user["uid"];
+          break;
+        }
+      }
+      userProfile.isAdmin = isAdmin;
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(docId)
+          .set(userProfile.toMap())
+          .then((value) {
+        String text = "Successfully".tr();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Theme
+                .of(context)
+                .scaffoldBackgroundColor),
+          ),
+          backgroundColor: Colors.pink,
+        ));
+        if (isAdmin) {
+          addAdmin(
+              email: userProfile.email,
+              password: userProfile.password,
+              context: context);
+        } else if (!isAdmin) {
+          removeAdmin(email: userProfile.email, context: context);
+        }
+        emit(GetFileSuccessStates());
+      }).catchError((onError) {
+        showToast(message: onError.toString(), state: ToastState.ERROR);
+        print(onError.toString());
+        emit(GetUserWaitingErrorStates());
+      });
+      emit(GetFileSuccessStates());
+    }).catchError((onError) {
       showToast(message: onError.toString(), state: ToastState.ERROR);
       emit(GetUserWaitingErrorStates());
     });
@@ -399,57 +554,11 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-  //get orders
-  List<OrderModel> orders = [];
-  double totalOfAllOrders = 0;
-  double totalOfAllOrdersConfirm = 0;
-
-  void getOrders(String filter) {
-    emit(ViewFileLoadingStates());
-    FirebaseFirestore.instance
-        .collection('orders')
-        .orderBy('date')
-        .snapshots()
-        .listen((event) {
-      orders = [];
-      totalOfAllOrders = 0;
-      totalOfAllOrdersConfirm = 0;
-      event.docs.forEach((element) {
-        OrderModel orderModel = OrderModel.fromMap(element.data());
-       if(!orderModel.charging){
-         if (orderModel.confirm) {
-           totalOfAllOrdersConfirm += orderModel.totalPrice;
-         }
-         if (filter ==  "Confirm".tr() && orderModel.confirm) {
-           orders.add(orderModel);
-           totalOfAllOrders += orderModel.totalPrice;
-         }
-         else if (filter == "Waiting".tr() && orderModel.waiting) {
-           orders.add(orderModel);
-           totalOfAllOrders += orderModel.totalPrice;
-         }
-         else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting) {
-           orders.add(orderModel);
-           totalOfAllOrders += orderModel.totalPrice;
-         }
-       }
-        emit(ViewFileSuccessStates());
-      });
-      emit(ViewFileSuccessStates());
-    }).onError((handleError) {
-      emit(ViewFileErrorStates());
-    });
-  }
-
 //update orders
-  void updateOrder({
-    required String orderName,
+  void updateOrder({required String orderName,
     required String conservation,
     required String city,
     required String address,
-    required bool waiting,
-    required bool confirm,
-    required bool charging,
     required String type,
     required String barCode,
     required String employerName,
@@ -457,7 +566,11 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     required String employerEmail,
     required String orderPhone,
     required String serviceType,
+    required String statusOrder,
     required String notes,
+    required String paper,
+    required bool isSelected,
+    required String editEmail,
     required String date,
     required int number,
     required double price,
@@ -465,26 +578,27 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     required double salOfCharging,
     required context}) async {
     OrderModel orderModel = OrderModel(
-        employerEmail: employerEmail,
-        waiting: waiting,
-        orderPhone: orderPhone,
-        serviceType: serviceType,
-        notes: notes,
-        orderName: orderName,
-        conservation: conservation,
-        city: city,
-        address: address,
-        confirm: confirm,
-        type: type,
-        charging: charging,
-        barCode: barCode,
-        employerName: employerName,
-        employerPhone: employerPhone,
-        date: date,
-        number: number,
-        price: price,
-        totalPrice: totalPrice,
-        salOfCharging: salOfCharging,
+      employerEmail: employerEmail,
+      orderPhone: orderPhone,
+      statusOrder: statusOrder,
+      serviceType: serviceType,
+      notes: notes,
+      editEmail: editEmail,
+      orderName: orderName,
+      conservation: conservation,
+      city: city,
+      address: address,
+      type: type,
+      paper: paper,
+      isSelected: isSelected,
+      barCode: barCode,
+      employerName: employerName,
+      employerPhone: employerPhone,
+      date: date,
+      number: number,
+      price: price,
+      totalPrice: totalPrice,
+      salOfCharging: salOfCharging,
     );
     FirebaseFirestore.instance
         .collection('orders')
@@ -492,25 +606,11 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .update(orderModel.toMap())
         .then((value) {
       String text = "Edited Successfully...".tr();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.green),
-        ),
-        backgroundColor: Colors.blueGrey,
-      ));
+      showToast(message: text, state: ToastState.SUCCESS);
       print(orderModel.price);
       emit(OrdersEditProfileSuccessStates());
     }).catchError((onError) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          onError.toString(),
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.red),
-        ),
-        backgroundColor: Colors.pink,
-      ));
+      showToast(message: onError.toString(), state: ToastState.ERROR);
       emit(OrdersEditProfileErrorStates());
     });
   }
@@ -521,23 +621,27 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     required String city,
     required String address,
     required String type,
+    required String paper,
     required String employerName,
     required String employerPhone,
     required String employerEmail,
     required String orderPhone,
     required String notes,
     required String serviceType,
+    required String statusOrder,
     required int number,
     required double price,
-    required bool waiting,
     required double totalPrice,
     required double salOfCharging,
     required context}) {
     OrderModel orderModel = OrderModel(
       orderPhone: orderPhone,
       orderName: orderName,
+      isSelected: false,
       notes: notes,
-      waiting: waiting,
+      paper: paper,
+      editEmail: "",
+      statusOrder: statusOrder,
       serviceType: serviceType,
       employerEmail: employerEmail,
       conservation: conservation,
@@ -559,10 +663,16 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     String text = "Order Uploaded Successfully".tr();
     docRef.set(orderModel.toMap()).then((value) {
       showToast(message: text, state: ToastState.SUCCESS);
+      navigateToWithReturn(
+          context,
+          UpdateOrdersScreen(
+            orderModel: orderModel,
+            editEmail: employerName,
+          ));
       emit(GetFileSuccessStates());
     }).catchError((onError) {
       print('pppppppppppppppppppppppp${onError.toString()}');
-      showToast(message: onError.toString(), state: ToastState.WARNING);
+      showToast(message: onError.toString(), state: ToastState.ERROR);
       emit(GetFileErrorStates());
     });
   }
@@ -636,7 +746,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('categories')
-        .orderBy('date')
+        .orderBy('date',descending: true)
         .snapshots()
         .listen((event) {
       categories = [];
@@ -653,22 +763,13 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 //add categories
   void addCategories({required date,
     required catName,
-    required salOfCharging,
-    required notes,
-    required source,
-    required totalPrice,
     required price,
-    required amount,
     required context}) {
     CategoryModel categoryModel = CategoryModel(
-        date: date,
-        source: source,
-        catName: catName,
-        salOfCharging: salOfCharging,
-        notes: notes,
-        totalPrice: totalPrice,
-        price: price,
-        amount: amount);
+      date: date,
+      catName: catName,
+      price: price,
+    );
     CollectionReference ref =
     FirebaseFirestore.instance.collection('categories');
     DocumentReference docRef = ref.doc();
@@ -703,41 +804,171 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         ),
         backgroundColor: Colors.pink,
       ));
-      navigateToWithReturn(context, const AdminShowOrders());
+      emit(RejectFileSuccessStates());
+    }).catchError((onError) {
+      emit(RejectFileErrorStates());
+    });
+  }
+  void removeImport({required String docId, required context}) {
+    emit(RejectFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('imports')
+        .doc(docId)
+        .delete()
+        .then((value) {
+      String text = "Deleted Successfully".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme
+              .of(context)
+              .scaffoldBackgroundColor),
+        ),
+        backgroundColor: Colors.pink,
+      ));
+      emit(RejectFileSuccessStates());
+    }).catchError((onError) {
+      emit(RejectFileErrorStates());
+    });
+  }
+  void removeMoney({required String docId, required context}) {
+    emit(RejectFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('money')
+        .doc(docId)
+        .delete()
+        .then((value) {
+      String text = "Deleted Successfully".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme
+              .of(context)
+              .scaffoldBackgroundColor),
+        ),
+        backgroundColor: Colors.pink,
+      ));
+      emit(RejectFileSuccessStates());
+    }).catchError((onError) {
+      emit(RejectFileErrorStates());
+    });
+  }
+  void removeState({required String docId, required context}) {
+    emit(RejectFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('states')
+        .doc(docId)
+        .delete()
+        .then((value) {
+      String text = "Deleted Successfully".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme
+              .of(context)
+              .scaffoldBackgroundColor),
+        ),
+        backgroundColor: Colors.pink,
+      ));
       emit(RejectFileSuccessStates());
     }).catchError((onError) {
       emit(RejectFileErrorStates());
     });
   }
 
+  void removePage({required String docId, required context}) {
+    emit(RejectFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('papers')
+        .doc(docId)
+        .delete()
+        .then((value) {
+      String text = "Deleted Successfully".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme
+              .of(context)
+              .scaffoldBackgroundColor),
+        ),
+        backgroundColor: Colors.pink,
+      ));
+      emit(RejectFileSuccessStates());
+    }).catchError((onError) {
+      emit(RejectFileErrorStates());
+    });
+  }
+
+  void removeUser({required String docId, required context}) {
+    emit(RejectFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(docId)
+        .delete()
+        .then((value) {
+      String text = "Deleted Successfully".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme
+              .of(context)
+              .scaffoldBackgroundColor),
+        ),
+        backgroundColor: Colors.pink,
+      ));
+      emit(RejectFileSuccessStates());
+    }).catchError((onError) {
+      emit(RejectFileErrorStates());
+    });
+  }
+  void removeAllOrders()async {
+    emit(RejectFileLoadingStates());
+    final instance = FirebaseFirestore.instance;
+    final batch = instance.batch();
+    var collection = instance.collection('orders');
+    var snapshots = await collection.get();
+    for (var doc in snapshots.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit().then((value) {
+      String text = "Deleted Successfully".tr();
+      showToast(message: text, state: ToastState.SUCCESS);
+      emit(RejectFileSuccessStates());
+    }).catchError((onError){
+      emit(RejectFileErrorStates());
+    });
+  }
+
+
   void editCat({required String docId,
     required CategoryModel categoryModel,
     required context}) {
-    if (categoryModel.amount == 0) {
-      removeCat(docId: docId, context: context);
-    } else {
-      emit(RejectFileLoadingStates());
-      FirebaseFirestore.instance
-          .collection('categories')
-          .doc(docId)
-          .update(categoryModel.toMap())
-          .then((value) {
-        String text = "Updated Successfully".tr();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Theme
-                .of(context)
-                .scaffoldBackgroundColor),
-          ),
-          backgroundColor: Colors.pink,
-        ));
-        emit(RejectFileSuccessStates());
-      }).catchError((onError) {
-        emit(RejectFileErrorStates());
-      });
-    }
+    emit(RejectFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('categories')
+        .doc(docId)
+        .update(categoryModel.toMap())
+        .then((value) {
+      String text = "Updated Successfully".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme
+              .of(context)
+              .scaffoldBackgroundColor),
+        ),
+        backgroundColor: Colors.pink,
+      ));
+      emit(RejectFileSuccessStates());
+    }).catchError((onError) {
+      emit(RejectFileErrorStates());
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -748,7 +979,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     emit(ViewFileLoadingStates()); //=order id
     FirebaseFirestore.instance
         .collection('orders')
-        .orderBy('date')
+        .orderBy('date',descending: true)
         .get()
         .then((event) {
       event.docs.forEach((element) {
@@ -765,24 +996,10 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   //search date
   List<OrderModel> searchOrdersDate = [];
+  int numSearchOrdersDate=0;
+  double priceSearchOrdersDate=0;
 
   void searchOrdersByDate({
     required String startDate,
@@ -791,92 +1008,198 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     required TimeOfDay firstTime,
     required TimeOfDay lastTime,
   }) {
-    print('fffffffffffffffffff$filter');
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
+        .orderBy('date', descending: true)
         .get()
         .then((event) {
+          numSearchOrdersDate=0;
+          priceSearchOrdersDate=0;
       searchOrdersDate = [];
       int tempHourTime = 0,
           tempHourLastTime = 0,
           tempHourFirstTime = 0;
-      DateTime firstDate= DateTime.parse(startDate.split(' ')[0]);
-      DateTime finishDate= DateTime.parse(endDate.split(' ')[0]);
+      DateTime firstDate = DateTime.parse(startDate.split(' ')[0]);
+      DateTime finishDate = DateTime.parse(endDate.split(' ')[0]);
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-       if(!orderModel.charging){
-         DateTime orderDate= DateTime.parse(orderModel.date.split(' ')[0]);
-         if (orderDate.isAfter(firstDate)&&orderDate.isBefore(finishDate)||
-             orderDate.isAtSameMomentAs(firstDate)||orderDate.isAtSameMomentAs(finishDate)) {
-           TimeOfDay time = TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
-           tempHourTime = time.hour;
-           tempHourFirstTime = firstTime.hour;
-           tempHourLastTime = lastTime.hour;
-           if (tempHourTime > tempHourFirstTime &&
-               (tempHourTime >= 1 && tempHourTime <= 12) &&
-               (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
-               (tempHourLastTime >= 1 && tempHourLastTime <= 12) &&
-               tempHourTime < tempHourLastTime) {
-             if (filter ==  "Confirm".tr() && orderModel.confirm) {
-                searchOrdersDate.add(orderModel);
-              }else if (filter == "Waiting".tr() && orderModel.waiting){
-                searchOrdersDate.add(orderModel);
-              }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
-                searchOrdersDate.add(orderModel);
-              }
-           }
-           if (tempHourTime > tempHourFirstTime &&
-               (tempHourTime >= 13 && tempHourTime <= 23) &&
-               (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
-               (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
-               tempHourTime < tempHourLastTime) {
-             if (filter ==  "Confirm".tr() && orderModel.confirm) {
-               searchOrdersDate.add(orderModel);
-             }else if (filter == "Waiting".tr() && orderModel.waiting){
-               searchOrdersDate.add(orderModel);
-             }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
-               searchOrdersDate.add(orderModel);
-             }
-           }
-           if ((tempHourTime >= 13 && tempHourTime <= 23) &&
-               (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
-               (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
-               tempHourTime < tempHourLastTime ||
-               (tempHourTime >= 13 && tempHourTime <= 23) &&
-                   (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
-                   tempHourTime > tempHourFirstTime &&
-                   (tempHourLastTime >= 1 && tempHourLastTime <= 12)) {
-             if (filter ==  "Confirm".tr() && orderModel.confirm) {
-               searchOrdersDate.add(orderModel);
-             }else if (filter == "Waiting".tr() && orderModel.waiting){
-               searchOrdersDate.add(orderModel);
-             }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
-               searchOrdersDate.add(orderModel);
-             }
-           }
-           if (tempHourTime == tempHourFirstTime &&
-               time.minute >= firstTime.minute) {
-             if (filter ==  "Confirm".tr() && orderModel.confirm) {
-               searchOrdersDate.add(orderModel);
-             }else if (filter == "Waiting".tr() && orderModel.waiting){
-               searchOrdersDate.add(orderModel);
-             }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
-               searchOrdersDate.add(orderModel);
-             }
-           }
-           if (tempHourTime == tempHourLastTime &&
-               time.minute <= lastTime.minute) {
-             if (filter ==  "Confirm".tr() && orderModel.confirm) {
-               searchOrdersDate.add(orderModel);
-             }else if (filter == "Waiting".tr() && orderModel.waiting){
-               searchOrdersDate.add(orderModel);
-             }else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting){
-               searchOrdersDate.add(orderModel);
-             }
-           }
-         }
-       }
+        DateTime orderDate = DateTime.parse(orderModel.date.split(' ')[0]);
+        if (!finishDate.isAtSameMomentAs(firstDate)&&
+            orderDate.isAfter(firstDate) && orderDate.isBefore(finishDate)
+            ) {
+          if (filter == "كل الطلبات") {
+            searchOrdersDate.add(orderModel);
+            numSearchOrdersDate++;
+            priceSearchOrdersDate+=orderModel.totalPrice;
+          }
+          else if (filter == orderModel.statusOrder) {
+            searchOrdersDate.add(orderModel);
+            numSearchOrdersDate++;
+            priceSearchOrdersDate+=orderModel.totalPrice;
+          }
+        }
+        else if(
+           !finishDate.isAtSameMomentAs(firstDate)&&
+            orderDate.isAtSameMomentAs(firstDate)){
+          TimeOfDay time = TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+          tempHourTime = time.hour;
+          tempHourFirstTime = firstTime.hour;
+          tempHourLastTime = lastTime.hour;
+          if (tempHourTime > tempHourFirstTime) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+          if (tempHourTime == tempHourFirstTime &&
+              time.minute >= firstTime.minute ) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+        }
+        else if(
+        !finishDate.isAtSameMomentAs(firstDate)&&
+            orderDate.isAtSameMomentAs(finishDate)){
+          TimeOfDay time = TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+          tempHourTime = time.hour;
+          tempHourFirstTime = firstTime.hour;
+          tempHourLastTime = lastTime.hour;
+          if (tempHourTime < tempHourLastTime) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+          if (tempHourTime == tempHourLastTime &&
+              lastTime.minute>=time.minute  ) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+        }
+        else if (finishDate.isAtSameMomentAs(firstDate)&&
+            orderDate.isAtSameMomentAs(finishDate)) {
+          TimeOfDay time =
+          TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+          tempHourTime = time.hour;
+          tempHourFirstTime = firstTime.hour;
+          tempHourLastTime = lastTime.hour;
+          if (tempHourTime > tempHourFirstTime &&
+              (tempHourTime >= 1 && tempHourTime <= 12) &&
+              (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
+              (tempHourLastTime >= 1 && tempHourLastTime <= 12) &&
+              tempHourTime < tempHourLastTime) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+          if (tempHourTime > tempHourFirstTime &&
+              (tempHourTime >= 13 && tempHourTime <= 23) &&
+              (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
+              (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
+              tempHourTime < tempHourLastTime) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+          if ((tempHourTime >= 13 && tempHourTime <= 23) &&
+              (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
+              (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
+              tempHourTime < tempHourLastTime ||
+              (tempHourTime >= 13 && tempHourTime <= 23) &&
+                  (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
+                  tempHourTime > tempHourFirstTime &&
+                  (tempHourLastTime >= 1 && tempHourLastTime <= 12)) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+          if (tempHourTime == tempHourFirstTime &&
+              time.minute >= firstTime.minute) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+          if (tempHourTime == tempHourLastTime &&
+              time.minute <= lastTime.minute) {
+            if (filter == "كل الطلبات") {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+            else if (filter == orderModel.statusOrder) {
+              searchOrdersDate.add(orderModel);
+
+              numSearchOrdersDate++;
+              priceSearchOrdersDate+=orderModel.totalPrice;
+            }
+          }
+        }
+        emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
     }).catchError((handleError) {
@@ -888,9 +1211,12 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   List<OrderModel> searchOrderPhone = [];
   double searchOrderPhonePrice = 0;
   int searchOrderPhoneNum = 0;
+
   void searchOrdersByPhone(String phone) {
     emit(ViewFileLoadingStates()); //=order id
-    FirebaseFirestore.instance.collection('orders').get().then((event) {
+    FirebaseFirestore.instance.collection('orders')
+        .orderBy('date',descending: true)
+        .get().then((event) {
       searchOrderPhone = [];
       searchOrderPhonePrice = 0;
       searchOrderPhoneNum = 0;
@@ -898,7 +1224,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (orderModel.orderPhone == phone) {
           searchOrderPhone.add(orderModel);
-          searchOrderPhonePrice+=orderModel.totalPrice;
+          searchOrderPhonePrice += orderModel.totalPrice;
           searchOrderPhoneNum++;
           emit(ViewFileSuccessStates());
         }
@@ -913,26 +1239,36 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 
   void validateOrdersByPhone(String phone) {
     emit(ViewFileLoadingStates()); //=order id
-    FirebaseFirestore.instance
-        .collection('orders')
-        .get()
-        .then((event) {
-          int num=0;
-          String date="";
-          bool found=false;
+    FirebaseFirestore.instance.collection('orders')
+        .orderBy('date',descending: true)
+        .get().then((event) {
+      int num = 0;
+      String date = "";
+      String status = "";
+      bool found = false;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (orderModel.orderPhone == phone) {
           num++;
-          date=orderModel.date;
-          found=true;
+          date = orderModel.date;
+          status = orderModel.statusOrder;
+          found = true;
         }
       });
-          String? validateOrder;
-      if(found) {
-        validateOrder="number orders".tr()+num.toString()+"\n"+"last order".tr()+" :$date";
-      }else{
-        validateOrder=null;
+      String? validateOrder;
+      if (found) {
+        validateOrder = "number orders".tr() +
+            " " +
+            num.toString() +
+            "\n" +
+            "last order".tr() +
+            " :$date" +
+            "\n" +
+            "Status".tr() +
+            " : " +
+            status;
+      } else {
+        validateOrder = null;
       }
       emit(OrdersHomeValidtePhoneOrderStates(validate: validateOrder));
     }).catchError((handleError) {
@@ -947,34 +1283,44 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 
   void getTodayOrders(String filter) {
     emit(ViewFileLoadingStates()); //=order id
-    FirebaseFirestore.instance.collection('orders').snapshots().listen((event) {
+    FirebaseFirestore.instance.
+    collection('orders')
+        .orderBy('date', descending: true)
+        .snapshots()
+        .listen((event) {
       todayOrders = [];
       todayOrdersPrice = 0;
       todayOrdersNumber = 0;
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        if(!orderModel.charging){
+        if (orderModel.date.split(' ')[0] ==
+            DateTime.now().toString().split(' ')[0]) {
+          if (filter == "كل الطلبات") {
+            todayOrders.add(orderModel);
+            todayOrdersPrice += orderModel.totalPrice;
+            todayOrdersNumber++;
+          }
+          if (filter == orderModel.statusOrder) {
+            todayOrders.add(orderModel);
+            todayOrdersPrice += orderModel.totalPrice;
+            todayOrdersNumber++;
+          }
+        }
+        emit(ViewFileSuccessStates());
+      });
+
+      if (filter == "Select".tr()) {
+        event.docs.forEach((element) {
+          OrderModel orderModel = OrderModel.fromMap(element.data());
           if (orderModel.date.split(' ')[0] ==
               DateTime.now().toString().split(' ')[0]) {
-            print(filter);
-            print(orderModel.confirm);
-            if (filter ==  "Confirm".tr() && orderModel.confirm) {
-              todayOrders.add(orderModel);
-              todayOrdersPrice += orderModel.totalPrice;
-              todayOrdersNumber++;
-            } else if (filter == "Waiting".tr() && orderModel.waiting) {
-              todayOrders.add(orderModel);
-              todayOrdersPrice += orderModel.totalPrice;
-              todayOrdersNumber++;
-            } else if (filter == "Cancel".tr() && !orderModel.confirm&&!orderModel.waiting) {
-              todayOrders.add(orderModel);
-              todayOrdersPrice += orderModel.totalPrice;
-              todayOrdersNumber++;
-            }
+            todayOrders.add(orderModel);
+            todayOrdersPrice += orderModel.totalPrice;
+            todayOrdersNumber++;
           }
           emit(ViewFileSuccessStates());
-        }
-      });
+        });
+      }
       emit(ViewFileSuccessStates());
     }).onError((handleError) {
       emit(ViewFileErrorStates());
@@ -1026,7 +1372,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     FirebaseFirestore.instance
         .collection("cities")
         .doc(state)
-         .collection('values')
+        .collection('values')
         .add({'city': city}).then((value) {
       showToast(message: "تم اضافة مدينة بنجاح", state: ToastState.SUCCESS);
       emit(SocialGetUserStatusSuccessStates());
@@ -1040,8 +1386,10 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   void getCites(String state) {
     FirebaseFirestore.instance
         .collection('cities')
-       .doc(state)
-        .collection('values').snapshots().listen((event) {
+        .doc(state)
+        .collection('values')
+        .snapshots()
+        .listen((event) {
       cities = [];
       event.docs.forEach((element) {
         cities.add(element['city']);
@@ -1054,9 +1402,11 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
   void addStates(String state) {
-    FirebaseFirestore.instance
-        .collection('states')
-        .add({'state': state}).then((value) {
+    CollectionReference ref =
+    FirebaseFirestore.instance.collection('states');
+    DocumentReference docRef = ref.doc();
+    String docId = docRef.id;
+    docRef.set({'state': state,"id":docId,"date":DateTime.now().toString()}).then((value) {
       showToast(message: "تم اضافة محافظة بنجاح", state: ToastState.SUCCESS);
       emit(SocialGetUserStatusSuccessStates());
     }).catchError((onError) {
@@ -1064,13 +1414,31 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-  List<String> states = [];
+  void addPapers(String paper) {
+    CollectionReference ref =
+    FirebaseFirestore.instance.collection('papers');
+    DocumentReference docRef = ref.doc();
+    String docId = docRef.id;
+    PageModel pageModel=PageModel(id: docId, name: paper, date: DateTime.now().toString());
+        docRef.set(pageModel.toMap()).then((value) {
+      showToast(message: "تم اضافة الصفحة بنجاح", state: ToastState.SUCCESS);
+      emit(SocialGetUserStatusSuccessStates());
+    }).catchError((onError) {
+      emit(GetVedioErrorStates());
+    });
+  }
+
+  List<StateModel> states = [];
 
   void getStates() {
-    FirebaseFirestore.instance.collection('states').snapshots().listen((value) {
+    FirebaseFirestore.instance.
+    collection('states')
+    .orderBy('date',descending: true)
+        .snapshots()
+        .listen((value) {
       states = [];
       value.docs.forEach((element) {
-        states.add(element['state']);
+        states.add(StateModel.fromMap(element.data()));
       });
       emit(SocialGetUserStatusSuccessStates());
     }).onError((onError) {
@@ -1079,67 +1447,420 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
   ////////////////////////////////////////////////////
-  List<UserOrders> userFilterOrders = [];
+  Set<UserOrders> userFilterOrders = {};
 
   void userOrdersFilter() {
     FirebaseFirestore.instance
         .collection('users')
-        .get()
-        .then((event) {
-      userFilterOrders = [];
+        .snapshots()
+        .listen((event) {
+      userFilterOrders = {};
       event.docs.forEach((element) async {
         String email = element['email'];
         String name = element['name'];
         int numToday = 0;
         int numAll = 0;
-
-        FirebaseFirestore.instance.
-        collection('orders')
-            .get()
-            .then((orders) {
+        FirebaseFirestore.instance
+            .collection('orders')
+            .snapshots()
+            .listen((orders) {
           orders.docs.forEach((order) {
             OrderModel orderModel = OrderModel.fromMap(order.data());
             if (orderModel.employerEmail == email) {
-                 numAll++;
-              if (orderModel.date.split(' ')[0] == DateTime.now().toString().split(' ')[0]) {
+              numAll++;
+              if (orderModel.date.split(' ')[0] ==
+                  DateTime.now().toString().split(' ')[0]) {
                 numToday++;
               }
             }
           });
-          userFilterOrders.add(
-            UserOrders(
-              email: email,
-              numOfAllOrders: numAll,
-              numOfTodayOrders: numToday,
-              name: name,
-            ),
-          );
-        }).catchError((handleError) {});
+        }).onError((handleError) {
+          showToast(message: handleError.toString(), state: ToastState.ERROR);
+        });
+        userFilterOrders.add(
+          UserOrders(
+            email: email,
+            numOfAllOrders: numAll,
+            numOfTodayOrders: numToday,
+            name: name,
+          ),
+        );
       });
-    }).catchError((handleError) {});
+    }).onError((handleError) {
+      showToast(message: handleError.toString(), state: ToastState.ERROR);
+    });
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  void addStatus(String status) {
+    FirebaseFirestore.instance
+        .collection('status')
+        .add({'state': status}).then((value) {
+      showToast(message: "تم اضافة حالة بنجاح", state: ToastState.SUCCESS);
+      emit(SocialGetUserStatusSuccessStates());
+    }).catchError((onError) {
+      emit(GetVedioErrorStates());
+    });
   }
 
-  ////////////////////////////////////////////////////////
+  List<String> status = [
+    'جاري الشحن',
+    "تم التاكيد",
+    "تسليم ناجح",
+    "ملغي",
+    "غير مؤكد",
+    "تسليم جزئي",
+    "مرتجع ناقص",
+    "مرتجع كامل لدينا",
+    "مرتجع لدى شركة الشحن",
+    "كل الطلبات",
+  ];
+  List<OrderModel> editOrders = [];
 
-  List<OrderModel> chargingOrders = [];
-  void getChargingOrders() {
+  void getOrdersToEdit(String filter) {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
-        .orderBy('date')
+        .orderBy('date',descending: true)
         .snapshots()
         .listen((event) {
-      chargingOrders = [];
+      editOrders = [];
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        if(orderModel.charging){
-          chargingOrders.add(orderModel);
+        if (filter == "كل الطلبات") {
+          editOrders.add(orderModel);
         }
-        emit(ViewFileSuccessStates());
+        else if (filter == orderModel.statusOrder) {
+          editOrders.add(orderModel);
+          print(orderModel.statusOrder);
+        }
+        //emit(ViewFileSuccessStates());
       });
       emit(ViewFileSuccessStates());
     }).onError((handleError) {
       emit(ViewFileErrorStates());
+    });
+  }
+
+  //get orders
+  List<OrderModel> orders = [];
+  double totalOfAllOrders = 0;
+  double totalOfAllOrdersConfirm = 0;
+  int totalOfConfirmedNumber = 0;
+  double totalOfConfirmedPrice = 0;
+
+  void getOrders(String filter) {
+    emit(ViewFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('orders')
+        .orderBy('date', descending: true)
+        .snapshots()
+        .listen((event) {
+      orders = [];
+      totalOfAllOrders = 0;
+      totalOfAllOrdersConfirm = 0;
+      totalOfConfirmedNumber = 0;
+      totalOfConfirmedPrice = 0;
+      papersDetails.updateAll((key, value) => papersDetails[key] = []);
+      event.docs.forEach((element) {
+        OrderModel orderModel = OrderModel.fromMap(element.data());
+        if (papersDetails.containsKey(orderModel.paper)) {
+          papersDetails[orderModel.paper]!.add(orderModel);
+        }
+        if (orderModel.statusOrder == "تسليم ناجح") {
+          totalOfAllOrdersConfirm += orderModel.totalPrice;
+        }
+        if (orderModel.statusOrder == 'جاري الشحن') {
+          totalOfConfirmedPrice += orderModel.totalPrice;
+          totalOfConfirmedNumber++;
+        }
+        if (filter == "كل الطلبات") {
+          orders.add(orderModel);
+          totalOfAllOrders += orderModel.totalPrice;
+        }
+        if (filter == orderModel.statusOrder) {
+          orders.add(orderModel);
+          totalOfAllOrders += orderModel.totalPrice;
+        }
+        emit(ViewFileSuccessStates());
+      });
+      if (filter == "Select".tr()) {
+        event.docs.forEach((element) {
+          OrderModel orderModel = OrderModel.fromMap(element.data());
+          orders.add(orderModel);
+          totalOfAllOrders += orderModel.totalPrice;
+          emit(ViewFileSuccessStates());
+        });
+      }
+      emit(ViewFileSuccessStates());
+    }).onError((handleError) {
+      emit(ViewFileErrorStates());
+    });
+  }
+
+  Map<String, List<OrderModel>> papersDetails = {};
+  List<String> papers = [];
+  List<PageModel>resPages=[];
+  void getPapers() {
+    emit(ViewFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('papers')
+        .orderBy('date',descending: true)
+        .snapshots()
+        .listen((value) {
+      papers = [];
+      papersDetails = {};
+      value.docs.forEach((element) {
+        if (!papers.contains(element['name'])) {
+          papers.add(element['name']);
+        }
+        resPages.add(PageModel.fromMap(element.data()));
+        papersDetails[element['name']] = [];
+      });
+      getOrders('كل الطلبات');
+    }).onError((onError) {
+      emit(GetVedioErrorStates());
+    });
+  }
+
+  //get orders
+  List<OrderModel> ordersTest = [];
+  double totalOfAllOrdersTest = 0;
+  double totalOfAllOrdersConfirmTest = 0;
+  int totalOfConfirmedNumberTest = 0;
+  double totalOfConfirmedPriceTest = 0;
+  bool isMoreData = true;
+  bool isLoading = false;
+  DocumentSnapshot? last;
+  int len = 0;
+
+  void firstLoad(String filter, int limit) {
+    FirebaseFirestore.instance
+        .collection('orders')
+        .orderBy('date')
+        .limit(limit)
+        .snapshots()
+        .listen((event) {
+      isMoreData = true;
+      ordersTest = [];
+      totalOfAllOrdersTest = 0;
+      totalOfAllOrdersConfirmTest = 0;
+      totalOfConfirmedNumberTest = 0;
+      totalOfConfirmedPriceTest = 0;
+      isLoading = false;
+      last = event.docs.last;
+      len = event.docs.length;
+      if (limit > len) {
+        print("ggggggggggggggggggggg");
+        isMoreData = false;
+      }
+      // print('$len ppppppppppppppppp');
+      event.docs.forEach((element) {
+        OrderModel orderModel = OrderModel.fromMap(element.data());
+        if (papersDetails.containsKey(orderModel.paper)) {
+          papersDetails[orderModel.paper]!.add(orderModel);
+        }
+        if (orderModel.statusOrder == "تسليم ناجح") {
+          totalOfAllOrdersConfirmTest += orderModel.totalPrice;
+        }
+        if (orderModel.statusOrder == 'جاري الشحن') {
+          totalOfConfirmedPriceTest += orderModel.totalPrice;
+          totalOfConfirmedNumberTest++;
+        }
+        if (filter == orderModel.statusOrder) {
+          ordersTest.add(orderModel);
+          totalOfAllOrdersTest += orderModel.totalPrice;
+        }
+        emit(ViewFileSuccessStates());
+      });
+      if (filter == "Select".tr()) {
+        event.docs.forEach((element) {
+          OrderModel orderModel = OrderModel.fromMap(element.data());
+          ordersTest.add(orderModel);
+          totalOfAllOrdersTest += orderModel.totalPrice;
+          emit(ViewFileSuccessStates());
+        });
+      }
+      emit(ViewFileSuccessStates());
+    }).onError((handleError) {
+      emit(ViewFileErrorStates());
+    });
+  }
+
+  void more(String filter, int limit, bool change, context) {
+    if (isMoreData) {
+      isLoading = true;
+      emit(ViewFileLoadingStates());
+      FirebaseFirestore.instance
+          .collection('orders')
+          .orderBy('date')
+          .limit(limit)
+          .startAfterDocument(last!)
+          .snapshots()
+          .listen((event) {
+        isLoading = false;
+        isMoreData = true;
+        len = event.docs.length;
+        try {
+          last = event.docs.last;
+        } catch (e) {
+          isMoreData = false;
+        }
+        if (limit > len) {
+          print("ggggggggggggggggggggg");
+          isMoreData = false;
+        }
+        event.docs.forEach((element) {
+          OrderModel orderModel = OrderModel.fromMap(element.data());
+          if (papersDetails.containsKey(orderModel.paper)) {
+            papersDetails[orderModel.paper]!.add(orderModel);
+          }
+          if (orderModel.statusOrder == "تسليم ناجح") {
+            totalOfAllOrdersConfirmTest += orderModel.totalPrice;
+          }
+          if (orderModel.statusOrder == 'جاري الشحن') {
+            totalOfConfirmedPriceTest += orderModel.totalPrice;
+            totalOfConfirmedNumberTest++;
+          }
+          if (filter == orderModel.statusOrder) {
+            ordersTest.add(orderModel);
+            totalOfAllOrdersTest += orderModel.totalPrice;
+          }
+          emit(ViewFileSuccessStates());
+        });
+        if (filter == "Select".tr()) {
+          event.docs.forEach((element) {
+            OrderModel orderModel = OrderModel.fromMap(element.data());
+            ordersTest.add(orderModel);
+            totalOfAllOrdersTest += orderModel.totalPrice;
+            emit(ViewFileSuccessStates());
+          });
+        }
+        emit(ViewFileSuccessStates());
+      }).onError((handleError) {
+        emit(ViewFileErrorStates());
+      });
+
+      emit(SocialGetUserStatusSuccessStates());
+    } else {
+      print("No More Order");
+      String text = "No More Data".tr();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.green),
+        ),
+        backgroundColor: Colors.blueGrey,
+      ));
+    }
+    emit(SocialGetUserStatusSuccessStates());
+  }
+
+  double searchCatPrice = 0;
+
+  void getPriceCategory(String cat) {
+    emit(ViewFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('categories')
+        .orderBy('date',descending: true)
+        .get()
+        .then((event) {
+      for (var element in event.docs) {
+        CategoryModel categoryModel = CategoryModel.fromMap(element.data());
+        if (categoryModel.catName == cat) {
+          searchCatPrice = categoryModel.price;
+          emit(ViewFileSuccessStates());
+          break;
+        }
+      }
+      emit(ViewFileSuccessStates());
+    }).catchError((handleError) {
+      emit(ViewFileErrorStates());
+    });
+  }
+
+//add categories
+  void addImport({
+    required sourceName,
+    required context}) {
+    CollectionReference ref =
+    FirebaseFirestore.instance.collection('imports');
+    DocumentReference docRef = ref.doc();
+    String docId = docRef.id;
+    String text = "Source Uploaded Successfully".tr();
+    ImportModel importModel =ImportModel(import: sourceName, id:docId);
+    docRef.set(importModel.toMap()).then((value) {
+      showToast(message: text, state: ToastState.SUCCESS);
+      emit(GetFileSuccessStates());
+    }).catchError((onError) {
+      print('pppppppppppppppppppppppp${onError.toString()}');
+      showToast(message: onError.toString(), state: ToastState.WARNING);
+      emit(GetFileErrorStates());
+    });
+  }
+List<ImportModel>imports=[];
+  void getImport() {
+    FirebaseFirestore.instance
+        .collection('imports')
+        .snapshots()
+        .listen((value) {
+      imports=[];
+      value.docs.forEach((element) {
+        imports.add(ImportModel.fromMap(element.data()));
+      });
+      emit(GetFileSuccessStates());
+    }).onError((onError) {
+      print('pppppppppppppppppppppppp${onError.toString()}');
+      showToast(message: onError.toString(), state: ToastState.WARNING);
+      emit(GetFileErrorStates());
+    });
+  }
+//add categories
+  void addSource({
+    required date,
+    required sourceName,
+    required num,
+    required total,
+    required price,
+    required context}) {
+    SourceModel sourceModel = SourceModel(
+      date: date,
+      price: price,
+      num: num,
+      total: total
+    );
+    String text = "Source Uploaded Successfully".tr();
+    FirebaseFirestore.instance
+        .collection('sources')
+        .doc(sourceName)
+        .collection('fatora')
+        .add(sourceModel.toMap()).then((value) {
+      showToast(message: text, state: ToastState.SUCCESS);
+      emit(GetFileSuccessStates());
+    }).catchError((onError) {
+      print('pppppppppppppppppppppppp${onError.toString()}');
+      showToast(message: onError.toString(), state: ToastState.WARNING);
+      emit(GetFileErrorStates());
+    });
+  }
+  List<SourceModel>sources=[];
+  void getSource(String name) {
+    FirebaseFirestore.instance
+        .collection('sources')
+        .doc(name)
+        .collection('fatora')
+        .get()
+       .then((value) {
+       sources=[];
+         value.docs.forEach((element) {
+         sources.add(SourceModel.fromMap(element.data()));
+         //emit(GetFileSuccessStates());
+       });
+      emit(GetFileSuccessStates());
+    }).catchError((onError) {
+      print('pppppppppppppppppppppppp${onError.toString()}');
+      showToast(message: onError.toString(), state: ToastState.WARNING);
+      emit(GetFileErrorStates());
     });
   }
 }

@@ -7,12 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
+import 'package:orders/modules/admin_screen/pdf_printer/pdf.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
 import 'dart:io';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:pdf/widgets.dart' as pw;
+
 class SearchByDateScreen extends StatefulWidget {
   SearchByDateScreen({super.key});
 
@@ -23,16 +26,12 @@ class SearchByDateScreen extends StatefulWidget {
 class _SearchByDateScreenState extends State<SearchByDateScreen> {
   DateTime firstDate = DateTime.now();
   DateTime endDate = DateTime.now();
-
   TimeOfDay firstTime = TimeOfDay.now();
-
   TimeOfDay lastTime = TimeOfDay.now();
-  String filterSelected="Select".tr();
-  List<String>filters=[
-    "Cancel",
-    "Confirm",
-    "Waiting"
-  ];
+  String filterSelected = "Select".tr();
+  List<OrderModel> selectedOrders = [];
+  pw.Document pdf = pw.Document();
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
@@ -44,19 +43,23 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
           child: Column(
             children: [
               DropdownButton(
-                focusColor: Theme.of(context).primaryColor,
+                focusColor: Theme
+                    .of(context)
+                    .primaryColor,
                 borderRadius: BorderRadius.circular(10),
                 hint: Text(filterSelected),
-                items:filters.map((filter) => DropdownMenuItem(
-                  child: Text(filter.tr()),
-                  value: filter.tr(),
-                )).toList(),
+                items: OrdersHomeCubit
+                    .get(context)
+                    .status
+                    .map((filter) =>
+                    DropdownMenuItem(
+                      child: Text(filter.tr()),
+                      value: filter.tr(),
+                    )).toList(),
                 onChanged: (val) {
                   if (val != null) {
                     filterSelected = val;
-                    setState(() {
-
-                    });
+                    setState(() {});
                   }
                 },
               ),
@@ -178,7 +181,6 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
                           ],
                         ),
                       )),
-                  if(filterSelected=="Confirm".tr())
                   Padding(
                     padding: const EdgeInsets.all(0.0),
                     child: TextButton(
@@ -203,7 +205,7 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
                           return listItem(
                               OrdersHomeCubit
                                   .get(context)
-                                  .searchOrdersDate[idx],
+                                  .searchOrdersDate[idx], idx,
                               ctx);
                         },
                         itemCount:
@@ -217,6 +219,31 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
                       Center(child: Text("Not Orders in this time".tr())),
                 ),
               ),
+              // if(OrdersHomeCubit.get(context).searchOrdersDate.isNotEmpty)
+              //   SizedBox(
+              //     width: double.infinity,
+              //     child: Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: MaterialButton(
+              //         color: Theme.of(context).primaryColor,
+              //         onPressed: ()async {
+              //           await printer();
+              //           selectedOrders.clear();
+              //           OrdersHomeCubit.get(context).searchOrdersByDate(
+              //             endDate: endDate.toString(),
+              //             firstTime: firstTime,
+              //             lastTime: lastTime,
+              //             startDate: firstDate.toString(),
+              //             filter: filterSelected,
+              //           );
+              //           navigateToWithReturn(context, PdfPrintOrdersScreen(pdf));
+              //         },
+              //         child: Text("Print Or Share".tr(),style: TextStyle(
+              //             color: Theme.of(context).scaffoldBackgroundColor
+              //         ),),
+              //       ),
+              //     ),
+              //   ),
             ],
           ),
         );
@@ -224,24 +251,164 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
     );
   }
 
-  Widget listItem(OrderModel order, ctx) {
+  Widget listItem(OrderModel order, int idx, ctx) {
     return InkWell(
       onTap: () {
-        navigateToWithReturn(ctx, UpdateOrdersScreen(order));
+        navigateToWithReturn(
+            ctx,
+            UpdateOrdersScreen(
+              orderModel: order,
+              editEmail: OrdersHomeCubit
+                  .get(context)
+                  .currentAdmin!
+                  .email,
+            ));
+      },
+      onLongPress: () {
+        order.isSelected = !order.isSelected;
+        if (order.isSelected) {
+          selectedOrders.add(order);
+          setState(() {});
+        } else {
+          selectedOrders.removeAt(idx);
+          setState(() {});
+        }
       },
       child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(child: Text('${"Order Name: ".tr()}${order.orderName}')),
-            Flexible(
-                child: Text(
-                  '${"Total Price: ".tr()}${order.totalPrice.toString()}',
-                )),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Flexible(
+                    child: Text('${"Order Name: ".tr()}${order.orderName}')),
+                Flexible(
+                  child: Text(
+                    order.serviceType,
+                  ),
+                ),
+                // order.isSelected
+                //     ? Icon(
+                //   Icons.check_circle,
+                //   color: Colors.green[700],
+                // )
+                //     : const Icon(
+                //   Icons.check_circle,
+                //   color: Colors.grey,
+                // )
+              ]),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                '${"Total Price: ".tr()}${order.totalPrice.toString()}',
+                maxLines: 100,
+              ),
+              if (order.editEmail != "")
+                Align(
+                  alignment: AlignmentDirectional.bottomEnd,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '${"edit By".tr()} ${order.editEmail} ${"to".tr()} ${order
+                          .statusOrder}',
+                      maxLines: 100,
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: Theme
+                              .of(context)
+                              .primaryColor
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void addPage(OrderModel orderModel) {
+    pdf.addPage(
+      pw.Page(build: (ctx) {
+        return pw.Column(
+          children: [
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Order Name: ".tr()}${orderModel.orderName}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Order Phone: ".tr()}${orderModel.orderPhone}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Order City: ".tr()}${orderModel.conservation}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Order Area: ".tr()}${orderModel.city}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Order Address: ".tr()} ${orderModel.address}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Item Name: ".tr()}${orderModel.type}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Service Type: ".tr()}${orderModel.serviceType}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text(orderModel.number != 0
+                ? '${"Order Number: ".tr()}${orderModel.number.toString()}'
+                : ""),
+            pw.SizedBox(
+              height: 15,
+            ),
+            //barcode
+            pw.Center(
+              child: pw.BarcodeWidget(
+                data: orderModel.barCode,
+                barcode: pw.Barcode.qrCode(
+                    errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
+                width: 200,
+                height: 200,
+              ),
+            ),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text(
+                '${"Date: ".tr()}${DateFormat().format(
+                    DateTime.parse(orderModel.date))}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Price".tr()}${orderModel.price.toString()}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text('${"Charging".tr()}${orderModel.salOfCharging.toString()}'),
+            pw.SizedBox(
+              height: 15,
+            ),
+            pw.Text("${"Total Price: ".tr()}${orderModel.totalPrice}"),
+          ],
+        );
+      }),
+    );
+  }
+
+  Future<void> printer() async {
+    for (int i = 0; i < selectedOrders.length; i++) {
+      addPage(selectedOrders[i]);
+    }
   }
 
   Future<void> _selectFirstDate(BuildContext context) async {
@@ -302,6 +469,7 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
   }
 
   void createExcelSheet() async {
+//    setState(() {});
     excel.Workbook workbook = excel.Workbook();
     excel.Worksheet sheet = workbook.worksheets[0];
     sheet.getRangeByIndex(1, 1).setText("Consignee_Name");
@@ -309,27 +477,29 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
     sheet.getRangeByIndex(1, 3).setText("Area");
     sheet.getRangeByIndex(1, 4).setText("Address");
     sheet.getRangeByIndex(1, 5).setText("Phone_1");
-    sheet.getRangeByIndex(1, 6).setText("Employee_Name");
-    sheet.getRangeByIndex(1, 7).setText("Number");
-    sheet.getRangeByIndex(1, 8).setText("Once");
-    sheet.getRangeByIndex(1, 9).setText("Cell");
+    sheet.getRangeByIndex(1, 6).setText("Order");
+    sheet.getRangeByIndex(1, 7).setText("Employee_Name");
+    sheet.getRangeByIndex(1, 8).setText("product");
+    sheet.getRangeByIndex(1, 9).setText("Charging");
     sheet.getRangeByIndex(1, 10).setText("Item_Name");
-    sheet.getRangeByIndex(1, 11).setText("Item_Description");
-    sheet.getRangeByIndex(1, 12).setText("COD");
-    sheet.getRangeByIndex(1, 13).setText("Weight");
-    sheet.getRangeByIndex(1, 14).setText("Size");
-    sheet.getRangeByIndex(1, 15).setText("Service_Type");
-    sheet.getRangeByIndex(1, 16).setText("notes");
+    sheet.getRangeByIndex(1, 11).setText("Quantity");
+    sheet.getRangeByIndex(1, 12).setText("Item_Description");
+    sheet.getRangeByIndex(1, 13).setText("COD");
+    sheet.getRangeByIndex(1, 14).setText("Weight");
+    sheet.getRangeByIndex(1, 15).setText("Size");
+    sheet.getRangeByIndex(1, 16).setText("Service_Type");
+    sheet.getRangeByIndex(1, 17).setText("notes");
 
     for (int i = 0; i < OrdersHomeCubit.get(context).searchOrdersDate.length; i++) {
       OrdersHomeCubit.get(context).updateOrder(
           orderName: OrdersHomeCubit.get(context).searchOrdersDate[i].orderName,
-          charging: true,
+          paper: OrdersHomeCubit.get(context).searchOrdersDate[i].paper,
           conservation: OrdersHomeCubit.get(context).searchOrdersDate[i].conservation,
+          isSelected: OrdersHomeCubit.get(context).searchOrdersDate[i].isSelected,
+          statusOrder: 'جاري الشحن',
           city: OrdersHomeCubit.get(context).searchOrdersDate[i].city,
+          editEmail: OrdersHomeCubit.get(context).searchOrdersDate[i].editEmail,
           address: OrdersHomeCubit.get(context).searchOrdersDate[i].address,
-          waiting: OrdersHomeCubit.get(context).searchOrdersDate[i].waiting,
-          confirm: OrdersHomeCubit.get(context).searchOrdersDate[i].confirm,
           type: OrdersHomeCubit.get(context).searchOrdersDate[i].type,
           barCode: OrdersHomeCubit.get(context).searchOrdersDate[i].barCode,
           employerName: OrdersHomeCubit.get(context).searchOrdersDate[i].employerName,
@@ -344,69 +514,55 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
           totalPrice: OrdersHomeCubit.get(context).searchOrdersDate[i].totalPrice,
           salOfCharging: OrdersHomeCubit.get(context).searchOrdersDate[i].salOfCharging,
           context: context);
-      sheet.getRangeByIndex(i + 2, 1)
-          .setText(OrdersHomeCubit
+      sheet.getRangeByIndex(i + 2, 1).setText(OrdersHomeCubit
           .get(context)
           .searchOrdersDate[i].orderName);
-      sheet.getRangeByIndex(i + 2, 2).setText(
-          OrdersHomeCubit
-              .get(context)
-              .searchOrdersDate[i].conservation);
-      sheet
-          .getRangeByIndex(i + 2, 3)
-          .setText(OrdersHomeCubit
+      sheet.getRangeByIndex(i + 2, 2).setText(OrdersHomeCubit
+          .get(context)
+          .searchOrdersDate[i].conservation);
+      sheet.getRangeByIndex(i + 2, 3).setText(OrdersHomeCubit
           .get(context)
           .searchOrdersDate[i].city);
-      sheet
-          .getRangeByIndex(i + 2, 4)
-          .setText(OrdersHomeCubit
+      sheet.getRangeByIndex(i + 2, 4).setText(OrdersHomeCubit
           .get(context)
           .searchOrdersDate[i].address);
-      sheet
-          .getRangeByIndex(i + 2, 5)
-          .setText(OrdersHomeCubit
+      sheet.getRangeByIndex(i + 2, 5).setText(OrdersHomeCubit
           .get(context)
           .searchOrdersDate[i].orderPhone);
-      sheet.getRangeByIndex(i + 2, 6).setText(
-          OrdersHomeCubit
-              .get(context)
-              .searchOrdersDate[i].employerName);
-      sheet.getRangeByIndex(i + 2, 7).setValue(" ");
+      sheet.getRangeByIndex(i + 2, 6).setText(" ");
+      sheet.getRangeByIndex(i + 2, 7).setText(OrdersHomeCubit
+          .get(context)
+          .searchOrdersDate[i].employerName);
       sheet.getRangeByIndex(i + 2, 8).setText(" ");
       sheet.getRangeByIndex(i + 2, 9).setText(" ");
-      sheet
-          .getRangeByIndex(i + 2, 10)
-          .setText(OrdersHomeCubit
+      sheet.getRangeByIndex(i + 2, 10).setText(OrdersHomeCubit
           .get(context)
           .searchOrdersDate[i].type);
-      sheet.getRangeByIndex(i + 2, 11).setText(" ");
-      sheet.getRangeByIndex(i + 2, 12).setNumber(
-          OrdersHomeCubit
-              .get(context)
-              .searchOrdersDate[i].totalPrice);
-      sheet.getRangeByIndex(i + 2, 13).setText(" ");
+      sheet.getRangeByIndex(i + 2, 11).setValue(OrdersHomeCubit
+          .get(context)
+          .searchOrdersDate[i].number);
+      sheet.getRangeByIndex(i + 2, 12).setText(" ");
+      sheet.getRangeByIndex(i + 2, 13).setNumber(OrdersHomeCubit
+          .get(context)
+          .searchOrdersDate[i].totalPrice);
       sheet.getRangeByIndex(i + 2, 14).setText(" ");
-      sheet.getRangeByIndex(i + 2, 15).setText(
-          OrdersHomeCubit
-              .get(context)
-              .searchOrdersDate[i].serviceType);
-      sheet
-          .getRangeByIndex(i + 2, 16)
-          .setText(OrdersHomeCubit
+      sheet.getRangeByIndex(i + 2, 15).setText(" ");
+      sheet.getRangeByIndex(i + 2, 16).setText(OrdersHomeCubit
+          .get(context)
+          .searchOrdersDate[i].serviceType);
+      sheet.getRangeByIndex(i + 2, 17).setText(OrdersHomeCubit
           .get(context)
           .searchOrdersDate[i].notes);
     }
     //save
-    final List<int> bytes = workbook.saveAsStream();
-
-    ///File('orders.xlsx').writeAsBytes(bytes);
+    final List<int>bytes = workbook.saveAsStream();
+    ///File('searchOrdersDate.xlsx').writeAsBytes(bytes);
     await workbook.save();
     workbook.dispose();
     final String path = (await getApplicationCacheDirectory()).path;
     final String fileName = '$path/searchOrdersDate.xlsx';
     final File file = File(fileName);
-    await file.writeAsBytes(bytes, flush: true);
+    await file.writeAsBytes(bytes, flush: true,);
     OpenFile.open(fileName);
-    //Share.share(fileName);
   }
 }

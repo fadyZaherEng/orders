@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:orders/models/user_profile.dart';
 import 'package:orders/modules/admin_screen/show_order/show_orders.dart';
 import 'package:orders/modules/login/bloc/states.dart';
 import 'package:orders/shared/components/components.dart';
@@ -12,7 +13,6 @@ import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class OrdersAppLoginCubit extends Cubit<OrdersAppLogInStates> {
   OrdersAppLoginCubit() : super(OrdersAppLogInInitialStates());
-
   static OrdersAppLoginCubit get(context) => BlocProvider.of(context);
   bool isAdmin = false;
   String adminText="I\"m Admin?".tr();
@@ -37,9 +37,30 @@ class OrdersAppLoginCubit extends Cubit<OrdersAppLogInStates> {
       email: email,
       password: password,
     ).then((value) {
-      showToast(message:"Welcome".tr(), state: ToastState.SUCCESS);
-      emit(OrdersAppLogInSuccessStates(value.user!.uid));
-      print(value.user!.email);
+     FirebaseFirestore.instance
+         .collection("users")
+         .get()
+         .then((val) {
+           bool flag=false;
+           for (var element in val.docs) {
+             UserProfile userProfile=UserProfile.fromMap(element.data());
+             if(userProfile.email==email&&!userProfile.block){
+               flag=true;
+             }
+           }
+           if(flag){
+             showToast(message:"Welcome".tr(), state: ToastState.SUCCESS);
+             emit(OrdersAppLogInSuccessStates(value.user!.uid));
+             print(value.user!.email);
+           }
+           if(!flag){
+             showToast(message:"Not Register", state: ToastState.WARNING);
+             emit(OrdersAppLogInErrorStates("Not Register"));
+           }
+       })
+         .catchError((onError){
+       emit(OrdersAppLogInErrorStates(onError.toString()));
+     });
     }).catchError((onError) {
       emit(OrdersAppLogInErrorStates(onError.toString()));
     });

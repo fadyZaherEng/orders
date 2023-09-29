@@ -29,6 +29,7 @@ class OrdersAppRegisterCubit extends Cubit<OrdersAppRegisterStates>
   var emailController=TextEditingController();
   var nameController=TextEditingController();
   var phoneController=TextEditingController();
+
   void signUp(){
     emit(OrdersAppRegisterLoadingStates());
     FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -51,8 +52,11 @@ class OrdersAppRegisterCubit extends Cubit<OrdersAppRegisterStates>
     UserProfile profile=UserProfile(
         phone: phoneController.text,
         name: nameController.text,
+        password: passwordController.text,
         email: emailController.text,
         uid: uid,
+        isAdmin: false,
+        block: true,
     );
     CollectionReference users = FirebaseFirestore.instance.collection('users');
    return users.doc(uid).set(profile.toMap());

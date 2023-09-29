@@ -2,7 +2,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:orders/layout/home_screen.dart';
+import 'package:orders/modules/admin_screen/show_order/show_orders.dart';
 import 'package:orders/modules/login/login.dart';
+import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,9 +21,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Timer(const Duration(seconds: 2), () {
-      if (name == 'home') {
+      if(name=="Admin"){
+        navigateToWithoutReturn(context, const AdminShowOrders());
+      }
+      else if (name == 'home') {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) =>  HomeScreen()));
+            MaterialPageRoute(builder: (context) =>  const HomeScreen()));
       } else {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => LogInScreen()));

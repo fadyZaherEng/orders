@@ -58,10 +58,11 @@ dependencies:
   screenshot:
   permission_handler:
   simple_barcode_scanner:
+  expansion_tile_group:
   easy_localization:
   flutter_phoenix:
   syncfusion_flutter_xlsio:
-
+  url_launcher:
 
 dev_dependencies:
   flutter_test:

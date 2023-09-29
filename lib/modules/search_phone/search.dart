@@ -23,16 +23,28 @@ class SearchOrderPhoneScreen extends StatelessWidget {
         builder: (ctx, state) {
           return Scaffold(
             appBar: AppBar(
-              leading: Text(
-                  '${"Total Price: ".tr()} ${OrdersHomeCubit
-                      .get(context)
-                      .searchOrderPhonePrice}'),
-              title: Text(
-                  '${"Total num: ".tr()} ${OrdersHomeCubit
-                      .get(context)
-                      .searchOrderPhoneNum}'),
-              centerTitle: true,
+              actions: [Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                      '${"Total Price: ".tr()} ${OrdersHomeCubit
+                          .get(context)
+                          .searchOrderPhonePrice}',style: TextStyle(
+                    color: Theme.of(context).primaryColor
+                  ),),
+                ),
+              )],
+              title: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(
+                    '${"Total num: ".tr()} ${OrdersHomeCubit
+                        .get(context)
+                        .searchOrderPhoneNum}',style: TextStyle(
+                color: Theme.of(context).primaryColor
+              ),),
+              ),
               titleSpacing: 0,
+              automaticallyImplyLeading: false,
             ),
             body: Column(
               children: [
@@ -171,6 +183,7 @@ class SearchOrderPhoneScreen extends StatelessWidget {
               //barcode
               Center(
                 child: BarcodeWidget(
+                  color: Colors.white,
                   data: orderModel.barCode,
                   barcode: Barcode.qrCode(
                       errorCorrectLevel: BarcodeQRCorrectionLevel.high),

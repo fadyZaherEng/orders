@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:orders/layout/home_screen.dart';
+import 'package:orders/modules/login/login.dart';
 import 'package:orders/modules/register/bloc/cubit.dart';
 import 'package:orders/modules/register/bloc/states.dart';
 import 'package:orders/shared/components/components.dart';
@@ -26,7 +27,7 @@ class RegisterScreen extends StatelessWidget {
                 message: "Create Account Successfully".tr(),
                 state: ToastState.SUCCESS);
             SharedHelper.save(value: state.uid, key: 'uid');
-            navigateToWithoutReturn(context, HomeScreen());
+            navigateToWithoutReturn(context, LogInScreen());
           }
           if (state is OrdersAppRegisterErrorStates) {
             showToast(message: state.error.toString(), state: ToastState.ERROR);

@@ -99,6 +99,8 @@ class AddAdminScreen extends StatelessWidget {
                                       email: emailController.text,
                                       password: passwordController.text
                                   );
+                                  emailController.text="";
+                                  passwordController.text="";
                                   FocusScope.of(context).unfocus();
                                 }
                               },

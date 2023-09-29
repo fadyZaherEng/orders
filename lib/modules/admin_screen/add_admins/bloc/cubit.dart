@@ -45,13 +45,14 @@ class OrdersAppAddAdminCubit extends Cubit<OrdersAppAddAdminStates> {
     FirebaseFirestore.instance.collection('admins');
     DocumentReference docRef = ref.doc();
     String docId = docRef.id;
-    AdminModel adminModel = AdminModel(email: email,
-        showOrders: false,
-        showCategories: false,
+    AdminModel adminModel = AdminModel(
+        email: email,
+        showOrders: true,
+        showCategories: true,
         id: docId,
-        addCat: false,
-        saveOrder: false,
-        removeOrder: false,
+        addCat: true,
+        saveOrder: true,
+        removeOrder: true,
         password: password);
     emit(OrdersAppAddAdminAdminLoadingStates());
         docRef.set(adminModel.toMap())
