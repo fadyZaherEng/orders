@@ -183,6 +183,8 @@ class _TodayOrdersState extends State<TodayOrders> {
                     ),
                   ),
                 ),
+              Text(
+                  '${"Email: ".tr()}${order.employerEmail}'),
             ],
           ),
         ),

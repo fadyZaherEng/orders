@@ -1309,18 +1309,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         emit(ViewFileSuccessStates());
       });
 
-      if (filter == "Select".tr()) {
-        event.docs.forEach((element) {
-          OrderModel orderModel = OrderModel.fromMap(element.data());
-          if (orderModel.date.split(' ')[0] ==
-              DateTime.now().toString().split(' ')[0]) {
-            todayOrders.add(orderModel);
-            todayOrdersPrice += orderModel.totalPrice;
-            todayOrdersNumber++;
-          }
-          emit(ViewFileSuccessStates());
-        });
-      }
       emit(ViewFileSuccessStates());
     }).onError((handleError) {
       emit(ViewFileErrorStates());
@@ -1447,8 +1435,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
   ////////////////////////////////////////////////////
-  Set<UserOrders> userFilterOrders = {};
-
+  Map<String,UserOrders> userFilterOrders = {};
   void userOrdersFilter() {
     FirebaseFirestore.instance
         .collection('users')
@@ -1460,12 +1447,15 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         String name = element['name'];
         int numToday = 0;
         int numAll = 0;
+        String key=element.id;
         FirebaseFirestore.instance
             .collection('orders')
             .snapshots()
-            .listen((orders) {
+            .listen((orders)async {
           orders.docs.forEach((order) {
             OrderModel orderModel = OrderModel.fromMap(order.data());
+            print(email);
+            print(orderModel.employerEmail);
             if (orderModel.employerEmail == email) {
               numAll++;
               if (orderModel.date.split(' ')[0] ==
@@ -1474,22 +1464,26 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
               }
             }
           });
-        }).onError((handleError) {
-          showToast(message: handleError.toString(), state: ToastState.ERROR);
-        });
-        userFilterOrders.add(
-          UserOrders(
+          print(numAll);
+          UserOrders userOrders= UserOrders(
             email: email,
             numOfAllOrders: numAll,
             numOfTodayOrders: numToday,
             name: name,
-          ),
-        );
+          );
+          if(!userFilterOrders.containsKey(key)) {
+            userFilterOrders[key]=userOrders;
+          }
+          print(userFilterOrders.length);
+        }).onError((handleError) {
+          showToast(message: handleError.toString(), state: ToastState.ERROR);
+        });
       });
     }).onError((handleError) {
       showToast(message: handleError.toString(), state: ToastState.ERROR);
     });
   }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void addStatus(String status) {
     FirebaseFirestore.instance
@@ -1583,14 +1577,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         }
         emit(ViewFileSuccessStates());
       });
-      if (filter == "Select".tr()) {
-        event.docs.forEach((element) {
-          OrderModel orderModel = OrderModel.fromMap(element.data());
-          orders.add(orderModel);
-          totalOfAllOrders += orderModel.totalPrice;
-          emit(ViewFileSuccessStates());
-        });
-      }
       emit(ViewFileSuccessStates());
     }).onError((handleError) {
       emit(ViewFileErrorStates());

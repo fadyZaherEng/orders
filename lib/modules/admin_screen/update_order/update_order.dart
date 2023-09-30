@@ -52,7 +52,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
     priceController.addListener(() {
       print(priceController.text);
       double p =
-      priceController.text != "" ? double.parse(priceController.text) : 0;
+          priceController.text != "" ? double.parse(priceController.text) : 0;
       double s = salOfChargingController.text != ""
           ? double.parse(salOfChargingController.text)
           : 0;
@@ -64,7 +64,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
     salOfChargingController.addListener(() {
       print(priceController.text);
       double p =
-      priceController.text != "" ? double.parse(priceController.text) : 0;
+          priceController.text != "" ? double.parse(priceController.text) : 0;
       double s = salOfChargingController.text != ""
           ? double.parse(salOfChargingController.text)
           : 0;
@@ -83,10 +83,11 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
     orderCityController.text = widget.orderModel.city;
     orderAddressController.text = widget.orderModel.address;
     orderTypeController.text = widget.orderModel.type;
-    orderNumberController.text = widget.orderModel.number != 0 ?
-    widget.orderModel.number.toString() : "";
-    city=widget.orderModel.city;
-    stateValue=widget.orderModel.conservation;
+    orderNumberController.text = widget.orderModel.number != 0
+        ? widget.orderModel.number.toString()
+        : "";
+    city = widget.orderModel.city;
+    stateValue = widget.orderModel.conservation;
   }
 
   @override
@@ -124,9 +125,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   prefixIcon: const Icon(Icons.person),
                                   text: "Order Name: ".tr(),
                                   validate: (val) {
-                                    if (val
-                                        .toString()
-                                        .isEmpty) {
+                                    if (val.toString().isEmpty) {
                                       return "Please Enter Order Name: ".tr();
                                     }
                                     return null;
@@ -141,9 +140,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   prefixIcon: const Icon(Icons.phone),
                                   text: "Order Phone: ".tr(),
                                   validate: (val) {
-                                    if (val
-                                        .toString()
-                                        .isEmpty) {
+                                    if (val.toString().isEmpty) {
                                       return "Please Enter Order Phone: ".tr();
                                     }
                                     return null;
@@ -152,49 +149,44 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               const SizedBox(
                                 height: 5,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: SizedBox(
+                                  width: MediaQuery.sizeOf(context).width*0.7,
+                                  child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: DropdownButton(
-                                        dropdownColor: Theme.of(context).primaryColor,
-                                        focusColor:
-                                        Theme.of(context).scaffoldBackgroundColor,
+                                        dropdownColor:
+                                            Theme.of(context).primaryColor,
+                                        focusColor: Theme.of(context)
+                                            .scaffoldBackgroundColor,
                                         underline: Container(),
                                         hint: Text(stateValue),
-                                        icon: Icon(
-                                          Icons.baby_changing_station,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
                                         elevation: 0,
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium!
                                             .copyWith(
-                                            color: Theme.of(context)
-                                                .scaffoldBackgroundColor),
+                                                color: Theme.of(context)
+                                                    .scaffoldBackgroundColor),
                                         items: OrdersHomeCubit.get(context)
                                             .states
                                             .map(
                                               (e) => DropdownMenuItem(
-                                            value: e.state,
-                                            child: InkWell(
-                                              onTap: () {
-                                               // city = "Select City".tr();
-                                                Navigator.pop(context);
-                                                stateValue = e.state;
-                                                OrdersHomeCubit.get(context)
-                                                    .getCites(stateValue);
-                                                setState(() {});
-                                              },
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(10.0),
-                                                child: Text(e.state),
+                                                value: e.state,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    // city = "Select City".tr();
+                                                    Navigator.pop(context);
+                                                    stateValue = e.state;
+                                                    OrdersHomeCubit.get(context)
+                                                        .getCites(stateValue);
+                                                    setState(() {});
+                                                  },
+                                                  child: Text(e.state),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        )
+                                            )
                                             .toList(),
                                         onChanged: (val) {
                                           if (val != null) {
@@ -205,43 +197,44 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                           }
                                         }),
                                   ),
-                                  Padding(
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: SizedBox(
+                                  width: MediaQuery.sizeOf(context).width*0.7,
+                                  child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: DropdownButton(
-                                        dropdownColor: Theme.of(context).primaryColor,
-                                        focusColor:
-                                        Theme.of(context).scaffoldBackgroundColor,
+                                        dropdownColor:
+                                            Theme.of(context).primaryColor,
+                                        focusColor: Theme.of(context)
+                                            .scaffoldBackgroundColor,
                                         underline: Container(),
                                         hint: Text(city),
-                                        icon: Icon(
-                                          Icons.location_city,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
+
                                         elevation: 0,
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium!
                                             .copyWith(
-                                            color: Theme.of(context)
-                                                .scaffoldBackgroundColor),
+                                                color: Theme.of(context)
+                                                    .scaffoldBackgroundColor),
                                         items: OrdersHomeCubit.get(context)
                                             .cities
                                             .map(
                                               (e) => DropdownMenuItem(
-                                            value: e,
-                                            child: InkWell(
-                                              onTap: () {
-                                                Navigator.pop(context);
-                                                city = e;
-                                                setState(() {});
-                                              },
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(10.0),
-                                                child: Text(e),
+                                                value: e,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    city = e;
+                                                    setState(() {});
+                                                  },
+                                                  child: Text(e),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        )
+                                            )
                                             .toList(),
                                         onChanged: (val) {
                                           if (val != null) {
@@ -250,7 +243,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                           }
                                         }),
                                   ),
-                                ],
+                                ),
                               ),
                               const SizedBox(
                                 height: 5,
@@ -261,9 +254,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   prefixIcon: const Icon(Icons.location_city),
                                   text: "Order Address: ".tr(),
                                   validate: (val) {
-                                    if (val
-                                        .toString()
-                                        .isEmpty) {
+                                    if (val.toString().isEmpty) {
                                       return "Please Enter Order Address: "
                                           .tr();
                                     }
@@ -276,13 +267,11 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               defaultTextForm(
                                   context: context,
                                   Controller: orderTypeController,
-                                  prefixIcon: const Icon(
-                                      Icons.merge_type_outlined),
+                                  prefixIcon:
+                                      const Icon(Icons.merge_type_outlined),
                                   text: "Item Name: ".tr(),
                                   validate: (val) {
-                                    if (val
-                                        .toString()
-                                        .isEmpty) {
+                                    if (val.toString().isEmpty) {
                                       return "Please Enter Item Name: ".tr();
                                     }
                                     return null;
@@ -291,32 +280,40 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: DropdownButton(
-                                    dropdownColor: Theme.of(context).primaryColor,
-                                    focusColor: Theme.of(context).scaffoldBackgroundColor,
+                                    dropdownColor:
+                                        Theme.of(context).primaryColor,
+                                    focusColor: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                     underline: Container(),
                                     hint: Text(
                                       widget.orderModel.serviceType,
                                     ),
                                     elevation: 0,
-                                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                        color: Theme.of(context).scaffoldBackgroundColor),
-                                    items: serviceType.map(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor),
+                                    items: serviceType
+                                        .map(
                                           (e) => DropdownMenuItem(
-                                        value: e,
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            widget.orderModel.serviceType= e;
-                                            setState(() {});
-                                          },
-                                          child: Text(e),
-                                        ),
-                                      ),
-                                    )
+                                            value: e,
+                                            child: InkWell(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                widget.orderModel.serviceType =
+                                                    e;
+                                                setState(() {});
+                                              },
+                                              child: Text(e),
+                                            ),
+                                          ),
+                                        )
                                         .toList(),
                                     onChanged: (val) {
                                       if (val != null) {
-                                        widget.orderModel.serviceType= val;
+                                        widget.orderModel.serviceType = val;
                                         setState(() {});
                                       }
                                     }),
@@ -325,34 +322,42 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: DropdownButton(
                                     key: Key(widget.orderModel.barCode),
-                                    dropdownColor: Theme.of(context).primaryColor,
-                                    focusColor: Theme.of(context).scaffoldBackgroundColor,
+                                    dropdownColor:
+                                        Theme.of(context).primaryColor,
+                                    focusColor: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                     underline: Container(),
                                     hint: Text(
                                       widget.orderModel.statusOrder,
                                       key: Key(widget.orderModel.barCode),
                                     ),
                                     elevation: 0,
-                                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                        color: Theme.of(context).scaffoldBackgroundColor),
-                                    items: OrdersHomeCubit.get(context).status
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor),
+                                    items: OrdersHomeCubit.get(context)
+                                        .status
                                         .map(
                                           (e) => DropdownMenuItem(
-                                        value: e,
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            widget.orderModel.statusOrder= e;
-                                            setState(() {});
-                                          },
-                                          child: Text(e),
-                                        ),
-                                      ),
-                                    )
+                                            value: e,
+                                            child: InkWell(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                widget.orderModel.statusOrder =
+                                                    e;
+                                                setState(() {});
+                                              },
+                                              child: Text(e),
+                                            ),
+                                          ),
+                                        )
                                         .toList(),
                                     onChanged: (val) {
                                       if (val != null) {
-                                        widget.orderModel.statusOrder= val;
+                                        widget.orderModel.statusOrder = val;
                                         setState(() {});
                                       }
                                     }),
@@ -360,16 +365,14 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               const SizedBox(
                                 height: 5,
                               ),
-                              if(widget.orderModel.number != 0)
+                              if (widget.orderModel.number != 0)
                                 defaultTextForm(
                                     context: context,
                                     Controller: orderNumberController,
                                     prefixIcon: const Icon(Icons.numbers),
                                     text: "Order Number: ".tr(),
                                     validate: (val) {
-                                      if (val
-                                          .toString()
-                                          .isEmpty) {
+                                      if (val.toString().isEmpty) {
                                         return "Please Enter Order Number: "
                                             .tr();
                                       }
@@ -383,12 +386,13 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               Center(
                                 child: BarcodeWidget(
                                   color: SharedHelper.get(key: 'theme') ==
-                                      'Light Theme' ? Colors.black : Colors
-                                      .white,
+                                          'Light Theme'
+                                      ? Colors.black
+                                      : Colors.white,
                                   data: widget.orderModel.barCode,
                                   barcode: Barcode.qrCode(
                                       errorCorrectLevel:
-                                      BarcodeQRCorrectionLevel.high),
+                                          BarcodeQRCorrectionLevel.high),
                                   width: 200,
                                   height: 150,
                                 ),
@@ -396,12 +400,9 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               const SizedBox(
                                 height: 5,
                               ),
-                              Text(
-                                  SharedHelper.get(key: 'lang') == 'arabic' ?
-                                  '${"Date: ".tr()}$arabicDate' :
-                                  '${"Date: ".tr()}${DateFormat().format(
-                                      DateTime.parse(widget.orderModel.date))}'
-                              ),
+                              Text(SharedHelper.get(key: 'lang') == 'arabic'
+                                  ? '${"Date: ".tr()}$arabicDate'
+                                  : '${"Date: ".tr()}${DateFormat().format(DateTime.parse(widget.orderModel.date))}'),
                               const SizedBox(
                                 height: 5,
                               ),
@@ -411,9 +412,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   prefixIcon: const Icon(Icons.price_check),
                                   text: "Price".tr(),
                                   validate: (val) {
-                                    if (val
-                                        .toString()
-                                        .isEmpty) {
+                                    if (val.toString().isEmpty) {
                                       return "Please Enter total price".tr();
                                     }
                                     return null;
@@ -426,12 +425,10 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                   context: context,
                                   Controller: salOfChargingController,
                                   prefixIcon:
-                                  const Icon(Icons.charging_station),
+                                      const Icon(Icons.charging_station),
                                   text: "Charging".tr(),
                                   validate: (val) {
-                                    if (val
-                                        .toString()
-                                        .isEmpty) {
+                                    if (val.toString().isEmpty) {
                                       return "Please Enter Charging".tr();
                                     }
                                     return null;
@@ -453,18 +450,12 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if (OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin != null && OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin!
-                          .saveOrder)
+                      if (OrdersHomeCubit.get(context).currentAdmin != null &&
+                          OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
                         Padding(
                           padding: const EdgeInsets.all(4.0), //tff all
                           child: MaterialButton(
-                            color: Theme
-                                .of(context)
-                                .primaryColor,
+                            color: Theme.of(context).primaryColor,
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
                                 OrdersHomeCubit.get(context).updateOrder(
@@ -480,21 +471,21 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                     address: orderAddressController.text,
                                     type: orderTypeController.text,
                                     barCode: widget.orderModel.barCode,
-                                    employerName: widget.orderModel
-                                        .employerName,
+                                    employerName:
+                                        widget.orderModel.employerName,
                                     employerPhone:
-                                    widget.orderModel.employerPhone,
+                                        widget.orderModel.employerPhone,
                                     employerEmail:
-                                    widget.orderModel.employerEmail,
+                                        widget.orderModel.employerEmail,
                                     orderPhone: orderPhoneController.text,
                                     date: widget.orderModel.date,
-                                    number: widget.orderModel.number != 0 ?
-                                     int.parse(
-                                        orderNumberController.text):0,
+                                    number: widget.orderModel.number != 0
+                                        ? int.parse(orderNumberController.text)
+                                        : 0,
                                     price: widget.orderModel.price,
                                     totalPrice: widget.orderModel.totalPrice,
-                                    salOfCharging: widget.orderModel
-                                        .salOfCharging,
+                                    salOfCharging:
+                                        widget.orderModel.salOfCharging,
                                     context: context);
                               }
                             },
@@ -504,9 +495,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                 fontWeight: FontWeight.normal,
                                 fontSize: 14,
                                 color:
-                                Theme
-                                    .of(context)
-                                    .scaffoldBackgroundColor,
+                                    Theme.of(context).scaffoldBackgroundColor,
                               ),
                             ),
                           ),
@@ -562,18 +551,14 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                       //       ),
                       //     ),
                       //   ),
-                      if (OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin != null && OrdersHomeCubit
-                          .get(context)
-                          .currentAdmin!
-                          .removeOrder)
+                      if (OrdersHomeCubit.get(context).currentAdmin != null &&
+                          OrdersHomeCubit.get(context)
+                              .currentAdmin!
+                              .removeOrder)
                         Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: MaterialButton(
-                            color: Theme
-                                .of(context)
-                                .primaryColor,
+                            color: Theme.of(context).primaryColor,
                             onPressed: () {
                               OrdersHomeCubit.get(context).removeOrders(
                                   docId: widget.orderModel.barCode,
@@ -584,9 +569,8 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 14,
-                                color: Theme
-                                    .of(context)
-                                    .scaffoldBackgroundColor,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
                               ),
                             ),
                           ),
@@ -645,14 +629,14 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                         child: Text(
                           'Print Or Share'.tr(),
                           style: TextStyle(
-                            color: Theme.of(context).scaffoldBackgroundColor
-                          ),
+                              color: Theme.of(context).scaffoldBackgroundColor),
                         ),
                       ),
-                      IconButton(onPressed: () {
-                        makingPhoneCall(orderPhoneController.text);
-                      }, icon: const Icon(Icons.phone)),
-
+                      IconButton(
+                          onPressed: () {
+                            makingPhoneCall(orderPhoneController.text);
+                          },
+                          icon: const Icon(Icons.phone)),
                     ],
                   ),
                 ),
@@ -681,5 +665,4 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
     arabicDate = formatted;
     setState(() {});
   }
-
 }

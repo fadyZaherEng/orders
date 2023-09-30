@@ -207,6 +207,8 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                     ),
                   ),
                 ),
+              Text(
+                '${"Email: ".tr()}${order.employerEmail}'),
             ],
           ),
         ),

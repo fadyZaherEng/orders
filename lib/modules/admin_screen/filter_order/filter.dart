@@ -15,9 +15,15 @@ class FilterOrdersScreen extends StatefulWidget {
 }
 
 class _FilterOrdersScreenState extends State<FilterOrdersScreen> {
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    OrdersHomeCubit.get(context).userOrdersFilter();
+  }
   @override
   Widget build(BuildContext context) {
+    print('ffffffffffffff${OrdersHomeCubit.get(context).userFilterOrders.length}');
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
       listener: (ctx, state) {},
       builder: (ctx, state) {
@@ -29,9 +35,9 @@ class _FilterOrdersScreenState extends State<FilterOrdersScreen> {
                 condition: OrdersHomeCubit.get(context).userFilterOrders.isNotEmpty,
                 builder: (ctx) => ListView.separated(
                   itemBuilder: (ctx, idx) {
-                    return listItem(OrdersHomeCubit.get(context).userFilterOrders.elementAt(idx), ctx);
+                    return listItem(OrdersHomeCubit.get(context).userFilterOrders.values.elementAt(idx), ctx);
                   },
-                  itemCount: OrdersHomeCubit.get(context).userFilterOrders.length,
+                  itemCount: OrdersHomeCubit.get(context).userFilterOrders.keys.length,
                   separatorBuilder: (ctx, idx) => mySeparator(context),
                 ),
                 fallback: (ctx) => Center(child:Text("Not Found Order".tr())) ),

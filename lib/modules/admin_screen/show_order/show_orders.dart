@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
+import 'package:orders/layout/home_screen.dart';
 import 'package:orders/modules/admin_remove/remove_cat/remove_cat.dart';
 import 'package:orders/modules/admin_remove/remove_import/remove_import.dart';
 import 'package:orders/modules/admin_remove/remove_money/remove_money.dart';
@@ -400,6 +401,16 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                             navigateToWithReturn(context, AddPapersScreen());
                           },
                           child: Text("Add Page".tr()),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: "add order",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(context,const HomeScreen());
+                          },
+                          child: Text("Add Order".tr()),
                         ),
                       ),
                       DropdownMenuItem(

@@ -322,6 +322,8 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
                     ),
                   ),
                 ),
+              Text(
+                  '${"Email: ".tr()}${order.employerEmail}'),
             ],
           ),
         ),
