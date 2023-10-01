@@ -176,7 +176,6 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                                 value: e.state,
                                                 child: InkWell(
                                                   onTap: () {
-                                                    // city = "Select City".tr();
                                                     Navigator.pop(context);
                                                     stateValue = e.state;
                                                     OrdersHomeCubit.get(context)
@@ -212,7 +211,6 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                                             .scaffoldBackgroundColor,
                                         underline: Container(),
                                         hint: Text(city),
-
                                         elevation: 0,
                                         style: Theme.of(context)
                                             .textTheme
@@ -450,8 +448,8 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if (OrdersHomeCubit.get(context).currentAdmin != null &&
-                          OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
+                      // if (OrdersHomeCubit.get(context).currentAdmin != null &&
+                      //     OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
                         Padding(
                           padding: const EdgeInsets.all(4.0), //tff all
                           child: MaterialButton(

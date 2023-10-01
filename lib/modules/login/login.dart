@@ -27,7 +27,10 @@ class LogInScreen extends StatelessWidget {
             showToast(
                 message:"Logged Successfully".tr() , state: ToastState.SUCCESS);
             SharedHelper.save(value: state.uid, key: 'uid');
-            navigateToWithoutReturn(context, HomeScreen());
+            if(SharedHelper.get(key: 'adminEmail')!=null) {
+              SharedHelper.remove(key: 'adminEmail');
+            }
+            navigateToWithoutReturn(context, const HomeScreen());
           }
           if (state is OrdersAppLogInErrorStates) {
             showToast(message: state.error.toString(), state: ToastState.ERROR);

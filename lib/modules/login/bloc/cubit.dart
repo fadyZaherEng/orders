@@ -104,6 +104,9 @@ class OrdersAppLoginCubit extends Cubit<OrdersAppLogInStates> {
             if(admin['password']==password&&admin['email']==email){
               adminFound=true;
               SharedHelper.save(value: email, key:'adminEmail');
+              if(SharedHelper.get(key: 'uid')!=null) {
+                SharedHelper.remove(key: 'uid');
+              }
               showToast(message:"Welcome".tr(), state: ToastState.SUCCESS);
               emit(OrdersAppLogInAdminSuccessStates('admin'));
               navigateToWithoutReturn(context, const AdminShowOrders());

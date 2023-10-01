@@ -27,6 +27,9 @@ class RegisterScreen extends StatelessWidget {
                 message: "Create Account Successfully".tr(),
                 state: ToastState.SUCCESS);
             SharedHelper.save(value: state.uid, key: 'uid');
+           if(SharedHelper.get(key: 'adminEmail')!=null) {
+             SharedHelper.remove(key: 'adminEmail');
+           }
             navigateToWithoutReturn(context, LogInScreen());
           }
           if (state is OrdersAppRegisterErrorStates) {

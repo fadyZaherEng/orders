@@ -77,6 +77,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     });
   }
   String res="";
+  String status="";
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
@@ -110,8 +111,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
             OrdersHomeCubit.get(context).searchOrderBarcode!.number != 0
                 ? OrdersHomeCubit.get(context).searchOrderBarcode!.number.toString()
                 : "";
+            if(status==""){
+              status=OrdersHomeCubit.get(context).searchOrderBarcode!.statusOrder;
+            }
           }
-
           return Scaffold(
             body: SafeArea(
               child: Column(
@@ -301,6 +304,51 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                           const SizedBox(
                                             height: 5,
                                           ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: DropdownButton(
+                                                dropdownColor:
+                                                Theme.of(context).primaryColor,
+                                                focusColor: Theme.of(context)
+                                                    .scaffoldBackgroundColor,
+                                                underline: Container(),
+                                                hint: Text(
+                                                  status,
+                                                  key: Key(status),
+                                                ),
+                                                elevation: 0,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium!
+                                                    .copyWith(
+                                                    color: Theme.of(context)
+                                                        .scaffoldBackgroundColor),
+                                                items: OrdersHomeCubit.get(context)
+                                                    .status
+                                                    .map(
+                                                      (e) => DropdownMenuItem(
+                                                    value: e,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        Navigator.pop(context);
+                                                        status = e;
+                                                        setState(() {});
+                                                      },
+                                                      child: Text(e),
+                                                    ),
+                                                  ),
+                                                )
+                                                    .toList(),
+                                                onChanged: (val) {
+                                                  if (val != null) {
+                                                    status = val;
+                                                    setState(() {});
+                                                  }
+                                                }),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
                                           if(OrdersHomeCubit.get(context).searchOrderBarcode!.number!=0)
                                           defaultTextForm(
                                               context: context,
@@ -411,7 +459,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                                     orderNameController.text,
                                                 notes: OrdersHomeCubit.get(context).searchOrderBarcode!.notes,
                                                 paper: OrdersHomeCubit.get(context).searchOrderBarcode!.paper,
-                                                 statusOrder: OrdersHomeCubit.get(context).searchOrderBarcode!.statusOrder,
+                                                 statusOrder: status,
                                                 serviceType: orderServiceController.text,
                                                 conservation:
                                                     orderStateController.text,

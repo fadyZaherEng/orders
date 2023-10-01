@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
-import 'package:orders/layout/home_screen.dart';
 import 'package:orders/modules/admin_remove/remove_cat/remove_cat.dart';
 import 'package:orders/modules/admin_remove/remove_import/remove_import.dart';
 import 'package:orders/modules/admin_remove/remove_money/remove_money.dart';
@@ -14,6 +13,7 @@ import 'package:orders/modules/admin_screen/add%20papers/papers.dart';
 import 'package:orders/modules/admin_screen/add_admins/add_admin.dart';
 import 'package:orders/modules/admin_screen/add_cat/add_cat.dart';
 import 'package:orders/modules/admin_screen/add_city/city.dart';
+import 'package:orders/modules/admin_screen/add_o/add.dart';
 import 'package:orders/modules/admin_screen/add_source/source.dart';
 import 'package:orders/modules/admin_screen/add_states/states.dart';
 import 'package:orders/modules/admin_screen/change_password/pass.dart';
@@ -22,7 +22,7 @@ import 'package:orders/modules/admin_screen/filter_order/filter.dart';
 import 'package:orders/modules/admin_screen/gain/gain.dart';
 import 'package:orders/modules/admin_screen/get_cat/cat.dart';
 import 'package:orders/modules/admin_screen/money/money.dart';
-import 'package:orders/modules/admin_screen/permission/permission.dart';
+import 'package:orders/modules/admin_screen/search_name/name.dart';
 import 'package:orders/modules/admin_screen/search_using_barcode/scan.dart';
 import 'package:orders/modules/admin_screen/showPapers/papers.dart';
 import 'package:orders/modules/admin_screen/users/permision.dart';
@@ -370,6 +370,17 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                           child: Text("Search Phone".tr()),
                         ),
                       ),
+                    DropdownMenuItem(
+                      value: "phone",
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          navigateToWithReturn(context, SearchOrderNameScreen());
+                        },
+                        child: Text("Search Name".tr()),
+                      ),
+                    ),
+
                       DropdownMenuItem(
                         value: "filter",
                         child: InkWell(
@@ -408,7 +419,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                         child: InkWell(
                           onTap: () {
                             Navigator.pop(context);
-                            navigateToWithReturn(context,const HomeScreen());
+                            navigateToWithReturn(context, AddOrderScreen());
                           },
                           child: Text("Add Order".tr()),
                         ),
@@ -548,7 +559,10 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                           onTap: () {
                             Navigator.pop(context);
                             OrdersHomeCubit.get(context).logOut();
-                            SharedHelper.remove(key: 'uid');
+                            SharedHelper.remove(key: 'adminEmail');
+                            if(SharedHelper.get(key: 'uid')!=null) {
+                              SharedHelper.remove(key: 'uid');
+                            }
                             navigateToWithoutReturn(context, LogInScreen());
                           },
                           child: Text("Log Out".tr()),

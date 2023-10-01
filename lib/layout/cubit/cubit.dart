@@ -1234,6 +1234,38 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(ViewFileErrorStates());
     });
   }
+  //name
+  List<OrderModel> searchOrderName = [];
+  double searchOrderNamePrice = 0;
+  int searchOrderNameNum = 0;
+
+  void searchOrdersByName(String name) {
+    emit(ViewFileLoadingStates());
+    FirebaseFirestore
+        .instance
+        .collection('orders')
+        .orderBy('date',descending: true)
+        .get()
+        .then((event) {
+      searchOrderName= [];
+      searchOrderNamePrice = 0;
+      searchOrderNameNum = 0;
+      event.docs.forEach((element) {
+        OrderModel orderModel = OrderModel.fromMap(element.data());
+        print(orderModel.orderName);
+        print(name);
+        if (orderModel.orderName.toString().contains(name)) {
+          searchOrderName.add(orderModel);
+          searchOrderNamePrice += orderModel.totalPrice;
+          searchOrderNameNum++;
+          emit(ViewFileSuccessStates());
+        }
+      });
+      emit(ViewFileSuccessStates());
+    }).catchError((handleError) {
+      emit(ViewFileErrorStates());
+    });
+  }
 
   //validate phone
 
