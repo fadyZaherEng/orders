@@ -25,6 +25,7 @@ import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 import 'package:once/once.dart';
+
 // ignore_for_file: avoid_print
 class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   OrdersHomeCubit() : super(OrdersHomeInitialStates());
@@ -914,25 +915,28 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(RejectFileErrorStates());
     });
   }
-  void removeChats()  {
-   Once.runCustom("Custom", callback: ()async{
-     emit(RejectFileLoadingStates());
-     final instance = FirebaseFirestore.instance;
-     final batch = instance.batch();
-     var collection = instance.collection('group');
-     var snapshots = await collection.get();
-     for (var doc in snapshots.docs) {
-       batch.delete(doc.reference);
-     }
-     await batch.commit().then((value) {
-       // String text = "Deleted Successfully".tr();
-       // showToast(message: text, state: ToastState.SUCCESS);
-       emit(RejectFileSuccessStates());
-     }).catchError((onError) {
-       emit(RejectFileErrorStates());
-     });
-   }, duration: const Duration(days: 10));
+
+  void removeChats() {
+    Once.runCustom("Custom", callback: () async {
+      emit(RejectFileLoadingStates());
+      final instance = FirebaseFirestore.instance;
+      final batch = instance.batch();
+      var collection =
+          instance.collection('group').doc('chat').collection('massages');
+      var snapshots = await collection.get();
+      for (var doc in snapshots.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit().then((value) {
+        // String text = "Deleted Successfully".tr();
+        // showToast(message: text, state: ToastState.SUCCESS);
+        emit(RejectFileSuccessStates());
+      }).catchError((onError) {
+        emit(RejectFileErrorStates());
+      });
+    }, duration: const Duration(days: 10));
   }
+
   void editCat(
       {required String docId,
       required CategoryModel categoryModel,
@@ -1860,19 +1864,19 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 //group
   //add massages group
   void addMassageToGroup({
-      required String text,
-      required String senderId,
-      required String dateTime,
-      required String name,
-      required String createdAt,
-      }) {
+    required String text,
+    required String senderId,
+    required String dateTime,
+    required String name,
+    required String createdAt,
+  }) {
     MassageModelGroup model = MassageModelGroup(
-        senderId:senderId,
-        text: text,
-        dateTime: dateTime,
-        createdAt: createdAt,
-        name:name,
-       );
+      senderId: senderId,
+      text: text,
+      dateTime: dateTime,
+      createdAt: createdAt,
+      name: name,
+    );
     FirebaseFirestore.instance
         .collection('group')
         .doc('chat')
@@ -1887,6 +1891,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   }
 
   List<MassageModelGroup> massagesGroup = [];
+
   //get massages
   void getMassageGroup() {
     FirebaseFirestore.instance
