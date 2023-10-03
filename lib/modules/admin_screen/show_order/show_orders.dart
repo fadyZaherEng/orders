@@ -28,6 +28,7 @@ import 'package:orders/modules/admin_screen/showPapers/papers.dart';
 import 'package:orders/modules/admin_screen/users/permision.dart';
 import 'package:orders/modules/admin_screen/users_block/user.dart';
 import 'package:orders/modules/admin_screen/work/work.dart';
+import 'package:orders/modules/group/group_chat.dart';
 import 'package:orders/modules/login/login.dart';
 import 'package:orders/modules/search_phone/search.dart';
 import 'package:orders/shared/components/components.dart';
@@ -215,6 +216,22 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: Theme.of(context).scaffoldBackgroundColor),
                     items: [
+                      DropdownMenuItem(
+                        value: "chat",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                              context,
+                              ChatGroupScreen(),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text('Chat'.tr()),
+                          ),
+                        ),
+                      ),
                       // if (OrdersHomeCubit.get(context).currentAdmin != null &&
                       //     OrdersHomeCubit.get(context).currentAdmin!.addCat)
                         DropdownMenuItem(

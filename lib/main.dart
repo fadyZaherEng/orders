@@ -84,9 +84,9 @@ class _MyAppState extends State<MyApp> {
           ..getMoney()
           ..getStates()
           ..userOrdersFilter()
-          ..getPapers()
           ..userOrdersFilter()
-        ..getImport(),
+        ..getImport()
+        ..getMassageGroup(),
         child: BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
           listener: (context, state) {},
           builder: (context, state) {

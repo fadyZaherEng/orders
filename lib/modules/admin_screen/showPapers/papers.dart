@@ -19,6 +19,9 @@ class ShowPapersDetailsScreen extends StatefulWidget {
 }
 
 class _ShowPapersDetailsScreenState extends State<ShowPapersDetailsScreen> {
+  DateTime dayDate = DateTime.now();
+  String filterSelected = "Select".tr();
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
@@ -29,31 +32,79 @@ class _ShowPapersDetailsScreenState extends State<ShowPapersDetailsScreen> {
             child: Padding(
               padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: 10, vertical: 10),
-              child: ConditionalBuilder(
-                condition:
+              child: Column(
+                children: [
+                  TextButton(
+                      onPressed: () async {
+                        await _selectDayDate(context);
+                        OrdersHomeCubit.get(context)
+                            .getPapers(dayDate.toString());
+                      },
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.date_range),
+                              const SizedBox(
+                                width: 2,
+                              ),
+                              Text('Date'.tr()),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(dayDate.toString().split(" ")[0]),
+                        ],
+                      )),
+                  ConditionalBuilder(
+                    condition:
                     OrdersHomeCubit.get(context).papersDetails.isNotEmpty,
-                builder: (ctx) => ListView.separated(
-                  itemBuilder: (ctx, idx) {
-                    String key = OrdersHomeCubit.get(context)
-                        .papersDetails
-                        .keys
-                        .elementAt(idx);
-                    return listItem(
-                        OrdersHomeCubit.get(context).papersDetails[key],
-                        key,
-                        ctx);
-                  },
-                  itemCount:
-                      OrdersHomeCubit.get(context).papersDetails.keys.length,
-                  separatorBuilder: (ctx, idx) => mySeparator(context),
-                ),
-                fallback: (ctx) => Center(child: Text("Not Found Order".tr())),
+                    builder: (ctx) => Expanded(
+                      child: ListView.separated(
+                        itemBuilder: (ctx, idx) {
+                          String key = OrdersHomeCubit.get(context)
+                              .papersDetails
+                              .keys
+                              .elementAt(idx);
+                          return listItem(
+                              OrdersHomeCubit.get(context).papersDetails[key],
+                              key,
+                              ctx);
+                        },
+                        itemCount: OrdersHomeCubit.get(context)
+                            .papersDetails
+                            .keys
+                            .length,
+                        separatorBuilder: (ctx, idx) => mySeparator(context),
+                      ),
+                    ),
+                    fallback: (ctx) =>
+                        Center(child: Text("Not Found Order".tr())),
+                  ),
+                ],
               ),
             ),
           ),
         );
       },
     );
+  }
+
+  Future<void> _selectDayDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      locale: const Locale('en', 'US'),
+      initialDate: dayDate,
+      fieldLabelText: 'yyyy-MM-dd hh:mm:ss',
+      firstDate: DateTime(2023),
+      lastDate: DateTime(3000),
+    );
+    if (picked != null && picked != dayDate) {
+      dayDate = picked;
+      setState(() {});
+      print("data $dayDate");
+    }
   }
 
   Widget listItem(List<OrderModel>? orders, String paper, ctx) {

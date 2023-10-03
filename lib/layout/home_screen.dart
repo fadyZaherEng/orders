@@ -8,6 +8,7 @@ import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/modules/admin_screen/search_name/name.dart';
 import 'package:orders/modules/admin_screen/search_using_barcode/scan.dart';
 import 'package:orders/modules/emp_today_order/order.dart';
+import 'package:orders/modules/group/group_chat.dart';
 import 'package:orders/modules/login/login.dart';
 import 'package:orders/modules/search_phone/search.dart';
 import 'package:orders/shared/components/components.dart';
@@ -154,6 +155,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: Theme.of(context).scaffoldBackgroundColor),
                     items: [
+                      DropdownMenuItem(
+                        value: "chat",
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            navigateToWithReturn(
+                              context,
+                               ChatGroupScreen(),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text('Chat'.tr()),
+                          ),
+                        ),
+                      ),
                       DropdownMenuItem(
                         value: "today",
                         child: InkWell(
