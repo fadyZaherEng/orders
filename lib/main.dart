@@ -78,6 +78,7 @@ class _MyAppState extends State<MyApp> {
     return Phoenix(
       child: BlocProvider(
         create: (context) => OrdersHomeCubit()
+        ..removeChats()
           ..getUsers()
           ..getCategories()
           ..getAdminsProfile()

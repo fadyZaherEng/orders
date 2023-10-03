@@ -39,6 +39,7 @@ dependencies:
   bloc:
   flutter_bloc:
   conditional_builder_null_safety:
+  once:
   hexcolor:
   sizer:
   shared_preferences:
