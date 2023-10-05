@@ -450,6 +450,7 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                     children: [
                       // if (OrdersHomeCubit.get(context).currentAdmin != null &&
                       //     OrdersHomeCubit.get(context).currentAdmin!.saveOrder)
+                       if(state is !OrderUpdateOrderLoadingStates)
                         Padding(
                           padding: const EdgeInsets.all(4.0), //tff all
                           child: MaterialButton(
@@ -498,6 +499,8 @@ class _UpdateOrdersScreenState extends State<UpdateOrdersScreen> {
                             ),
                           ),
                         ),
+                      if(state is OrderUpdateOrderLoadingStates)
+                        const Center(child: CircularProgressIndicator(),),
                       // if (OrdersHomeCubit
                       //     .get(context)
                       //     .currentAdmin == null)

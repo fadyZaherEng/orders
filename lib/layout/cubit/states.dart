@@ -1,6 +1,8 @@
 abstract class OrdersHomeStates {}
 
 class OrdersHomeInitialStates extends OrdersHomeStates {}
+class OrderAddOrderLoadingStates extends OrdersHomeStates {}
+class OrderUpdateOrderLoadingStates extends OrdersHomeStates {}
 
 class OrdersHomeChangeBottomNavStates extends OrdersHomeStates {}
 

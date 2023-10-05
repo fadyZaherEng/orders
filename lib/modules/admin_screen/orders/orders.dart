@@ -17,6 +17,7 @@ import 'dart:io';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+
 //checked
 class DisplayOrdersScreen extends StatefulWidget {
   const DisplayOrdersScreen({super.key});
@@ -77,7 +78,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                     // Navigator.pop(context);
+                      // Navigator.pop(context);
                       createExcelSheet();
                     },
                     child: Padding(
@@ -85,6 +86,17 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                       child: Text("Share Orders".tr()),
                     ),
                   ),
+                  IconButton(
+                      onPressed: () {
+                        OrdersHomeCubit.get(context).removeCollectionsOrders(
+                          orders: OrdersHomeCubit.get(context).orders,
+                          context: context,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ))
                 ],
               ),
               ConditionalBuilder(
@@ -165,27 +177,24 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                        child:
-                            Text('${"Order Name: ".tr()}${order.orderName}')),
-                    Flexible(
-                      child: Text(
-                        order.serviceType,
-                      ),
-                    ),
-                    // order.isSelected
-                    //     ? Icon(
-                    //         Icons.check_circle,
-                    //         color: Colors.green[700],
-                    //       )
-                    //     : const Icon(
-                    //         Icons.check_circle,
-                    //         color: Colors.grey,
-                    //       )
-                  ]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Flexible(
+                    child: Text('${"Order Name: ".tr()}${order.orderName}')),
+                Flexible(
+                  child: Text(
+                    order.serviceType,
+                  ),
+                ),
+                // order.isSelected
+                //     ? Icon(
+                //         Icons.check_circle,
+                //         color: Colors.green[700],
+                //       )
+                //     : const Icon(
+                //         Icons.check_circle,
+                //         color: Colors.grey,
+                //       )
+              ]),
               const SizedBox(
                 height: 10,
               ),
@@ -202,13 +211,11 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                       '${"edit By".tr()} ${order.editEmail} ${"to".tr()} ${order.statusOrder}',
                       maxLines: 100,
                       style: TextStyle(
-                          fontSize: 11,
-                          color: Theme.of(context).primaryColor),
+                          fontSize: 11, color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ),
-              Text(
-                '${"Email: ".tr()}${order.employerEmail}'),
+              Text('${"Email: ".tr()}${order.employerEmail}'),
             ],
           ),
         ),
@@ -219,6 +226,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
   var screenShotController = ScreenshotController();
 
   List<Uint8List?> widgets = [];
+
   void createExcelSheet() async {
 //    setState(() {});
     excel.Workbook workbook = excel.Workbook();
@@ -265,55 +273,59 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
           totalPrice: OrdersHomeCubit.get(context).orders[i].totalPrice,
           salOfCharging: OrdersHomeCubit.get(context).orders[i].salOfCharging,
           context: context);
-      sheet.getRangeByIndex(i + 2, 1).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].orderName);
-      sheet.getRangeByIndex(i + 2, 2).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].conservation);
-      sheet.getRangeByIndex(i + 2, 3).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].city);
-      sheet.getRangeByIndex(i + 2, 4).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].address);
-      sheet.getRangeByIndex(i + 2, 5).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].orderPhone);
+      sheet
+          .getRangeByIndex(i + 2, 1)
+          .setText(OrdersHomeCubit.get(context).orders[i].orderName);
+      sheet
+          .getRangeByIndex(i + 2, 2)
+          .setText(OrdersHomeCubit.get(context).orders[i].conservation);
+      sheet
+          .getRangeByIndex(i + 2, 3)
+          .setText(OrdersHomeCubit.get(context).orders[i].city);
+      sheet
+          .getRangeByIndex(i + 2, 4)
+          .setText(OrdersHomeCubit.get(context).orders[i].address);
+      sheet
+          .getRangeByIndex(i + 2, 5)
+          .setText(OrdersHomeCubit.get(context).orders[i].orderPhone);
       sheet.getRangeByIndex(i + 2, 6).setText(" ");
-      sheet.getRangeByIndex(i + 2, 7).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].employerName);
+      sheet
+          .getRangeByIndex(i + 2, 7)
+          .setText(OrdersHomeCubit.get(context).orders[i].employerName);
       sheet.getRangeByIndex(i + 2, 8).setText(" ");
       sheet.getRangeByIndex(i + 2, 9).setText(" ");
-      sheet.getRangeByIndex(i + 2, 10).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].type);
-      sheet.getRangeByIndex(i + 2, 11).setValue(OrdersHomeCubit
-          .get(context)
-          .orders[i].number);
+      sheet
+          .getRangeByIndex(i + 2, 10)
+          .setText(OrdersHomeCubit.get(context).orders[i].type);
+      sheet
+          .getRangeByIndex(i + 2, 11)
+          .setValue(OrdersHomeCubit.get(context).orders[i].number);
       sheet.getRangeByIndex(i + 2, 12).setText(" ");
-      sheet.getRangeByIndex(i + 2, 13).setNumber(OrdersHomeCubit
-          .get(context)
-          .orders[i].totalPrice);
+      sheet
+          .getRangeByIndex(i + 2, 13)
+          .setNumber(OrdersHomeCubit.get(context).orders[i].totalPrice);
       sheet.getRangeByIndex(i + 2, 14).setText(" ");
       sheet.getRangeByIndex(i + 2, 15).setText(" ");
-      sheet.getRangeByIndex(i + 2, 16).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].serviceType);
-      sheet.getRangeByIndex(i + 2, 17).setText(OrdersHomeCubit
-          .get(context)
-          .orders[i].notes);
+      sheet
+          .getRangeByIndex(i + 2, 16)
+          .setText(OrdersHomeCubit.get(context).orders[i].serviceType);
+      sheet
+          .getRangeByIndex(i + 2, 17)
+          .setText(OrdersHomeCubit.get(context).orders[i].notes);
     }
     //save
-    final List<int>bytes = workbook.saveAsStream();
+    final List<int> bytes = workbook.saveAsStream();
+
     ///File('orders.xlsx').writeAsBytes(bytes);
     await workbook.save();
     workbook.dispose();
     final String path = (await getApplicationCacheDirectory()).path;
     final String fileName = '$path/orders.xlsx';
     final File file = File(fileName);
-    await file.writeAsBytes(bytes, flush: true,);
+    await file.writeAsBytes(
+      bytes,
+      flush: true,
+    );
     OpenFile.open(fileName);
   }
 

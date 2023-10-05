@@ -584,6 +584,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       totalPrice: totalPrice,
       salOfCharging: salOfCharging,
     );
+    emit(OrderUpdateOrderLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
         .doc(barCode)
@@ -618,6 +619,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       required double totalPrice,
       required double salOfCharging,
       required context}) {
+    emit(OrderAddOrderLoadingStates());
     OrderModel orderModel = OrderModel(
       orderPhone: orderPhone,
       orderName: orderName,
@@ -664,27 +666,44 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 //remove orders doc id equal barcode
   void removeOrders({required String docId, required context}) {
     emit(RejectFileLoadingStates());
+    navigateToWithReturn(context, const AdminShowOrders());
+    String text = "Deleted Successfully".tr();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+      ),
+      backgroundColor: Colors.pink,
+    ));
     FirebaseFirestore.instance
         .collection('orders')
         .doc(docId)
         .delete()
         .then((value) {
-      String text = "Deleted Successfully".tr();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
-        ),
-        backgroundColor: Colors.pink,
-      ));
-      navigateToWithReturn(context, const AdminShowOrders());
       emit(RejectFileSuccessStates());
     }).catchError((onError) {
       emit(RejectFileErrorStates());
     });
   }
-
+//remove collection of order
+  void removeCollectionsOrders({required List<OrderModel>orders, required context}) {
+   orders.forEach((order) {
+     emit(RejectFileLoadingStates());
+     navigateToWithReturn(context, const AdminShowOrders());
+     String text = "Deleted Successfully".tr();
+     FirebaseFirestore.instance
+         .collection('orders')
+         .doc(order.barCode)
+         .delete()
+         .then((value) {
+           showToast(message: text, state: ToastState.SUCCESS);
+       emit(RejectFileSuccessStates());
+     }).catchError((onError) {
+       emit(RejectFileErrorStates());
+     });
+   });
+  }
 ////////////////////////////////////////////////////////////////////////////////////
 //mode
   void modeChange() {
@@ -1593,7 +1612,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   List<String> papers = [];
   List<PageModel> resPages = [];
 
-  void getPapers(String date) {
+  void getPapersFilter(String date) {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
         .collection('papers')
@@ -1612,6 +1631,28 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           resPages.add(PageModel.fromMap(element.data()));
           papersDetails[element['name']] = [];
         }
+      });
+      getOrders('كل الطلبات');
+    }).onError((onError) {
+      emit(GetVedioErrorStates());
+    });
+  }
+  void getPapers() {
+    emit(ViewFileLoadingStates());
+    FirebaseFirestore.instance
+        .collection('papers')
+        .orderBy('date', descending: true)
+        .snapshots()
+        .listen((value) {
+      papers = [];
+      papersDetails = {};
+      resPages = [];
+      value.docs.forEach((element) {
+          if (!papers.contains(element['name'])) {
+            papers.add(element['name']);
+          }
+          resPages.add(PageModel.fromMap(element.data()));
+          papersDetails[element['name']] = [];
       });
       getOrders('كل الطلبات');
     }).onError((onError) {

@@ -11,6 +11,7 @@ import 'package:orders/bloc_observer/observer.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/modules/splash/splash_screen.dart';
+import 'package:orders/shared/network/dio_helper.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 import 'package:orders/shared/styles/themes.dart';
 import 'package:sizer/sizer.dart';
@@ -26,6 +27,7 @@ void main() async {
   );
   Bloc.observer = SimpleBlocObserver();
   await SharedHelper.init();
+  await DioHelper.Init();
   if (SharedHelper.get(key: 'theme') == null) {
     SharedHelper.save(value: 'Light Theme', key: 'theme');
   }
@@ -87,6 +89,7 @@ class _MyAppState extends State<MyApp> {
           ..userOrdersFilter()
           ..userOrdersFilter()
         ..getImport()
+          ..getPapers()
         ..getMassageGroup(),
         child: BlocConsumer<OrdersHomeCubit, OrdersHomeStates>(
           listener: (context, state) {},

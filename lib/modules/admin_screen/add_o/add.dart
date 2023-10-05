@@ -579,6 +579,7 @@ class _AddOrderScreenState extends State<AddOrderScreen>  {
                     const SizedBox(
                       height: 30,
                     ),
+                    if(state is  ! OrderAddOrderLoadingStates)
                     SizedBox(
                       width: double.infinity,
                       height: 43,
@@ -644,6 +645,8 @@ class _AddOrderScreenState extends State<AddOrderScreen>  {
                                     : Colors.black)),
                       ),
                     ),
+                    if(state is OrderAddOrderLoadingStates)
+                      const Center(child: CircularProgressIndicator(),),
                   ],
                 ),
               ),

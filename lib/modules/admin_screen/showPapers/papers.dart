@@ -38,7 +38,7 @@ class _ShowPapersDetailsScreenState extends State<ShowPapersDetailsScreen> {
                       onPressed: () async {
                         await _selectDayDate(context);
                         OrdersHomeCubit.get(context)
-                            .getPapers(dayDate.toString());
+                            .getPapersFilter(dayDate.toString());
                       },
                       child: Column(
                         children: [

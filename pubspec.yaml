@@ -64,6 +64,9 @@ dependencies:
   flutter_phoenix:
   syncfusion_flutter_xlsio:
   url_launcher:
+  firebase_messaging:
+  #dio
+  dio:
 
 dev_dependencies:
   flutter_test:

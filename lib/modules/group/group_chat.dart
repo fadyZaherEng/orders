@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
@@ -10,6 +11,8 @@ import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/model_group_massage.dart';
 import 'package:orders/modules/users_group/user_screen.dart';
 import 'package:orders/shared/components/components.dart';
+import 'package:orders/shared/components/constants.dart';
+import 'package:orders/shared/network/dio_helper.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
 
 class ChatGroupScreen extends StatelessWidget {
@@ -437,7 +440,7 @@ class ChatGroupScreen extends StatelessWidget {
                     color: SharedHelper.get(key: 'theme') == 'Light Theme'
                         ? Colors.white
                         : Theme.of(context).scaffoldBackgroundColor,
-                    onPressed: () {
+                    onPressed: () async{
                       if (textController.text != '') {
                         OrdersHomeCubit.get(context).addMassageToGroup(
                           name:signIn!=null? OrdersHomeCubit.get(context).userProfile!.name:
@@ -448,6 +451,15 @@ class ChatGroupScreen extends StatelessWidget {
                             OrdersHomeCubit.get(context).currentAdmin!.id,
                             dateTime: DateTime.now().toString());
                         textController.text = '';
+                        if(token!="") {
+                          DioHelper.postData(
+                            token: token,
+                            massage:
+                            "you have massage from ${signIn!=null? OrdersHomeCubit.get(context).userProfile!.name:
+                            OrdersHomeCubit.get(context).currentAdmin!.email.split("@")[0]}")
+                            .then((value) {})
+                            .catchError((onError) {});
+                        }
                       }
                     },
                     child: const Icon(
