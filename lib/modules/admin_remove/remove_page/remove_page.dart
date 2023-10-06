@@ -24,13 +24,13 @@ class _RemovePageScreenState extends State<RemovePageScreen> {
         return Scaffold(
           body: SafeArea(
             child: ConditionalBuilder(
-              condition: OrdersHomeCubit.get(context).resPages.isNotEmpty,
+              condition: OrdersHomeCubit.get(context).resPagesFilter.isNotEmpty,
               builder: (context) => ListView.separated(
                 itemBuilder: (context, idx) {
                   return listItem(
-                      OrdersHomeCubit.get(context).resPages[idx], context);
+                      OrdersHomeCubit.get(context).resPagesFilter[idx], context);
                 },
-                itemCount: OrdersHomeCubit.get(context).resPages.length,
+                itemCount: OrdersHomeCubit.get(context).resPagesFilter.length,
                 separatorBuilder: (context, idx) => mySeparator(context),
               ),
               fallback: (context) => Center(child: Text("Not".tr())),

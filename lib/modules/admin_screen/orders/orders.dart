@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable, avoid_print
 
+import 'dart:math';
+
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,11 +14,8 @@ import 'package:orders/models/order_model.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:screenshot/screenshot.dart';
-import 'dart:io';
-import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
-import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
 
 //checked
 class DisplayOrdersScreen extends StatefulWidget {
@@ -36,7 +35,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
   @override
   void initState() {
     super.initState();
-    OrdersHomeCubit.get(context).getOrders(filterSelected);
+    //OrdersHomeCubit.get(context).getOrders(filterSelected);
     // controller.addListener(() {
     //   if (controller.position.pixels == controller.position.maxScrollExtent) {
     //     OrdersHomeCubit.get(context).firstLoad(filterSelected, limit);
@@ -51,35 +50,64 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
       builder: (ctx, state) {
         return Padding(
           padding:
-              const EdgeInsetsDirectional.symmetric(horizontal: 3, vertical: 5),
-          child: Column(
+          const EdgeInsetsDirectional.symmetric(horizontal: 3, vertical: 5),
+          child:state is OrdergetLoadingStates&& state is! GetFinishedStates||
+          state is ViewFileSuccessStates&& state is! GetFinishedStates||
+          state is GhhhetFinishedStates && state is! GetFinishedStates
+              ? Center(
+            child: CircularPercentIndicator(
+              radius: 120.0,
+              lineWidth: 13.0,
+              animation: true,
+              percent: double.parse(Random().nextInt(1).toString()),
+              center: const Text(
+                "waiting........",
+                style:
+                 TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+              ),
+              footer: const Text(
+                "Upload",
+                style:
+                TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+              ),
+              circularStrokeCap: CircularStrokeCap.round,
+              progressColor: Colors.purple,
+            ),
+          )
+              : Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   DropdownButton(
-                    focusColor: Theme.of(context).primaryColor,
+                    focusColor: Theme
+                        .of(context)
+                        .primaryColor,
                     borderRadius: BorderRadius.circular(10),
                     hint: Text(filterSelected),
-                    items: OrdersHomeCubit.get(context)
+                    items: OrdersHomeCubit
+                        .get(context)
                         .status
-                        .map((filter) => DropdownMenuItem(
-                              child: Text(filter),
-                              value: filter,
-                            ))
+                        .map((filter) =>
+                        DropdownMenuItem(
+                          child: Text(filter),
+                          value: filter,
+                        ))
                         .toList(),
                     onChanged: (val) {
                       if (val != null) {
                         filterSelected = val;
                         //  setState(() {});
-                        OrdersHomeCubit.get(context).getOrders(filterSelected);
+                        OrdersHomeCubit.get(context)
+                            .getOrders(filterSelected);
                       }
                     },
                   ),
                   InkWell(
                     onTap: () {
                       // Navigator.pop(context);
-                      createExcelSheet();
+                      OrdersHomeCubit.get(context)
+                          .createExcelSheet(context);
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(top: 5, bottom: 5),
@@ -88,8 +116,11 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                   ),
                   IconButton(
                       onPressed: () {
-                        OrdersHomeCubit.get(context).removeCollectionsOrders(
-                          orders: OrdersHomeCubit.get(context).orders,
+                        OrdersHomeCubit.get(context)
+                            .removeCollectionsOrders(
+                          orders: OrdersHomeCubit
+                              .get(context)
+                              .orders,
                           context: context,
                         );
                       },
@@ -100,19 +131,31 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 ],
               ),
               ConditionalBuilder(
-                condition: OrdersHomeCubit.get(context).orders.isNotEmpty,
-                builder: (ctx) => Expanded(
-                  child: ListView.separated(
-                    controller: controller,
-                    itemBuilder: (ctx, idx) {
-                      return listItem(
-                          OrdersHomeCubit.get(context).orders[idx], idx, ctx);
-                    },
-                    itemCount: OrdersHomeCubit.get(context).orders.length,
-                    separatorBuilder: (ctx, idx) => mySeparator(context),
-                  ),
-                ),
-                fallback: (ctx) => Center(child: Text("Not Found Order".tr())),
+                condition: OrdersHomeCubit
+                    .get(context)
+                    .orders
+                    .isNotEmpty,
+                builder: (ctx) =>
+                    Expanded(
+                      child: ListView.separated(
+                        controller: controller,
+                        itemBuilder: (ctx, idx) {
+                          return listItem(
+                              OrdersHomeCubit
+                                  .get(context)
+                                  .orders[idx],
+                              idx,
+                              ctx);
+                        },
+                        itemCount: OrdersHomeCubit
+                            .get(context)
+                            .orders
+                            .length,
+                        separatorBuilder: (ctx, idx) => mySeparator(context),
+                      ),
+                    ),
+                fallback: (ctx) =>
+                    Center(child: Text("Not Found Order".tr())),
               ),
               // OrdersHomeCubit.get(context).isLoading
               //     ? const Center(child: CircularProgressIndicator())
@@ -159,7 +202,10 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
             ctx,
             UpdateOrdersScreen(
               orderModel: order,
-              editEmail: OrdersHomeCubit.get(context).currentAdmin!.email,
+              editEmail: OrdersHomeCubit
+                  .get(context)
+                  .currentAdmin!
+                  .email,
             ));
       },
       onLongPress: () {
@@ -208,10 +254,13 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      '${"edit By".tr()} ${order.editEmail} ${"to".tr()} ${order.statusOrder}',
+                      '${"edit By".tr()} ${order.editEmail} ${"to".tr()} ${order
+                          .statusOrder}',
                       maxLines: 100,
                       style: TextStyle(
-                          fontSize: 11, color: Theme.of(context).primaryColor),
+                          fontSize: 11, color: Theme
+                          .of(context)
+                          .primaryColor),
                     ),
                   ),
                 ),
@@ -226,108 +275,6 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
   var screenShotController = ScreenshotController();
 
   List<Uint8List?> widgets = [];
-
-  void createExcelSheet() async {
-//    setState(() {});
-    excel.Workbook workbook = excel.Workbook();
-    excel.Worksheet sheet = workbook.worksheets[0];
-    sheet.getRangeByIndex(1, 1).setText("Consignee_Name");
-    sheet.getRangeByIndex(1, 2).setText("City");
-    sheet.getRangeByIndex(1, 3).setText("Area");
-    sheet.getRangeByIndex(1, 4).setText("Address");
-    sheet.getRangeByIndex(1, 5).setText("Phone_1");
-    sheet.getRangeByIndex(1, 6).setText("Order");
-    sheet.getRangeByIndex(1, 7).setText("Employee_Name");
-    sheet.getRangeByIndex(1, 8).setText("product");
-    sheet.getRangeByIndex(1, 9).setText("Charging");
-    sheet.getRangeByIndex(1, 10).setText("Item_Name");
-    sheet.getRangeByIndex(1, 11).setText("Quantity");
-    sheet.getRangeByIndex(1, 12).setText("Item_Description");
-    sheet.getRangeByIndex(1, 13).setText("COD");
-    sheet.getRangeByIndex(1, 14).setText("Weight");
-    sheet.getRangeByIndex(1, 15).setText("Size");
-    sheet.getRangeByIndex(1, 16).setText("Service_Type");
-    sheet.getRangeByIndex(1, 17).setText("notes");
-
-    for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
-      OrdersHomeCubit.get(context).updateOrder(
-          orderName: OrdersHomeCubit.get(context).orders[i].orderName,
-          paper: OrdersHomeCubit.get(context).orders[i].paper,
-          conservation: OrdersHomeCubit.get(context).orders[i].conservation,
-          isSelected: OrdersHomeCubit.get(context).orders[i].isSelected,
-          statusOrder: 'جاري الشحن',
-          city: OrdersHomeCubit.get(context).orders[i].city,
-          editEmail: OrdersHomeCubit.get(context).orders[i].editEmail,
-          address: OrdersHomeCubit.get(context).orders[i].address,
-          type: OrdersHomeCubit.get(context).orders[i].type,
-          barCode: OrdersHomeCubit.get(context).orders[i].barCode,
-          employerName: OrdersHomeCubit.get(context).orders[i].employerName,
-          employerPhone: OrdersHomeCubit.get(context).orders[i].employerPhone,
-          employerEmail: OrdersHomeCubit.get(context).orders[i].employerEmail,
-          orderPhone: OrdersHomeCubit.get(context).orders[i].orderPhone,
-          serviceType: OrdersHomeCubit.get(context).orders[i].serviceType,
-          notes: OrdersHomeCubit.get(context).orders[i].notes,
-          date: OrdersHomeCubit.get(context).orders[i].date,
-          number: OrdersHomeCubit.get(context).orders[i].number,
-          price: OrdersHomeCubit.get(context).orders[i].price,
-          totalPrice: OrdersHomeCubit.get(context).orders[i].totalPrice,
-          salOfCharging: OrdersHomeCubit.get(context).orders[i].salOfCharging,
-          context: context);
-      sheet
-          .getRangeByIndex(i + 2, 1)
-          .setText(OrdersHomeCubit.get(context).orders[i].orderName);
-      sheet
-          .getRangeByIndex(i + 2, 2)
-          .setText(OrdersHomeCubit.get(context).orders[i].conservation);
-      sheet
-          .getRangeByIndex(i + 2, 3)
-          .setText(OrdersHomeCubit.get(context).orders[i].city);
-      sheet
-          .getRangeByIndex(i + 2, 4)
-          .setText(OrdersHomeCubit.get(context).orders[i].address);
-      sheet
-          .getRangeByIndex(i + 2, 5)
-          .setText(OrdersHomeCubit.get(context).orders[i].orderPhone);
-      sheet.getRangeByIndex(i + 2, 6).setText(" ");
-      sheet
-          .getRangeByIndex(i + 2, 7)
-          .setText(OrdersHomeCubit.get(context).orders[i].employerName);
-      sheet.getRangeByIndex(i + 2, 8).setText(" ");
-      sheet.getRangeByIndex(i + 2, 9).setText(" ");
-      sheet
-          .getRangeByIndex(i + 2, 10)
-          .setText(OrdersHomeCubit.get(context).orders[i].type);
-      sheet
-          .getRangeByIndex(i + 2, 11)
-          .setValue(OrdersHomeCubit.get(context).orders[i].number);
-      sheet.getRangeByIndex(i + 2, 12).setText(" ");
-      sheet
-          .getRangeByIndex(i + 2, 13)
-          .setNumber(OrdersHomeCubit.get(context).orders[i].totalPrice);
-      sheet.getRangeByIndex(i + 2, 14).setText(" ");
-      sheet.getRangeByIndex(i + 2, 15).setText(" ");
-      sheet
-          .getRangeByIndex(i + 2, 16)
-          .setText(OrdersHomeCubit.get(context).orders[i].serviceType);
-      sheet
-          .getRangeByIndex(i + 2, 17)
-          .setText(OrdersHomeCubit.get(context).orders[i].notes);
-    }
-    //save
-    final List<int> bytes = workbook.saveAsStream();
-
-    ///File('orders.xlsx').writeAsBytes(bytes);
-    await workbook.save();
-    workbook.dispose();
-    final String path = (await getApplicationCacheDirectory()).path;
-    final String fileName = '$path/orders.xlsx';
-    final File file = File(fileName);
-    await file.writeAsBytes(
-      bytes,
-      flush: true,
-    );
-    OpenFile.open(fileName);
-  }
 
   void addPage(OrderModel orderModel) {
     Screenshot(
@@ -384,7 +331,8 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
               height: 15,
             ),
             Text(
-                '${"Date: ".tr()}${DateFormat().format(DateTime.parse(orderModel.date))}'),
+                '${"Date: ".tr()}${DateFormat().format(
+                    DateTime.parse(orderModel.date))}'),
             const SizedBox(
               height: 15,
             ),

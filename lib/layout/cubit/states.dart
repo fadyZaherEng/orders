@@ -3,6 +3,14 @@ abstract class OrdersHomeStates {}
 class OrdersHomeInitialStates extends OrdersHomeStates {}
 class OrderAddOrderLoadingStates extends OrdersHomeStates {}
 class OrderUpdateOrderLoadingStates extends OrdersHomeStates {}
+class OrderGetCityLoadingStates extends OrdersHomeStates {}
+class OrderShareLoadingStates extends OrdersHomeStates {}
+class OrdergetLoadingStates extends OrdersHomeStates {}
+class GetPaperFilterLoadingStates extends OrdersHomeStates {}
+class GetPaperFiltermLoadingStates extends OrdersHomeStates {}
+class GetVedioLoadingStates extends OrdersHomeStates {}
+class OrderShareSuccessStates extends OrdersHomeStates {}
+class OrderShareErrorStates extends OrdersHomeStates {}
 
 class OrdersHomeChangeBottomNavStates extends OrdersHomeStates {}
 
@@ -114,7 +122,8 @@ class GetUserRejectWaitingErrorStates extends OrdersHomeStates {}
 
 class PhoneState extends OrdersHomeStates {}
 
-class GetVedioLoadingStates extends OrdersHomeStates {}
+class GetFinishedStates extends OrdersHomeStates {}
+class GhhhetFinishedStates extends OrdersHomeStates {}
 
 class GetVedioSuccessStates extends OrdersHomeStates {}
 

@@ -38,7 +38,7 @@ class _ShowPapersDetailsScreenState extends State<ShowPapersDetailsScreen> {
                       onPressed: () async {
                         await _selectDayDate(context);
                         OrdersHomeCubit.get(context)
-                            .getPapersFilter(dayDate.toString());
+                            .getPapersFilter(dayDate.toString(),context);
                       },
                       child: Column(
                         children: [
@@ -59,21 +59,21 @@ class _ShowPapersDetailsScreenState extends State<ShowPapersDetailsScreen> {
                       )),
                   ConditionalBuilder(
                     condition:
-                    OrdersHomeCubit.get(context).papersDetails.isNotEmpty,
+                    OrdersHomeCubit.get(context).papersDetailsFilter.isNotEmpty,
                     builder: (ctx) => Expanded(
                       child: ListView.separated(
                         itemBuilder: (ctx, idx) {
                           String key = OrdersHomeCubit.get(context)
-                              .papersDetails
+                              .papersDetailsFilter
                               .keys
                               .elementAt(idx);
                           return listItem(
-                              OrdersHomeCubit.get(context).papersDetails[key],
+                              OrdersHomeCubit.get(context).papersDetailsFilter[key],
                               key,
                               ctx);
                         },
                         itemCount: OrdersHomeCubit.get(context)
-                            .papersDetails
+                            .papersDetailsFilter
                             .keys
                             .length,
                         separatorBuilder: (ctx, idx) => mySeparator(context),
@@ -82,6 +82,8 @@ class _ShowPapersDetailsScreenState extends State<ShowPapersDetailsScreen> {
                     fallback: (ctx) =>
                         Center(child: Text("Not Found Order".tr())),
                   ),
+                  if(state is GetPaperFiltermLoadingStates)
+                    const Center(child: CircularProgressIndicator(),),
                 ],
               ),
             ),
@@ -122,7 +124,7 @@ class _ShowPapersDetailsScreenState extends State<ShowPapersDetailsScreen> {
             ),
             if (orders!.isNotEmpty)
               Text(
-                '${'Orders Number : '.tr()}${orders!.length.toString()}',
+                '${'Orders Number : '.tr()}${orders.length.toString()}',
                 maxLines: 100,
               ),
             const SizedBox(

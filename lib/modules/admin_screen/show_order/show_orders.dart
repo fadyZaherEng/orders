@@ -518,7 +518,7 @@ class _AdminShowOrdersState extends State<AdminShowOrders> {
                                     content: InkWell(
                                       onTap: () {
                                         Navigator.pop(context);
-                                        OrdersHomeCubit.get(context).removeAllOrders();
+                                        OrdersHomeCubit.get(context).removeAllOrders(context);
                                       },
                                       child: Text("Remove All Orders".tr()),
                                     ),

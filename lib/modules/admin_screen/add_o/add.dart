@@ -296,56 +296,59 @@ class _AddOrderScreenState extends State<AddOrderScreen>  {
                     const SizedBox(
                       height: 10,
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width*0.7,
-                        child: DropdownButton(
-                            dropdownColor: Theme.of(context).primaryColor,
-                            focusColor:
-                            Theme.of(context).scaffoldBackgroundColor,
-                            underline: Container(),
-                            isDense: false,
-                            // alignment: AlignmentDirectional.center,
-                            hint: Text(city),
-                            icon: Icon(
-                              Icons.location_city,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            elevation: 0,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                color: Theme.of(context)
-                                    .scaffoldBackgroundColor),
-                            items: OrdersHomeCubit.get(context)
-                                .cities
-                                .map(
-                                  (e) => DropdownMenuItem(
-                                value: e,
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    city = e;
-                                    setState(() {});
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Text(e),
+                    if(state is !OrderGetCityLoadingStates)
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: MediaQuery.sizeOf(context).width*0.7,
+                          child: DropdownButton(
+                              dropdownColor: Theme.of(context).primaryColor,
+                              focusColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                              underline: Container(),
+                              isDense: false,
+                              // alignment: AlignmentDirectional.center,
+                              hint: Text(city),
+                              icon: Icon(
+                                Icons.location_city,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              elevation: 0,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                  color: Theme.of(context)
+                                      .scaffoldBackgroundColor),
+                              items: OrdersHomeCubit.get(context)
+                                  .cities
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                  value: e,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      city = e;
+                                      setState(() {});
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text(e),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )
-                                .toList(),
-                            onChanged: (val) {
-                              if (val != null) {
-                                city = val;
-                                setState(() {});
-                              }
-                            }),
+                              )
+                                  .toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  city = val;
+                                  setState(() {});
+                                }
+                              }),
+                        ),
                       ),
-                    ),
+                    if(state is OrderGetCityLoadingStates)
+                      const Center(child: CircularProgressIndicator(),),
                     const SizedBox(
                       height: 10,
                     ),

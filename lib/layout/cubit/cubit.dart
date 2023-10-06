@@ -4,6 +4,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:orders/modules/admin_screen/showPapers/papers.dart';
+import 'dart:io';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/admin_model.dart';
@@ -283,7 +288,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     FirebaseFirestore.instance.collection("papers").get().then((value) {
       String docId = "";
       for (var page in value.docs) {
-        if (page['paper'] == paper) {
+        if (page['name'] == paper) {
           docId = page.id;
           break;
         }
@@ -293,7 +298,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           .doc(docId)
           .delete()
           .then((value) {
-        //emit(GetFileSuccessStates());
+        emit(GetFileSuccessStates());
       }).catchError((onError) {
         emit(GetUserWaitingErrorStates());
       });
@@ -917,7 +922,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
 
-  void removeAllOrders() async {
+  void removeAllOrders(context) async {
     emit(RejectFileLoadingStates());
     final instance = FirebaseFirestore.instance;
     final batch = instance.batch();
@@ -927,6 +932,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       batch.delete(doc.reference);
     }
     await batch.commit().then((value) {
+      Phoenix.rebirth(context);
       String text = "Deleted Successfully".tr();
       showToast(message: text, state: ToastState.SUCCESS);
       emit(RejectFileSuccessStates());
@@ -1402,6 +1408,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   List<String> cities = [];
 
   void getCites(String state) {
+    emit(OrderGetCityLoadingStates());
     FirebaseFirestore.instance
         .collection('cities')
         .doc(state)
@@ -1568,7 +1575,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   double totalOfConfirmedPrice = 0;
 
   void getOrders(String filter) {
-    emit(ViewFileLoadingStates());
+    emit(OrdergetLoadingStates());
     FirebaseFirestore.instance
         .collection('orders')
         .orderBy('date', descending: true)
@@ -1579,11 +1586,11 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       totalOfAllOrdersConfirm = 0;
       totalOfConfirmedNumber = 0;
       totalOfConfirmedPrice = 0;
-      papersDetails.updateAll((key, value) => papersDetails[key] = []);
+      papersDetailsFilter.updateAll((key, value) => papersDetailsFilter[key] = []);
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        if (papersDetails.containsKey(orderModel.paper)) {
-          papersDetails[orderModel.paper]!.add(orderModel);
+        if (papersDetailsFilter.containsKey(orderModel.paper)) {
+          papersDetailsFilter[orderModel.paper]!.add(orderModel);
         }
         if (orderModel.statusOrder == "تسليم ناجح") {
           totalOfAllOrdersConfirm += orderModel.totalPrice;
@@ -1602,41 +1609,63 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         }
         emit(ViewFileSuccessStates());
       });
-      emit(ViewFileSuccessStates());
+      emit(GetFinishedStates());
     }).onError((handleError) {
       emit(ViewFileErrorStates());
     });
   }
 
-  Map<String, List<OrderModel>> papersDetails = {};
-  List<String> papers = [];
-  List<PageModel> resPages = [];
+  Map<String, List<OrderModel>> papersDetailsFilter = {};
+  List<PageModel> resPagesFilter = [];
+  List<String> resPagesUnique = [];
+  void getPapersFilter(String date,context) async{
+    emit(GetPaperFiltermLoadingStates());
+     FirebaseFirestore.instance
+        .collection('orders')
+        .get()
+        .then((value) {
+      papersDetailsFilter = {};
+      resPagesFilter = [];
+      resPagesUnique=[];
+      value.docs.forEach((order) {
+        if (date.split(" ")[0] == OrderModel.fromMap(order.data()).date.split(" ")[0]) {
+          OrderModel  orderModel=OrderModel.fromMap(order.data());
+          FirebaseFirestore.instance
+              .collection('papers')
+              .get()
+              .then((value) {
+            value.docs.forEach((element) async{
+              if (!resPagesUnique.contains(element['name'])) {
+                resPagesUnique.add(element['name']);
+                resPagesFilter.add(PageModel.fromMap(element.data()));
+              }
+              if(orderModel.paper==element['name']) {
+                if ( !papersDetailsFilter.containsKey(element['name'])) {
+                   papersDetailsFilter[element['name']]=[];
+                }
+                if (papersDetailsFilter.containsKey(element['name'])) {
+                  papersDetailsFilter[element['name']]!.add(orderModel);
+                }
+              }
+            });
+            emit(GetFileSuccessStates());
 
-  void getPapersFilter(String date) {
-    emit(ViewFileLoadingStates());
-    FirebaseFirestore.instance
-        .collection('papers')
-        .orderBy('date', descending: true)
-        .snapshots()
-        .listen((value) {
-      papers = [];
-      papersDetails = {};
-      resPages = [];
-      value.docs.forEach((element) {
-        if (date.split(" ")[0] ==
-            PageModel.fromMap(element.data()).date.split(" ")[0]) {
-          if (!papers.contains(element['name'])) {
-            papers.add(element['name']);
-          }
-          resPages.add(PageModel.fromMap(element.data()));
-          papersDetails[element['name']] = [];
+          }).catchError((onError) {
+            emit(GetVedioErrorStates());
+          });
         }
       });
-      getOrders('كل الطلبات');
-    }).onError((onError) {
+      print(papersDetailsFilter);
+
+      emit(GetFileSuccessStates());
+    }).catchError((onError){
       emit(GetVedioErrorStates());
     });
+    emit(GetFileSuccessStates());
+
   }
+
+  List<String> papers = [];
   void getPapers() {
     emit(ViewFileLoadingStates());
     FirebaseFirestore.instance
@@ -1645,16 +1674,12 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .snapshots()
         .listen((value) {
       papers = [];
-      papersDetails = {};
-      resPages = [];
       value.docs.forEach((element) {
           if (!papers.contains(element['name'])) {
             papers.add(element['name']);
           }
-          resPages.add(PageModel.fromMap(element.data()));
-          papersDetails[element['name']] = [];
       });
-      getOrders('كل الطلبات');
+      //getOrders('كل الطلبات');
     }).onError((onError) {
       emit(GetVedioErrorStates());
     });
@@ -1694,8 +1719,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       // print('$len ppppppppppppppppp');
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
-        if (papersDetails.containsKey(orderModel.paper)) {
-          papersDetails[orderModel.paper]!.add(orderModel);
+        if (papersDetailsFilter.containsKey(orderModel.paper)) {
+          papersDetailsFilter[orderModel.paper]!.add(orderModel);
         }
         if (orderModel.statusOrder == "تسليم ناجح") {
           totalOfAllOrdersConfirmTest += orderModel.totalPrice;
@@ -1749,8 +1774,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         }
         event.docs.forEach((element) {
           OrderModel orderModel = OrderModel.fromMap(element.data());
-          if (papersDetails.containsKey(orderModel.paper)) {
-            papersDetails[orderModel.paper]!.add(orderModel);
+          if (papersDetailsFilter.containsKey(orderModel.paper)) {
+            papersDetailsFilter[orderModel.paper]!.add(orderModel);
           }
           if (orderModel.statusOrder == "تسليم ناجح") {
             totalOfAllOrdersConfirmTest += orderModel.totalPrice;
@@ -1952,4 +1977,171 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(GetFileErrorStates());
     });
   }
+
+  void updateOrderCharging(
+      {required String orderName,
+        required String conservation,
+        required String city,
+        required String address,
+        required String type,
+        required String barCode,
+        required String employerName,
+        required String employerPhone,
+        required String employerEmail,
+        required String orderPhone,
+        required String serviceType,
+        required String statusOrder,
+        required String notes,
+        required String paper,
+        required bool isSelected,
+        required String editEmail,
+        required String date,
+        required int number,
+        required double price,
+        required double totalPrice,
+        required double salOfCharging,
+        required context}) async {
+    OrderModel orderModel = OrderModel(
+      employerEmail: employerEmail,
+      orderPhone: orderPhone,
+      statusOrder: statusOrder,
+      serviceType: serviceType,
+      notes: notes,
+      editEmail: editEmail,
+      orderName: orderName,
+      conservation: conservation,
+      city: city,
+      address: address,
+      type: type,
+      paper: paper,
+      isSelected: isSelected,
+      barCode: barCode,
+      employerName: employerName,
+      employerPhone: employerPhone,
+      date: date,
+      number: number,
+      price: price,
+      totalPrice: totalPrice,
+      salOfCharging: salOfCharging,
+    );
+    FirebaseFirestore.instance
+        .collection('orders')
+        .doc(barCode)
+        .update(orderModel.toMap())
+        .then((value) {
+    }).catchError((onError) {
+      showToast(message: onError.toString(), state: ToastState.ERROR);
+      emit(OrdersEditProfileErrorStates());
+    });
+  }
+  ////////////////////////
+  double progress = 0.0;
+  void createExcelSheet(context) async {
+    emit(GhhhetFinishedStates());
+    excel.Workbook workbook = excel.Workbook();
+    excel.Worksheet sheet = workbook.worksheets[0];
+    sheet.getRangeByIndex(1, 1).setText("Consignee_Name");
+    sheet.getRangeByIndex(1, 2).setText("City");
+    sheet.getRangeByIndex(1, 3).setText("Area");
+    sheet.getRangeByIndex(1, 4).setText("Address");
+    sheet.getRangeByIndex(1, 5).setText("Phone_1");
+    sheet.getRangeByIndex(1, 6).setText("Order");
+    sheet.getRangeByIndex(1, 7).setText("Employee_Name");
+    sheet.getRangeByIndex(1, 8).setText("product");
+    sheet.getRangeByIndex(1, 9).setText("Charging");
+    sheet.getRangeByIndex(1, 10).setText("Item_Name");
+    sheet.getRangeByIndex(1, 11).setText("Quantity");
+    sheet.getRangeByIndex(1, 12).setText("Item_Description");
+    sheet.getRangeByIndex(1, 13).setText("COD");
+    sheet.getRangeByIndex(1, 14).setText("Weight");
+    sheet.getRangeByIndex(1, 15).setText("Size");
+    sheet.getRangeByIndex(1, 16).setText("Service_Type");
+    sheet.getRangeByIndex(1, 17).setText("notes");
+    for (int i = 0; i < orders.length; i++) {
+      updateOrderCharging(
+          orderName: orders[i].orderName,
+          paper: orders[i].paper,
+          conservation: orders[i].conservation,
+          isSelected: orders[i].isSelected,
+          statusOrder: 'جاري الشحن',
+          city: orders[i].city,
+          editEmail: orders[i].editEmail,
+          address: orders[i].address,
+          type: orders[i].type,
+          barCode: orders[i].barCode,
+          employerName: orders[i].employerName,
+          employerPhone: orders[i].employerPhone,
+          employerEmail: orders[i].employerEmail,
+          orderPhone: orders[i].orderPhone,
+          serviceType: orders[i].serviceType,
+          notes: orders[i].notes,
+          date: orders[i].date,
+          number: orders[i].number,
+          price: orders[i].price,
+          totalPrice: orders[i].totalPrice,
+          salOfCharging: orders[i].salOfCharging,
+          context: context);
+      sheet
+          .getRangeByIndex(i + 2, 1)
+          .setText(orders[i].orderName);
+      sheet
+          .getRangeByIndex(i + 2, 2)
+          .setText(orders[i].conservation);
+      sheet
+          .getRangeByIndex(i + 2, 3)
+          .setText(orders[i].city);
+      sheet
+          .getRangeByIndex(i + 2, 4)
+          .setText(orders[i].address);
+      sheet
+          .getRangeByIndex(i + 2, 5)
+          .setText(orders[i].orderPhone);
+      sheet.getRangeByIndex(i + 2, 6).setText(" ");
+      sheet
+          .getRangeByIndex(i + 2, 7)
+          .setText(orders[i].employerName);
+      sheet.getRangeByIndex(i + 2, 8).setText(" ");
+      sheet.getRangeByIndex(i + 2, 9).setText(" ");
+      sheet
+          .getRangeByIndex(i + 2, 10)
+          .setText(orders[i].type);
+      sheet
+          .getRangeByIndex(i + 2, 11)
+          .setValue(orders[i].number);
+      sheet.getRangeByIndex(i + 2, 12).setText(" ");
+      sheet
+          .getRangeByIndex(i + 2, 13)
+          .setNumber(orders[i].totalPrice);
+      sheet.getRangeByIndex(i + 2, 14).setText(" ");
+      sheet.getRangeByIndex(i + 2, 15).setText(" ");
+      sheet
+          .getRangeByIndex(i + 2, 16)
+          .setText(orders[i].serviceType);
+      sheet
+          .getRangeByIndex(i + 2, 17)
+          .setText(orders[i].notes);
+    }
+    await Future.delayed(const Duration(seconds: 80))
+    .then((value)async{
+      //save
+      String text = "Edited Successfully...".tr();
+      showToast(message: text, state: ToastState.SUCCESS);
+      final List<int> bytes = workbook.saveAsStream();
+      await workbook.save();
+      workbook.dispose();
+      final String path = (await getApplicationCacheDirectory()).path;
+      final String fileName = '$path/orders.xlsx';
+      final File file = File(fileName);
+      await file.writeAsBytes(
+      bytes,
+      flush: true,
+      );
+      emit(GetFinishedStates());
+      OpenFile.open(fileName);
+    })
+    .catchError((onError){
+
+    });
+  }
+
 }

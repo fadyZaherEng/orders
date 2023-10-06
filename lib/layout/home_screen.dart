@@ -526,6 +526,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(
                       height: 10,
                     ),
+                    if(state is !OrderGetCityLoadingStates)
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
@@ -576,6 +577,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             }),
                       ),
                     ),
+                    if(state is OrderGetCityLoadingStates)
+                      const Center(child: CircularProgressIndicator(),),
                     const SizedBox(
                       height: 10,
                     ),
