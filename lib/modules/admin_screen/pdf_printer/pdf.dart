@@ -6,32 +6,34 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 class PdfPrintOrdersScreen extends StatefulWidget {
-  List<Uint8List?> widgets;
-  PdfPrintOrdersScreen({required this.widgets});
+  //List<Uint8List?> widgets;
 
+  //PdfPrintOrdersScreen({required this.widgets});
+  pw.Document pdf = pw.Document();
+  PdfPrintOrdersScreen(this.pdf);
   @override
   State<PdfPrintOrdersScreen> createState() => _PdfPrintOrdersScreenState();
 }
 
 class _PdfPrintOrdersScreenState extends State<PdfPrintOrdersScreen> {
-  final pdf = pw.Document();
 
   @override
   void initState() {
     // TODO: implement initState
-    print(widget.widgets);
+   // print(widget.widgets);
     super.initState();
-    widget.widgets.forEach((image) {
-      pdf.addPage(
-        pw.Page(build: (ctx) {
-          return pw.Center(
-            child: pw.Image(pw.MemoryImage(image!)),
-          );
-        }),
-      );
-    });
-    //savePdf();
-    print(pdf.document);
+    // widget.widgets.forEach((image) {
+    //   pdf.addPage(
+    //     pw.Page(build: (ctx) {
+    //       return pw.Center(
+    //         child: pw.Image(pw.MemoryImage(image!)),
+    //       );
+    //     }),
+    //   );
+    // });
+    // //savePdf();
+    // print(pdf.document);
+
   }
 
   @override
@@ -45,7 +47,7 @@ class _PdfPrintOrdersScreenState extends State<PdfPrintOrdersScreen> {
 
   Widget showOrders() {
     return PdfPreview(
-      build: (format)async =>await pdf.save(),
+      build: (format)async =>await widget.pdf.save(),
     );
   }
 }

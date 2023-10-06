@@ -3,6 +3,7 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
@@ -10,6 +11,8 @@ import 'package:orders/models/order_model.dart';
 import 'package:orders/modules/admin_screen/pdf_printer/pdf.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'dart:io';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
 import 'package:path_provider/path_provider.dart';
@@ -78,8 +81,8 @@ class _TodayOrdersState extends State<TodayOrders> {
                        ),
                      ),
                  fallback: (ctx) =>
-                  Center(
-                     child: Text("Not Orders Today".tr())),
+                  const Center(
+                     child: CircularProgressIndicator()),
                ),
                if(OrdersHomeCubit.get(context).todayOrders.isNotEmpty)
                  Row(
@@ -93,23 +96,23 @@ class _TodayOrdersState extends State<TodayOrders> {
                            },
                            child: Text("Copy".tr())),
                      ),
-                     // SizedBox(
-                     //   child: Padding(
-                     //     padding: const EdgeInsets.all(8.0),
-                     //     child: MaterialButton(
-                     //       color: Theme.of(context).primaryColor,
-                     //       onPressed: ()async {
-                     //         await printer();
-                     //         selectedOrders.clear();
-                     //         OrdersHomeCubit.get(context).getTodayOrders(filterSelected);
-                     //         navigateToWithReturn(context, PdfPrintOrdersScreen(pdf));
-                     //       },
-                     //       child: Text("Print Or Share".tr(),style: TextStyle(
-                     //           color: Theme.of(context).scaffoldBackgroundColor
-                     //       ),),
-                     //     ),
-                     //   ),
-                     // ),
+                     SizedBox(
+                       child: Padding(
+                         padding: const EdgeInsets.all(8.0),
+                         child: MaterialButton(
+                           color: Theme.of(context).primaryColor,
+                           onPressed: ()async {
+                             await addPage();
+                             selectedOrders.clear();
+                             OrdersHomeCubit.get(context).getTodayOrders(filterSelected);
+                             navigateToWithReturn(context, PdfPrintOrdersScreen(pdf));
+                           },
+                           child: Text("Print Or Share".tr(),style: TextStyle(
+                               color: Theme.of(context).scaffoldBackgroundColor
+                           ),),
+                         ),
+                       ),
+                     ),
                    ],
                  ),
              ],
@@ -151,15 +154,15 @@ class _TodayOrdersState extends State<TodayOrders> {
                     order.serviceType,
                   ),
                 ),
-                // order.isSelected
-                //     ? Icon(
-                //   Icons.check_circle,
-                //   color: Colors.green[700],
-                // )
-                //     : const Icon(
-                //   Icons.check_circle,
-                //   color: Colors.grey,
-                // )
+                order.isSelected
+                    ? Icon(
+                  Icons.check_circle,
+                  color: Colors.green[700],
+                )
+                    : const Icon(
+                  Icons.check_circle,
+                  color: Colors.grey,
+                )
               ]),
               const SizedBox(
                 height: 10,
@@ -192,86 +195,101 @@ class _TodayOrdersState extends State<TodayOrders> {
     );
   }
 
-  void addPage(OrderModel orderModel) {
+  Future<void> addPage() async{
+    // var data = await rootBundle.load("assets/fonts/Cairo_Bold.ttf");
+    // dynamic ttf = pw.Font.ttf(data);
     pdf.addPage(
-      pw.Page(build: (ctx) {
-        return pw.Column(
-          children: [
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Order Name: ".tr()}${orderModel.orderName}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Order Phone: ".tr()}${orderModel.orderPhone}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Order City: ".tr()}${orderModel.conservation}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Order Area: ".tr()}${orderModel.city}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Order Address: ".tr()} ${orderModel.address}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Item Name: ".tr()}${orderModel.type}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Service Type: ".tr()}${orderModel.serviceType}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text(orderModel.number != 0
-                ? '${"Order Number: ".tr()}${orderModel.number.toString()}'
-                : ""),
-            pw.SizedBox(
-              height: 15,
-            ),
-            //barcode
-            pw.Center(
-              child: pw.BarcodeWidget(
-                data: orderModel.barCode,
-                barcode: pw.Barcode.qrCode(
-                    errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
-                width: 200,
-                height: 200,
+      pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          theme: pw.ThemeData.withFont(
+            base: await PdfGoogleFonts.iBMPlexSansArabicBold(),
+          ),
+          textDirection: pw.TextDirection.rtl,
+          mainAxisAlignment: pw.MainAxisAlignment.end,
+          crossAxisAlignment: pw.CrossAxisAlignment.end,
+          build: (ctx) {
+       return selectedOrders.map((orderModel) {
+          return  pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.end,
+            crossAxisAlignment: pw.CrossAxisAlignment.end,
+            children: [
+              pw.SizedBox(
+                height: 8,
               ),
-            ),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text(
-                '${"Date: ".tr()}${DateFormat().format(DateTime.parse(orderModel.date))}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Price".tr()}${orderModel.price.toString()}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text('${"Charging".tr()}${orderModel.salOfCharging.toString()}'),
-            pw.SizedBox(
-              height: 15,
-            ),
-            pw.Text("${"Total Price: ".tr()}${orderModel.totalPrice}"),
-          ],
-        );
+              pw.Text('${"Order Name: ".tr()}${orderModel.orderName}',),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text('${"Order Phone: ".tr()}${orderModel.orderPhone}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text('${"Order City: ".tr()}${orderModel.conservation}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text('${"Order Area: ".tr()}${orderModel.city}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text('${"Order Address: ".tr()} ${orderModel.address}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text('${"Item Name: ".tr()}${orderModel.type}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text('${"Service Type: ".tr()}${orderModel.serviceType}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text(orderModel.number != 0
+                  ? '${"Order Number: ".tr()}${orderModel.number.toString()}'
+                  : ""),
+              pw.SizedBox(
+                height: 8,
+              ),
+              //barcode
+              pw.Center(
+                child: pw.BarcodeWidget(
+                  data: orderModel.barCode,
+                  barcode: pw.Barcode.qrCode(
+                      errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
+                  width: 100,
+                  height: 100,
+                ),
+              ),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text(
+                  '${"Date: ".tr()}${DateFormat().format(DateTime.parse(orderModel.date))}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text('${"Price".tr()}${orderModel.price.toString()}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text('${"Charging".tr()}${orderModel.salOfCharging.toString()}'),
+              pw.SizedBox(
+                height: 8,
+              ),
+              pw.Text("${"Total Price: ".tr()}${orderModel.totalPrice}"),
+            ],
+          );
+        }).toList();
       }),
     );
   }
 
-  Future<void> printer() async{
-    for (int i = 0; i < selectedOrders.length; i++) {
-      addPage(selectedOrders[i]);
-    }
-  }
+  // Future<void> printer() async{
+  //   for (int i = 0; i < selectedOrders.length; i++) {
+  //
+  //     addPage(selectedOrders[i]);
+  //   }
+  // }
 
   void createExcelSheet() async {
 //    setState(() {});
@@ -313,7 +331,7 @@ class _TodayOrdersState extends State<TodayOrders> {
           orderPhone: OrdersHomeCubit.get(context).todayOrders[i].orderPhone,
           serviceType: OrdersHomeCubit.get(context).todayOrders[i].serviceType,
           notes: OrdersHomeCubit.get(context).todayOrders[i].notes,
-          date: OrdersHomeCubit.get(context).todayOrders[i].date,
+          date:DateTime.now().toString(),
           number: OrdersHomeCubit.get(context).todayOrders[i].number,
           price: OrdersHomeCubit.get(context).todayOrders[i].price,
           totalPrice: OrdersHomeCubit.get(context).todayOrders[i].totalPrice,

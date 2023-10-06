@@ -582,73 +582,82 @@ class _AddOrderScreenState extends State<AddOrderScreen>  {
                     const SizedBox(
                       height: 30,
                     ),
-                    if(state is  ! OrderAddOrderLoadingStates)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 43,
-                      child: MaterialButton(
-                        color: SharedHelper.get(key: 'theme') == 'Light Theme'
-                            ? Colors.deepPurple
-                            : Colors.white,
-                        onPressed: () {
-                          String cat = "";
-                          int number = 0;
-                          if (radioSelected == "Single Category".tr()) {
-                            cat = catSelected;
-                            number = int.parse(quantityController.text);
-                          }
-                          if (radioSelected == "Multi Category".tr()) {
-                            cat = catsClientController.text;
-                            number = quantityController.text != ""
-                                ? int.parse(quantityController.text)
-                                : 0;
-                          }
-                          if (formKey.currentState!.validate() &&
-                              OrdersHomeCubit.get(context).currentAdmin !=
-                                  null &&
-                              paper != "Select Paper".tr()) {
-                            OrdersHomeCubit.get(context).addOrders(
-                                orderName: nameClientController.text,
-                                conservation: stateValue,
-                                paper: paper,
-                                city: city,
-                                serviceType: service,
-                                statusOrder: statusValue,
-                                notes: notesController.text,
-                                address: addressClientController.text,
-                                type: cat,
-                                employerName: OrdersHomeCubit.get(context)
-                                    .currentAdmin!.email,
-                                employerPhone: "",
-                                employerEmail: OrdersHomeCubit.get(context)
-                                    .currentAdmin!
-                                    .email,
-                                orderPhone: phoneClientController.text,
-                                number: number,
-                                price: double.parse(priceController.text),
-                                totalPrice: totalPrice,
-                                salOfCharging:
-                                double.parse(salOfChargingController.text),
-                                context: context);
-                            nameClientController.text = "";
-                            addressClientController.text = "";
-                            notesController.text = "";
-                            salOfChargingController.text = "";
-                            quantityController.text = "";
-                            catsClientController.text = "";
-                            priceController.text = "";
-                            phoneClientController.text = "";
-                          }
-                        },
-                        child: Text("Add Order".tr(),
-                            style: TextStyle(
-                                color: SharedHelper.get(key: 'theme') ==
-                                    'Light Theme'
-                                    ? Colors.white
-                                    : Colors.black)),
+                    if(city != "Select City".tr()&&(state is ! OrderAddOrderLoadingStates) ||
+                        (state is! OrderGetCityLoadingStates))
+                      SizedBox(
+                        width: double.infinity,
+                        height: 43,
+                        child: MaterialButton(
+                          color: SharedHelper.get(key: 'theme') == 'Light Theme'
+                              ? Colors.deepPurple
+                              : Colors.white,
+                          onPressed: () {
+                            String cat = "";
+                            int number = 0;
+                            if (radioSelected == "Single Category".tr()) {
+                              cat = catSelected;
+                              number = int.parse(quantityController.text);
+                            }
+                            if (radioSelected == "Multi Category".tr()) {
+                              cat = catsClientController.text;
+                              number = quantityController.text != ""
+                                  ? int.parse(quantityController.text)
+                                  : 0;
+                            }
+                            if (formKey.currentState!.validate() &&
+                                OrdersHomeCubit.get(context).userProfile !=
+                                    null &&
+                                paper != "Select Paper".tr()) {
+                              OrdersHomeCubit.get(context).addOrders(
+                                  orderName: nameClientController.text,
+                                  conservation: stateValue,
+                                  paper: paper,
+                                  city: city,
+                                  serviceType: service,
+                                  statusOrder: statusValue,
+                                  notes: notesController.text,
+                                  address: addressClientController.text,
+                                  type: cat,
+                                  employerName: OrdersHomeCubit.get(context)
+                                      .userProfile!
+                                      .name,
+                                  employerPhone: OrdersHomeCubit.get(context)
+                                      .userProfile!
+                                      .phone,
+                                  employerEmail: OrdersHomeCubit.get(context)
+                                      .userProfile!
+                                      .email,
+                                  orderPhone: phoneClientController.text,
+                                  number: number,
+                                  price: double.parse(priceController.text),
+                                  totalPrice: totalPrice,
+                                  salOfCharging:
+                                  double.parse(salOfChargingController.text),
+                                  context: context);
+                              nameClientController.text = "";
+                              addressClientController.text = "";
+                              notesController.text = "";
+                              salOfChargingController.text = "";
+                              quantityController.text = "";
+                              catsClientController.text = "";
+                              priceController.text = "";
+                              phoneClientController.text = "";
+                            }
+
+                          },
+                          child: Text("Add Order".tr(),
+                              style: TextStyle(
+                                  color: SharedHelper.get(key: 'theme') ==
+                                      'Light Theme'
+                                      ? Colors.white
+                                      : Colors.black)),
+                        ),
                       ),
-                    ),
+                    if(city == "Select City".tr())
+                      const Center(child: CircularProgressIndicator(),),
                     if(state is OrderAddOrderLoadingStates)
+                      const Center(child: CircularProgressIndicator(),),
+                    if(state is OrderGetCityLoadingStates)
                       const Center(child: CircularProgressIndicator(),),
                   ],
                 ),

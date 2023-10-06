@@ -2035,7 +2035,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     });
   }
   ////////////////////////
-  double progress = 0.0;
   void createExcelSheet(context) async {
     emit(GhhhetFinishedStates());
     excel.Workbook workbook = excel.Workbook();
@@ -2075,7 +2074,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           orderPhone: orders[i].orderPhone,
           serviceType: orders[i].serviceType,
           notes: orders[i].notes,
-          date: orders[i].date,
+          date: DateTime.now().toString(),
           number: orders[i].number,
           price: orders[i].price,
           totalPrice: orders[i].totalPrice,

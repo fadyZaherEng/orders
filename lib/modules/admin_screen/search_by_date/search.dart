@@ -510,7 +510,7 @@ class _SearchByDateScreenState extends State<SearchByDateScreen> {
           orderPhone: OrdersHomeCubit.get(context).searchOrdersDate[i].orderPhone,
           serviceType: OrdersHomeCubit.get(context).searchOrdersDate[i].serviceType,
           notes: OrdersHomeCubit.get(context).searchOrdersDate[i].notes,
-          date: OrdersHomeCubit.get(context).searchOrdersDate[i].date,
+          date:DateTime.now().toString(),
           number: OrdersHomeCubit.get(context).searchOrdersDate[i].number,
           price: OrdersHomeCubit.get(context).searchOrdersDate[i].price,
           totalPrice: OrdersHomeCubit.get(context).searchOrdersDate[i].totalPrice,

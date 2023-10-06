@@ -812,7 +812,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(
                       height: 30,
                     ),
-                    if(state is ! OrderAddOrderLoadingStates)
+                    if(city != "Select City".tr()&&(state is ! OrderAddOrderLoadingStates) ||
+                        (state is! OrderGetCityLoadingStates))
                     SizedBox(
                       width: double.infinity,
                       height: 43,
@@ -882,7 +883,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     : Colors.black)),
                       ),
                     ),
+                    if(city == "Select City".tr())
+                      const Center(child: CircularProgressIndicator(),),
                     if(state is OrderAddOrderLoadingStates)
+                      const Center(child: CircularProgressIndicator(),),
+                    if(state is OrderGetCityLoadingStates)
                       const Center(child: CircularProgressIndicator(),),
                   ],
                 ),
