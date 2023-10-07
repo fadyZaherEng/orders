@@ -2,20 +2,20 @@
 
 import 'dart:math';
 
-import 'package:barcode_widget/barcode_widget.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orders/layout/cubit/cubit.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/order_model.dart';
+import 'package:orders/modules/admin_screen/pdf_printer/pdf.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
+import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:screenshot/screenshot.dart';
+import 'package:printing/printing.dart';
 
 //checked
 class DisplayOrdersScreen extends StatefulWidget {
@@ -51,9 +51,10 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
         return Padding(
           padding:
           const EdgeInsetsDirectional.symmetric(horizontal: 3, vertical: 5),
-          child:state is OrdergetLoadingStates&& state is! GetFinishedStates||
-          state is ViewFileSuccessStates&& state is! GetFinishedStates||
-          state is GhhhetFinishedStates && state is! GetFinishedStates
+          child: state is OrdergetLoadingStates &&
+              state is! GetFinishedStates ||
+              state is ViewFileSuccessStates && state is! GetFinishedStates ||
+              state is GhhhetFinishedStates && state is! GetFinishedStates
               ? Center(
             child: CircularPercentIndicator(
               radius: 120.0,
@@ -61,9 +62,9 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
               animation: true,
               percent: double.parse(Random().nextInt(1).toString()),
               center: const Text(
-                "waiting........",
+                "أنتظر........",
                 style:
-                 TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
               ),
               footer: const Text(
                 "Upload",
@@ -76,59 +77,79 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
           )
               : Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  DropdownButton(
-                    focusColor: Theme
-                        .of(context)
-                        .primaryColor,
-                    borderRadius: BorderRadius.circular(10),
-                    hint: Text(filterSelected),
-                    items: OrdersHomeCubit
-                        .get(context)
-                        .status
-                        .map((filter) =>
-                        DropdownMenuItem(
-                          child: Text(filter),
-                          value: filter,
-                        ))
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) {
-                        filterSelected = val;
-                        //  setState(() {});
-                        OrdersHomeCubit.get(context)
-                            .getOrders(filterSelected);
-                      }
-                    },
-                  ),
-                  InkWell(
-                    onTap: () {
-                      // Navigator.pop(context);
-                      OrdersHomeCubit.get(context)
-                          .createExcelSheet(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 5, bottom: 5),
-                      child: Text("Share Orders".tr()),
-                    ),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        OrdersHomeCubit.get(context)
-                            .removeCollectionsOrders(
-                          orders: OrdersHomeCubit
-                              .get(context)
-                              .orders,
-                          context: context,
-                        );
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    DropdownButton(
+                      focusColor: Theme
+                          .of(context)
+                          .primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                      hint: Text(filterSelected),
+                      items: OrdersHomeCubit
+                          .get(context)
+                          .status
+                          .map((filter) =>
+                          DropdownMenuItem(
+                            child: Text(filter),
+                            value: filter,
+                          ))
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          filterSelected = val;
+                          //  setState(() {});
+                          OrdersHomeCubit.get(context)
+                              .getOrders(filterSelected);
+                        }
                       },
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                      ))
-                ],
+                    ),
+                    InkWell(
+                      onTap: () {
+                        // Navigator.pop(context);
+                        OrdersHomeCubit.get(context)
+                            .createExcelSheet(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Text("Share Orders".tr()),
+                      ),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          OrdersHomeCubit.get(context)
+                              .removeCollectionsOrders(
+                            orders: OrdersHomeCubit
+                                .get(context)
+                                .orders,
+                            context: context,
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        )),
+                    IconButton(
+                        onPressed: () async{
+                        await selectAll();
+                         setState(() {
+
+                         });
+                        },
+                        icon: const Icon(Icons.select_all)),
+                    IconButton(
+                        onPressed: ()async {
+                         await clearAll();
+                          setState(() {
+
+                          });
+                        },
+                        icon: const Icon(Icons.clear)),
+
+                  ],
+                ),
               ),
               ConditionalBuilder(
                 condition: OrdersHomeCubit
@@ -157,37 +178,47 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fallback: (ctx) =>
                     Center(child: Text("Not Found Order".tr())),
               ),
-              // OrdersHomeCubit.get(context).isLoading
-              //     ? const Center(child: CircularProgressIndicator())
-              //     : const SizedBox()
-              // if (OrdersHomeCubit.get(context).orders.isNotEmpty)
-              //   SizedBox(
-              //     width: double.infinity,
-              //     child: Padding(
-              //       padding: const EdgeInsets.all(8.0),
-              //       child: MaterialButton(
-              //         color: Theme.of(context).primaryColor,
-              //         onPressed: () async {
-              //           await printer();
-              //           Future.delayed(const Duration(seconds: 1))
-              //           .then((value) {
-              //             selectedOrders.clear();
-              //             OrdersHomeCubit.get(context).getOrders(filterSelected);
-              //             navigateToWithReturn(
-              //                 context,
-              //                 PdfPrintOrdersScreen(
-              //                   widgets: widgets,
-              //                 ));
-              //           });
-              //         },
-              //         child: Text(
-              //           "Print Or Share".tr(),
-              //           style: TextStyle(
-              //               color: Theme.of(context).scaffoldBackgroundColor),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
+              OrdersHomeCubit
+                  .get(context)
+                  .isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : const SizedBox(),
+              if (OrdersHomeCubit
+                  .get(context)
+                  .orders
+                  .isNotEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: MaterialButton(
+                      color: Theme
+                          .of(context)
+                          .primaryColor,
+                      onPressed: () async {
+                        await addPage();
+                        Future.delayed(const Duration(seconds: 1))
+                            .then((value) {
+                          selectedOrders.clear();
+                          OrdersHomeCubit.get(context).getOrders(
+                              filterSelected);
+                          navigateToWithReturn(
+                              context,
+                              PdfPrintOrdersScreen(
+                                pdf,
+                              ));
+                        });
+                      },
+                      child: Text(
+                        "Print Or Share".tr(),
+                        style: TextStyle(
+                            color: Theme
+                                .of(context)
+                                .scaffoldBackgroundColor),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         );
@@ -231,15 +262,15 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                     order.serviceType,
                   ),
                 ),
-                // order.isSelected
-                //     ? Icon(
-                //         Icons.check_circle,
-                //         color: Colors.green[700],
-                //       )
-                //     : const Icon(
-                //         Icons.check_circle,
-                //         color: Colors.grey,
-                //       )
+                order.isSelected
+                    ? Icon(
+                  Icons.check_circle,
+                  color: Colors.green[700],
+                )
+                    : const Icon(
+                  Icons.check_circle,
+                  color: Colors.grey,
+                )
               ]),
               const SizedBox(
                 height: 10,
@@ -272,96 +303,223 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
     );
   }
 
-  var screenShotController = ScreenshotController();
 
-  List<Uint8List?> widgets = [];
-
-  void addPage(OrderModel orderModel) {
-    Screenshot(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Order Name: ".tr()}${orderModel.orderName}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Order Phone: ".tr()}${orderModel.orderPhone}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Order City: ".tr()}${orderModel.conservation}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Order Area: ".tr()}${orderModel.city}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Order Address: ".tr()} ${orderModel.address}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Item Name: ".tr()}${orderModel.type}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Service Type: ".tr()}${orderModel.serviceType}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text(orderModel.number != 0
+  pw.SizedBox getItem(OrderModel orderModel) {
+    return pw.SizedBox(
+      width: MediaQuery.sizeOf(context).width*0.5,
+      child: pw.Column(
+        mainAxisSize: pw.MainAxisSize.min,
+        children: [
+          pw.Text(
+            '${"Order Name: ".tr()}${orderModel.orderName}',maxLines: 2,overflow: pw.TextOverflow.visible,
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            '${"Order Phone: ".tr()}${orderModel.orderPhone}',maxLines: 2,overflow: pw.TextOverflow.visible,
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            '${"Order City: ".tr()}${orderModel.conservation}',maxLines: 2,overflow: pw.TextOverflow.visible,
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            '${"Order Area: ".tr()}${orderModel.city}',maxLines: 2,overflow: pw.TextOverflow.visible,
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+              '${"Order Address: ".tr()}${orderModel.address}',
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 8,
+                  fontWeight: pw.FontWeight.normal),
+              maxLines: 3,
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            '${"Item Name: ".tr()}${orderModel.type}',maxLines: 2,overflow: pw.TextOverflow.visible,
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            '${"Service Type: ".tr()}${orderModel.serviceType}',maxLines: 2,overflow: pw.TextOverflow.visible,
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            orderModel.number != 0
                 ? '${"Order Number: ".tr()}${orderModel.number.toString()}'
-                : ""),
-            const SizedBox(
-              height: 15,
+                : "",
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          //barcode
+          pw.Center(
+            child: pw.BarcodeWidget(
+              data: orderModel.barCode,
+              barcode: pw.Barcode.qrCode(
+                  errorCorrectLevel:
+                  pw.BarcodeQRCorrectionLevel.high),
+              width: 100,
+              height: 100,
             ),
-            //barcode
-            Center(
-              child: BarcodeWidget(
-                data: orderModel.barCode,
-                barcode: pw.Barcode.qrCode(
-                    errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
-                width: 200,
-                height: 200,
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            '${"Date: ".tr()}${DateFormat().format(
+                DateTime.parse(orderModel.date))}',maxLines: 2,overflow: pw.TextOverflow.visible,
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            '${"Price".tr()}${orderModel.price.toString()}',maxLines: 2,overflow: pw.TextOverflow.visible,
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            '${"Charging".tr()}${orderModel.salOfCharging.toString()}',
+            style: pw.TextStyle(
+                color: PdfColors.black,
+                fontSize: 10,
+                fontWeight: pw.FontWeight.normal),
+          ),
+          pw.SizedBox(
+            height: 4,
+          ),
+          pw.Text(
+            "${"Total Price: ".tr()}${orderModel.totalPrice}",style: pw.TextStyle(
+              color: PdfColors.black,
+              fontSize: 10,
+              fontWeight: pw.FontWeight.normal),),
+        ],
+      )
+    );
+  }
+  Future<void> addPage() async {
+    pdf.addPage(
+      pw.MultiPage(
+          pageFormat: PdfPageFormat.standard,
+          theme: pw.ThemeData.withFont(
+            base: await PdfGoogleFonts.iBMPlexSansArabicSemiBold(),
+          ),
+          textDirection: pw.TextDirection.rtl,
+          mainAxisAlignment: pw.MainAxisAlignment.end,
+          crossAxisAlignment: pw.CrossAxisAlignment.end,
+          build: (ctx) {
+            List<pw.Widget> lists = [];
+            for (int i = 0; i < selectedOrders.length&&i<300; ) {
+              lists.add(
+              pw.Padding(
+                padding: const pw.EdgeInsets.all(2),
+                child:  pw.Column(
+                  mainAxisSize: pw.MainAxisSize.min,
+                  mainAxisAlignment: pw.MainAxisAlignment.end,
+                  crossAxisAlignment: pw.CrossAxisAlignment.end,
+                  children: [
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          if(selectedOrders.length-1>i)
+                          getItem(selectedOrders[i++]),
+                          if(selectedOrders.length-1>i)
+                          getItem(selectedOrders[i++]),
+                        ]),
+                    pw.SizedBox(
+                      height: 4
+                    ),
+                    pw.Container(
+                      width: double.infinity,
+                      height: 1,
+                      color: PdfColors.grey
+                    ),
+                    pw.SizedBox(
+                        height: 4
+                    ),
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          if(selectedOrders.length-1>i)
+                          getItem(selectedOrders[i++]),
+                          if(selectedOrders.length-1>i)
+                          getItem(selectedOrders[i++]),
+                        ]),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Text(
-                '${"Date: ".tr()}${DateFormat().format(
-                    DateTime.parse(orderModel.date))}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Price".tr()}${orderModel.price.toString()}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('${"Charging".tr()}${orderModel.salOfCharging.toString()}'),
-            const SizedBox(
-              height: 15,
-            ),
-            Text("${"Total Price: ".tr()}${orderModel.totalPrice}"),
-          ],
-        ),
-        controller: screenShotController);
-    screenShotController
-        .capture(delay: const Duration(milliseconds: 1))
-        .then((image) {
-      widgets.add(
-        image,
-      );
-    }).catchError((onError) {
-      print(onError.toString());
+              );
+              //i=i+4;
+            }
+            return lists;
+          }),
+    );
+  }
+  Future<void> selectAll() async{
+  setState(() {
+    for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
+      OrdersHomeCubit.get(context).orders[i].isSelected=true;
+      selectedOrders.add( OrdersHomeCubit.get(context).orders[i]);
+    }
+  });
+}
+  Future<void> clearAll() async{
+    setState(() {
+      for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
+        OrdersHomeCubit.get(context).orders[i].isSelected=false;
+      }
+      selectedOrders.clear();
     });
   }
 
-  Future<void> printer() async {
-    for (int i = 0; i < selectedOrders.length; i++) {
-      addPage(selectedOrders[i]);
-    }
-  }
 }

@@ -813,7 +813,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       height: 30,
                     ),
                     if(city != "Select City".tr()&&(state is ! OrderAddOrderLoadingStates) ||
-                        (state is! OrderGetCityLoadingStates))
+                        city != "Select City".tr()&& (state is! OrderGetCityLoadingStates))
                     SizedBox(
                       width: double.infinity,
                       height: 43,
