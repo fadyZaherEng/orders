@@ -607,7 +607,12 @@ class _AddOrderScreenState extends State<AddOrderScreen>  {
                             if (formKey.currentState!.validate() &&
                                 OrdersHomeCubit.get(context).userProfile !=
                                     null &&
-                                paper != "Select Paper".tr()) {
+                                paper != "Select Paper".tr() &&
+                                city != "Select City".tr() &&
+                                service != "Select Service".tr() &&
+                                stateValue != "Select State".tr() &&
+                                statusValue != "Select Status".tr() &&
+                                catSelected != "Select".tr()) {
                               OrdersHomeCubit.get(context).addOrders(
                                   orderName: nameClientController.text,
                                   conservation: stateValue,

@@ -139,114 +139,99 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             centerTitle: true,
             titleSpacing: 0,
             actions: [
-              if(SharedHelper.get(key: 'uid')!=null)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DropdownButton(
-                    dropdownColor: Theme.of(context).primaryColor,
-                    focusColor: Theme.of(context).scaffoldBackgroundColor,
-                    underline: Container(),
-                    icon: Icon(
-                      Icons.reorder,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    elevation: 0,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).scaffoldBackgroundColor),
-                    items: [
-                      DropdownMenuItem(
-                        value: "chat",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            navigateToWithReturn(
-                              context,
-                               ChatGroupScreen(),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text('Chat'.tr()),
-                          ),
-                        ),
+              if (SharedHelper.get(key: 'uid') != null)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: DropdownButton(
+                      dropdownColor: Theme.of(context).primaryColor,
+                      focusColor: Theme.of(context).scaffoldBackgroundColor,
+                      underline: Container(),
+                      icon: Icon(
+                        Icons.reorder,
+                        color: Theme.of(context).primaryColor,
                       ),
-                      DropdownMenuItem(
-                        value: "today",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            navigateToWithReturn(
-                              context,
-                              const ScannerScreen(),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text('Search By Barcode'.tr()),
-                          ),
-                        ),
-                      ),
-                      DropdownMenuItem(
-                        value: "toda",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            navigateToWithReturn(
-                              context,
-                              EmployerTodayOrdersScreen(),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text("Today Orders".tr()),
-                          ),
-                        ),
-                      ),
-                      DropdownMenuItem(
-                        value: "phone",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            navigateToWithReturn(
-                              context,
-                              SearchOrderPhoneScreen(),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text("Search Phone".tr()),
-                          ),
-                        ),
-                      ),
-                      DropdownMenuItem(
-                        value: "phone",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            navigateToWithReturn(context, SearchOrderNameScreen());
-                          },
-                          child: Text("Search Name".tr()),
-                        ),
-                      ),
-                      DropdownMenuItem(
-                        value: "t",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                                '${"all num".tr()} ${OrdersHomeCubit.get(context).totalAllOrdersOfCurrentEmp}'),
-                          ),
-                        ),
-                      ),
-                      if (OrdersHomeCubit.get(context)
-                              .totalTodayOrdersOfCurrentEmp !=
-                          0)
+                      elevation: 0,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: Theme.of(context).scaffoldBackgroundColor),
+                      items: [
                         DropdownMenuItem(
-                          value: "tod",
+                          value: "chat",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              navigateToWithReturn(
+                                context,
+                                ChatGroupScreen(),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text('Chat'.tr()),
+                            ),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "today",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              navigateToWithReturn(
+                                context,
+                                const ScannerScreen(),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text('Search By Barcode'.tr()),
+                            ),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "toda",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              navigateToWithReturn(
+                                context,
+                                EmployerTodayOrdersScreen(),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text("Today Orders".tr()),
+                            ),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "phone",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              navigateToWithReturn(
+                                context,
+                                SearchOrderPhoneScreen(),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text("Search Phone".tr()),
+                            ),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "phone",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              navigateToWithReturn(
+                                  context, SearchOrderNameScreen());
+                            },
+                            child: Text("Search Name".tr()),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "t",
                           child: InkWell(
                             onTap: () {
                               Navigator.pop(context);
@@ -254,59 +239,75 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             child: Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Text(
-                                  '${"today num".tr()} ${OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmp}'),
+                                  '${"all num".tr()} ${OrdersHomeCubit.get(context).totalAllOrdersOfCurrentEmp}'),
                             ),
                           ),
                         ),
-                      DropdownMenuItem(
-                        value: "theme",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            OrdersHomeCubit.get(context).modeChange();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text("Change Theme".tr()),
+                        if (OrdersHomeCubit.get(context)
+                                .totalTodayOrdersOfCurrentEmp !=
+                            0)
+                          DropdownMenuItem(
+                            value: "tod",
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Text(
+                                    '${"today num".tr()} ${OrdersHomeCubit.get(context).totalTodayOrdersOfCurrentEmp}'),
+                              ),
+                            ),
+                          ),
+                        DropdownMenuItem(
+                          value: "theme",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              OrdersHomeCubit.get(context).modeChange();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text("Change Theme".tr()),
+                            ),
                           ),
                         ),
-                      ),
-                      DropdownMenuItem(
-                        value: "lang",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            OrdersHomeCubit.get(context).langChange(context);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text("Change lang".tr()),
+                        DropdownMenuItem(
+                          value: "lang",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              OrdersHomeCubit.get(context).langChange(context);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text("Change lang".tr()),
+                            ),
                           ),
                         ),
-                      ),
-                      DropdownMenuItem(
-                        value: "logout",
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            OrdersHomeCubit.get(context).logOut();
-                            SharedHelper.remove(key: 'uid');
-                            if(SharedHelper.get(key: 'adminEmail')!=null) {
-                              SharedHelper.remove(key: 'adminEmail');
-                            }
-                            navigateToWithoutReturn(context, LogInScreen());
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text("Log Out".tr()),
+                        DropdownMenuItem(
+                          value: "logout",
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              OrdersHomeCubit.get(context).logOut();
+                              SharedHelper.remove(key: 'uid');
+                              if (SharedHelper.get(key: 'adminEmail') != null) {
+                                SharedHelper.remove(key: 'adminEmail');
+                              }
+                              navigateToWithoutReturn(context, LogInScreen());
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text("Log Out".tr()),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                    onChanged: (idx) {},
+                      ],
+                      onChanged: (idx) {},
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           body: SingleChildScrollView(
@@ -472,11 +473,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width*0.7,
+                        width: MediaQuery.sizeOf(context).width * 0.7,
                         child: DropdownButton(
                             dropdownColor: Theme.of(context).primaryColor,
                             focusColor:
-                            Theme.of(context).scaffoldBackgroundColor,
+                                Theme.of(context).scaffoldBackgroundColor,
                             underline: Container(),
                             hint: Text(stateValue),
                             //      value: stateValue,
@@ -489,29 +490,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 .textTheme
                                 .titleMedium!
                                 .copyWith(
-                                color: Theme.of(context)
-                                    .scaffoldBackgroundColor),
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor),
                             items: OrdersHomeCubit.get(context)
                                 .states
                                 .map(
                                   (e) => DropdownMenuItem(
-                                value: e.state,
-                                child: InkWell(
-                                  onTap: () {
-                                    city = "Select City".tr();
-                                    Navigator.pop(context);
-                                    stateValue = e.state;
-                                    OrdersHomeCubit.get(context)
-                                        .getCites(stateValue);
-                                    setState(() {});
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Text(e.state),
+                                    value: e.state,
+                                    child: InkWell(
+                                      onTap: () {
+                                        city = "Select City".tr();
+                                        Navigator.pop(context);
+                                        stateValue = e.state;
+                                        OrdersHomeCubit.get(context)
+                                            .getCites(stateValue);
+                                        setState(() {});
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(e.state),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            )
+                                )
                                 .toList(),
                             onChanged: (val) {
                               if (val != null) {
@@ -526,59 +527,61 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(
                       height: 10,
                     ),
-                    if(state is !OrderGetCityLoadingStates)
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width*0.7,
-                        child: DropdownButton(
-                            dropdownColor: Theme.of(context).primaryColor,
-                            focusColor:
-                            Theme.of(context).scaffoldBackgroundColor,
-                            underline: Container(),
-                            isDense: false,
-                            // alignment: AlignmentDirectional.center,
-                            hint: Text(city),
-                            icon: Icon(
-                              Icons.location_city,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            elevation: 0,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                color: Theme.of(context)
-                                    .scaffoldBackgroundColor),
-                            items: OrdersHomeCubit.get(context)
-                                .cities
-                                .map(
-                                  (e) => DropdownMenuItem(
-                                value: e,
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    city = e;
-                                    setState(() {});
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Text(e),
-                                  ),
-                                ),
+                    if (state is! OrderGetCityLoadingStates)
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: MediaQuery.sizeOf(context).width * 0.7,
+                          child: DropdownButton(
+                              dropdownColor: Theme.of(context).primaryColor,
+                              focusColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
+                              underline: Container(),
+                              isDense: false,
+                              // alignment: AlignmentDirectional.center,
+                              hint: Text(city),
+                              icon: Icon(
+                                Icons.location_city,
+                                color: Theme.of(context).primaryColor,
                               ),
-                            )
-                                .toList(),
-                            onChanged: (val) {
-                              if (val != null) {
-                                city = val;
-                                setState(() {});
-                              }
-                            }),
+                              elevation: 0,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor),
+                              items: OrdersHomeCubit.get(context)
+                                  .cities
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          city = e;
+                                          setState(() {});
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Text(e),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  city = val;
+                                  setState(() {});
+                                }
+                              }),
+                        ),
                       ),
-                    ),
-                    if(state is OrderGetCityLoadingStates)
-                      const Center(child: CircularProgressIndicator(),),
+                    if (state is OrderGetCityLoadingStates)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -812,83 +815,96 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(
                       height: 30,
                     ),
-                    if(city != "Select City".tr()&&(state is ! OrderAddOrderLoadingStates) ||
-                        city != "Select City".tr()&& (state is! OrderGetCityLoadingStates))
-                    SizedBox(
-                      width: double.infinity,
-                      height: 43,
-                      child: MaterialButton(
-                        color: SharedHelper.get(key: 'theme') == 'Light Theme'
-                            ? Colors.deepPurple
-                            : Colors.white,
-                        onPressed: () {
-                          String cat = "";
-                          int number = 0;
-                          if (radioSelected == "Single Category".tr()) {
-                            cat = catSelected;
-                            number = int.parse(quantityController.text);
-                          }
-                          if (radioSelected == "Multi Category".tr()) {
-                            cat = catsClientController.text;
-                            number = quantityController.text != ""
-                                ? int.parse(quantityController.text)
-                                : 0;
-                          }
-                          if (formKey.currentState!.validate() &&
-                              OrdersHomeCubit.get(context).userProfile !=
-                                  null &&
-                              paper != "Select Paper".tr()) {
-                            OrdersHomeCubit.get(context).addOrders(
-                                orderName: nameClientController.text,
-                                conservation: stateValue,
-                                paper: paper,
-                                city: city,
-                                serviceType: service,
-                                statusOrder: statusValue,
-                                notes: notesController.text,
-                                address: addressClientController.text,
-                                type: cat,
-                                employerName: OrdersHomeCubit.get(context)
-                                    .userProfile!
-                                    .name,
-                                employerPhone: OrdersHomeCubit.get(context)
-                                    .userProfile!
-                                    .phone,
-                                employerEmail: OrdersHomeCubit.get(context)
-                                    .userProfile!
-                                    .email,
-                                orderPhone: phoneClientController.text,
-                                number: number,
-                                price: double.parse(priceController.text),
-                                totalPrice: totalPrice,
-                                salOfCharging:
-                                    double.parse(salOfChargingController.text),
-                                context: context);
-                            nameClientController.text = "";
-                            addressClientController.text = "";
-                            notesController.text = "";
-                            salOfChargingController.text = "";
-                            quantityController.text = "";
-                            catsClientController.text = "";
-                            priceController.text = "";
-                            phoneClientController.text = "";
-                          }
-
-                        },
-                        child: Text("Add Order".tr(),
-                            style: TextStyle(
-                                color: SharedHelper.get(key: 'theme') ==
-                                        'Light Theme'
-                                    ? Colors.white
-                                    : Colors.black)),
+                    if (city != "Select City".tr() &&
+                            service != "Select Service".tr() &&
+                            (state is! OrderAddOrderLoadingStates) ||
+                        city != "Select City".tr() &&
+                            (state is! OrderGetCityLoadingStates))
+                      SizedBox(
+                        width: double.infinity,
+                        height: 43,
+                        child: MaterialButton(
+                          color: SharedHelper.get(key: 'theme') == 'Light Theme'
+                              ? Colors.deepPurple
+                              : Colors.white,
+                          onPressed: () {
+                            String cat = "";
+                            int number = 0;
+                            if (radioSelected == "Single Category".tr()) {
+                              cat = catSelected;
+                              number = int.parse(quantityController.text);
+                            }
+                            if (radioSelected == "Multi Category".tr()) {
+                              cat = catsClientController.text;
+                              number = quantityController.text != ""
+                                  ? int.parse(quantityController.text)
+                                  : 0;
+                            }
+                            if (formKey.currentState!.validate() &&
+                                OrdersHomeCubit.get(context).userProfile !=
+                                    null &&
+                                paper != "Select Paper".tr() &&
+                                city != "Select City".tr() &&
+                                service != "Select Service".tr() &&
+                                stateValue != "Select State".tr() &&
+                                statusValue != "Select Status".tr() &&
+                                catSelected != "Select".tr()) {
+                              OrdersHomeCubit.get(context).addOrders(
+                                  orderName: nameClientController.text,
+                                  conservation: stateValue,
+                                  paper: paper,
+                                  city: city,
+                                  serviceType: service,
+                                  statusOrder: statusValue,
+                                  notes: notesController.text,
+                                  address: addressClientController.text,
+                                  type: cat,
+                                  employerName: OrdersHomeCubit.get(context)
+                                      .userProfile!
+                                      .name,
+                                  employerPhone: OrdersHomeCubit.get(context)
+                                      .userProfile!
+                                      .phone,
+                                  employerEmail: OrdersHomeCubit.get(context)
+                                      .userProfile!
+                                      .email,
+                                  orderPhone: phoneClientController.text,
+                                  number: number,
+                                  price: double.parse(priceController.text),
+                                  totalPrice: totalPrice,
+                                  salOfCharging: double.parse(
+                                      salOfChargingController.text),
+                                  context: context);
+                              nameClientController.text = "";
+                              addressClientController.text = "";
+                              notesController.text = "";
+                              salOfChargingController.text = "";
+                              quantityController.text = "";
+                              catsClientController.text = "";
+                              priceController.text = "";
+                              phoneClientController.text = "";
+                            }
+                          },
+                          child: Text("Add Order".tr(),
+                              style: TextStyle(
+                                  color: SharedHelper.get(key: 'theme') ==
+                                          'Light Theme'
+                                      ? Colors.white
+                                      : Colors.black)),
+                        ),
                       ),
-                    ),
-                    if(city == "Select City".tr())
-                      const Center(child: CircularProgressIndicator(),),
-                    if(state is OrderAddOrderLoadingStates)
-                      const Center(child: CircularProgressIndicator(),),
-                    if(state is OrderGetCityLoadingStates)
-                      const Center(child: CircularProgressIndicator(),),
+                    if (city == "Select City".tr())
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    if (state is OrderAddOrderLoadingStates)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    if (state is OrderGetCityLoadingStates)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
                   ],
                 ),
               ),

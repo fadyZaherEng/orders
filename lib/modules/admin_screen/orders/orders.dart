@@ -318,7 +318,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             '${"Order Phone: ".tr()}${orderModel.orderPhone}',maxLines: 2,overflow: pw.TextOverflow.visible,
@@ -328,7 +328,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             '${"Order City: ".tr()}${orderModel.conservation}',maxLines: 2,overflow: pw.TextOverflow.visible,
@@ -338,7 +338,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             '${"Order Area: ".tr()}${orderModel.city}',maxLines: 2,overflow: pw.TextOverflow.visible,
@@ -348,7 +348,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
               '${"Order Address: ".tr()}${orderModel.address}',
@@ -359,7 +359,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
               maxLines: 3,
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             '${"Item Name: ".tr()}${orderModel.type}',maxLines: 2,overflow: pw.TextOverflow.visible,
@@ -369,7 +369,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             '${"Service Type: ".tr()}${orderModel.serviceType}',maxLines: 2,overflow: pw.TextOverflow.visible,
@@ -379,7 +379,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             orderModel.number != 0
@@ -391,7 +391,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           //barcode
           pw.Center(
@@ -405,7 +405,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
             ),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             '${"Date: ".tr()}${DateFormat().format(
@@ -416,7 +416,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             '${"Price".tr()}${orderModel.price.toString()}',maxLines: 2,overflow: pw.TextOverflow.visible,
@@ -426,7 +426,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             '${"Charging".tr()}${orderModel.salOfCharging.toString()}',
@@ -436,7 +436,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 fontWeight: pw.FontWeight.normal),
           ),
           pw.SizedBox(
-            height: 4,
+            height: 2,
           ),
           pw.Text(
             "${"Total Price: ".tr()}${orderModel.totalPrice}",style: pw.TextStyle(
@@ -459,7 +459,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           build: (ctx) {
             List<pw.Widget> lists = [];
-            for (int i = 0; i < selectedOrders.length&&i<300; ) {
+            for (int i = 0; i < selectedOrders.length&&i<350; ) {
               lists.add(
               pw.Padding(
                 padding: const pw.EdgeInsets.all(2),
@@ -477,7 +477,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                           getItem(selectedOrders[i++]),
                         ]),
                     pw.SizedBox(
-                      height: 4
+                      height: 2
                     ),
                     pw.Container(
                       width: double.infinity,
@@ -485,7 +485,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                       color: PdfColors.grey
                     ),
                     pw.SizedBox(
-                        height: 4
+                        height: 2
                     ),
                     pw.Row(
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
