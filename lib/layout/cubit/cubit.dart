@@ -2027,16 +2027,14 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     FirebaseFirestore.instance
         .collection('orders')
         .doc(barCode)
-        .update(orderModel.toMap())
-        .then((value) {
-    }).catchError((onError) {
-      showToast(message: onError.toString(), state: ToastState.ERROR);
-      emit(OrdersEditProfileErrorStates());
-    });
+        .update(orderModel.toMap());
   }
   ////////////////////////
   void createExcelSheet(context) async {
     emit(GhhhetFinishedStates());
+    if(await File("orders.xlsx").exists()){
+      File("orders.xlsx").delete();
+    }
     excel.Workbook workbook = excel.Workbook();
     excel.Worksheet sheet = workbook.worksheets[0];
     sheet.getRangeByIndex(1, 1).setText("Consignee_Name");
@@ -2057,29 +2055,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     sheet.getRangeByIndex(1, 16).setText("Service_Type");
     sheet.getRangeByIndex(1, 17).setText("notes");
     for (int i = 0; i < orders.length; i++) {
-      updateOrderCharging(
-          orderName: orders[i].orderName,
-          paper: orders[i].paper,
-          conservation: orders[i].conservation,
-          isSelected: orders[i].isSelected,
-          statusOrder: 'جاري الشحن',
-          city: orders[i].city,
-          editEmail: orders[i].editEmail,
-          address: orders[i].address,
-          type: orders[i].type,
-          barCode: orders[i].barCode,
-          employerName: orders[i].employerName,
-          employerPhone: orders[i].employerPhone,
-          employerEmail: orders[i].employerEmail,
-          orderPhone: orders[i].orderPhone,
-          serviceType: orders[i].serviceType,
-          notes: orders[i].notes,
-          date: DateTime.now().toString(),
-          number: orders[i].number,
-          price: orders[i].price,
-          totalPrice: orders[i].totalPrice,
-          salOfCharging: orders[i].salOfCharging,
-          context: context);
+      orders[i].statusOrder= 'جاري الشحن';
       sheet
           .getRangeByIndex(i + 2, 1)
           .setText(orders[i].orderName);
@@ -2120,7 +2096,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           .getRangeByIndex(i + 2, 17)
           .setText(orders[i].notes);
     }
-    await Future.delayed(const Duration(seconds: 80))
+    Future.delayed(const Duration(minutes: 1))
     .then((value)async{
       //save
       String text = "Edited Successfully...".tr();
@@ -2137,9 +2113,36 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       );
       emit(GetFinishedStates());
       OpenFile.open(fileName);
+    });
+     Future.delayed(const Duration(milliseconds: 10))
+    .then((value)async{
+      for(int i=0;i<orders.length;i++){
+        updateOrderCharging(
+            orderName: orders[i].orderName,
+            paper: orders[i].paper,
+            conservation: orders[i].conservation,
+            isSelected: orders[i].isSelected,
+            statusOrder: 'جاري الشحن',
+            city: orders[i].city,
+            editEmail: orders[i].editEmail,
+            address: orders[i].address,
+            type: orders[i].type,
+            barCode: orders[i].barCode,
+            employerName: orders[i].employerName,
+            employerPhone: orders[i].employerPhone,
+            employerEmail: orders[i].employerEmail,
+            orderPhone: orders[i].orderPhone,
+            serviceType: orders[i].serviceType,
+            notes: orders[i].notes,
+            date: DateTime.now().toString(),
+            number: orders[i].number,
+            price: orders[i].price,
+            totalPrice: orders[i].totalPrice,
+            salOfCharging: orders[i].salOfCharging,
+            context: context);
+      }
     })
     .catchError((onError){
-
     });
   }
 

@@ -51,10 +51,8 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
         return Padding(
           padding:
           const EdgeInsetsDirectional.symmetric(horizontal: 3, vertical: 5),
-          child: state is OrdergetLoadingStates &&
-              state is! GetFinishedStates ||
-              state is ViewFileSuccessStates && state is! GetFinishedStates ||
-              state is GhhhetFinishedStates && state is! GetFinishedStates
+          child: (state is OrdergetLoadingStates||state is ViewFileSuccessStates) && state is! GetFinishedStates ||
+                 state is GhhhetFinishedStates && state is! GetFinishedStates
               ? Center(
             child: CircularPercentIndicator(
               radius: 120.0,
@@ -100,7 +98,6 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                       onChanged: (val) {
                         if (val != null) {
                           filterSelected = val;
-                          //  setState(() {});
                           OrdersHomeCubit.get(context)
                               .getOrders(filterSelected);
                         }
@@ -108,7 +105,6 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        // Navigator.pop(context);
                         OrdersHomeCubit.get(context)
                             .createExcelSheet(context);
                       },
@@ -190,18 +186,19 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(4.0),
                     child: MaterialButton(
                       color: Theme
                           .of(context)
                           .primaryColor,
                       onPressed: () async {
+                        showToast(message: "أنتظر....", state: ToastState.SUCCESS);
                         await addPage();
                         Future.delayed(const Duration(seconds: 1))
                             .then((value) {
                           selectedOrders.clear();
-                          OrdersHomeCubit.get(context).getOrders(
-                              filterSelected);
+                          // OrdersHomeCubit.get(context).getOrders(
+                          //     filterSelected);
                           navigateToWithReturn(
                               context,
                               PdfPrintOrdersScreen(
@@ -302,8 +299,6 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
       ),
     );
   }
-
-
   pw.SizedBox getItem(OrderModel orderModel) {
     return pw.SizedBox(
       width: MediaQuery.sizeOf(context).width*0.5,
@@ -459,7 +454,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           build: (ctx) {
             List<pw.Widget> lists = [];
-            for (int i = 0; i < selectedOrders.length&&i<350; ) {
+            for (int i = 0; i < selectedOrders.length&&i<300; ) {
               lists.add(
               pw.Padding(
                 padding: const pw.EdgeInsets.all(2),
