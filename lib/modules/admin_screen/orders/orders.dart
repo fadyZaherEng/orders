@@ -25,22 +25,50 @@ class DisplayOrdersScreen extends StatefulWidget {
   State<DisplayOrdersScreen> createState() => _DisplayOrdersScreenState();
 }
 
-class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
+class _DisplayOrdersScreenState extends State<DisplayOrdersScreen>
+    with WidgetsBindingObserver {
   String filterSelected = "Select".tr();
   List<OrderModel> selectedOrders = [];
-  pw.Document pdf = pw.Document();
   ScrollController controller = ScrollController();
   int limit = 2;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     //OrdersHomeCubit.get(context).getOrders(filterSelected);
     // controller.addListener(() {
     //   if (controller.position.pixels == controller.position.maxScrollExtent) {
     //     OrdersHomeCubit.get(context).firstLoad(filterSelected, limit);
     //   }
     // });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.values ||
+        state == AppLifecycleState.hidden) {
+      for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
+        OrdersHomeCubit.get(context).orders[i].isSelected = false;
+      }
+      Future.delayed(const Duration(seconds: 1)).then((value) {
+        setState(() {});
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
+      OrdersHomeCubit.get(context).orders[i].isSelected = false;
+    }
+    setState(() {});
   }
 
   @override
@@ -51,8 +79,10 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
         return Padding(
           padding:
           const EdgeInsetsDirectional.symmetric(horizontal: 3, vertical: 5),
-          child: (state is OrdergetLoadingStates||state is ViewFileSuccessStates) && state is! GetFinishedStates ||
-                 state is GhhhetFinishedStates && state is! GetFinishedStates
+          child: (state is OrdergetLoadingStates ||
+              state is ViewFileSuccessStates) &&
+              state is! GetFinishedStates ||
+              state is GhhhetFinishedStates && state is! GetFinishedStates
               ? Center(
             child: CircularPercentIndicator(
               radius: 120.0,
@@ -61,13 +91,13 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
               percent: double.parse(Random().nextInt(1).toString()),
               center: const Text(
                 "أنتظر........",
-                style:
-                TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 20.0),
               ),
               footer: const Text(
                 "Upload",
-                style:
-                TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 17.0),
               ),
               circularStrokeCap: CircularStrokeCap.round,
               progressColor: Colors.purple,
@@ -81,19 +111,15 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     DropdownButton(
-                      focusColor: Theme
-                          .of(context)
-                          .primaryColor,
+                      focusColor: Theme.of(context).primaryColor,
                       borderRadius: BorderRadius.circular(10),
                       hint: Text(filterSelected),
-                      items: OrdersHomeCubit
-                          .get(context)
+                      items: OrdersHomeCubit.get(context)
                           .status
-                          .map((filter) =>
-                          DropdownMenuItem(
-                            child: Text(filter),
-                            value: filter,
-                          ))
+                          .map((filter) => DropdownMenuItem(
+                        child: Text(filter),
+                        value: filter,
+                      ))
                           .toList(),
                       onChanged: (val) {
                         if (val != null) {
@@ -117,9 +143,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                         onPressed: () {
                           OrdersHomeCubit.get(context)
                               .removeCollectionsOrders(
-                            orders: OrdersHomeCubit
-                                .get(context)
-                                .orders,
+                            orders: OrdersHomeCubit.get(context).orders,
                             context: context,
                           );
                         },
@@ -128,73 +152,54 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                           color: Colors.red,
                         )),
                     IconButton(
-                        onPressed: () async{
-                        await selectAll();
-                         setState(() {
-
-                         });
+                        onPressed: () async {
+                          await selectAll();
+                          setState(() {});
                         },
                         icon: const Icon(Icons.select_all)),
                     IconButton(
-                        onPressed: ()async {
-                         await clearAll();
-                          setState(() {
-
-                          });
+                        onPressed: () async {
+                          await clearAll();
+                          setState(() {});
                         },
                         icon: const Icon(Icons.clear)),
-
                   ],
                 ),
               ),
               ConditionalBuilder(
-                condition: OrdersHomeCubit
-                    .get(context)
-                    .orders
-                    .isNotEmpty,
-                builder: (ctx) =>
-                    Expanded(
-                      child: ListView.separated(
-                        controller: controller,
-                        itemBuilder: (ctx, idx) {
-                          return listItem(
-                              OrdersHomeCubit
-                                  .get(context)
-                                  .orders[idx],
-                              idx,
-                              ctx);
-                        },
-                        itemCount: OrdersHomeCubit
-                            .get(context)
-                            .orders
-                            .length,
-                        separatorBuilder: (ctx, idx) => mySeparator(context),
-                      ),
-                    ),
+                condition: OrdersHomeCubit.get(context).orders.isNotEmpty,
+                builder: (ctx) => Expanded(
+                  child: ListView.separated(
+                    controller: controller,
+                    itemBuilder: (ctx, idx) {
+                      return listItem(
+                          OrdersHomeCubit.get(context).orders[idx],
+                          idx,
+                          ctx);
+                    },
+                    itemCount: OrdersHomeCubit.get(context).orders.length,
+                    separatorBuilder: (ctx, idx) => mySeparator(context),
+                  ),
+                ),
                 fallback: (ctx) =>
                     Center(child: Text("Not Found Order".tr())),
               ),
-              OrdersHomeCubit
-                  .get(context)
-                  .isLoading
+              OrdersHomeCubit.get(context).isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : const SizedBox(),
-              if (OrdersHomeCubit
-                  .get(context)
-                  .orders
-                  .isNotEmpty)
+              if (OrdersHomeCubit.get(context).orders.isNotEmpty)
                 SizedBox(
                   width: double.infinity,
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: MaterialButton(
-                      color: Theme
-                          .of(context)
-                          .primaryColor,
+                      color: Theme.of(context).primaryColor,
                       onPressed: () async {
-                        showToast(message: "أنتظر....", state: ToastState.SUCCESS);
+                        showToast(
+                            message: "أنتظر....",
+                            state: ToastState.SUCCESS);
                         await addPage();
-                        Future.delayed(const Duration(seconds: 1))
+                        await Future.delayed(const Duration(seconds: 3))
                             .then((value) {
                           selectedOrders.clear();
                           // OrdersHomeCubit.get(context).getOrders(
@@ -205,12 +210,25 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                                 pdf,
                               ));
                         });
+                        Future.delayed(const Duration(seconds: 5))
+                            .then((value) {
+                          for (int i = 0;
+                          i <
+                              OrdersHomeCubit.get(context)
+                                  .orders
+                                  .length;
+                          i++) {
+                            OrdersHomeCubit.get(context)
+                                .orders[i]
+                                .isSelected = false;
+                          }
+                          setState(() {});
+                        });
                       },
                       child: Text(
                         "Print Or Share".tr(),
                         style: TextStyle(
-                            color: Theme
-                                .of(context)
+                            color: Theme.of(context)
                                 .scaffoldBackgroundColor),
                       ),
                     ),
@@ -230,10 +248,7 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
             ctx,
             UpdateOrdersScreen(
               orderModel: order,
-              editEmail: OrdersHomeCubit
-                  .get(context)
-                  .currentAdmin!
-                  .email,
+              editEmail: OrdersHomeCubit.get(context).currentAdmin!.email,
             ));
       },
       onLongPress: () {
@@ -282,13 +297,10 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      '${"edit By".tr()} ${order.editEmail} ${"to".tr()} ${order
-                          .statusOrder}',
+                      '${"edit By".tr()} ${order.editEmail} ${"to".tr()} ${order.statusOrder}',
                       maxLines: 100,
                       style: TextStyle(
-                          fontSize: 11, color: Theme
-                          .of(context)
-                          .primaryColor),
+                          fontSize: 11, color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ),
@@ -299,150 +311,170 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
       ),
     );
   }
+
   pw.SizedBox getItem(OrderModel orderModel) {
     return pw.SizedBox(
-      width: MediaQuery.sizeOf(context).width*0.5,
-      child: pw.Column(
-        mainAxisSize: pw.MainAxisSize.min,
-        children: [
-          pw.Text(
-            '${"Order Name: ".tr()}${orderModel.orderName}',maxLines: 2,overflow: pw.TextOverflow.visible,
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            '${"Order Phone: ".tr()}${orderModel.orderPhone}',maxLines: 2,overflow: pw.TextOverflow.visible,
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            '${"Order City: ".tr()}${orderModel.conservation}',maxLines: 2,overflow: pw.TextOverflow.visible,
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            '${"Order Area: ".tr()}${orderModel.city}',maxLines: 2,overflow: pw.TextOverflow.visible,
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
+        width: MediaQuery.sizeOf(context).width * 0.5,
+        child: pw.Column(
+          mainAxisSize: pw.MainAxisSize.min,
+          children: [
+            pw.Text(
+              '${"Order Name: ".tr()}${orderModel.orderName}',
+              maxLines: 2,
+              overflow: pw.TextOverflow.visible,
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              '${"Order Phone: ".tr()}${orderModel.orderPhone}',
+              maxLines: 2,
+              overflow: pw.TextOverflow.visible,
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              '${"Order City: ".tr()}${orderModel.conservation}',
+              maxLines: 2,
+              overflow: pw.TextOverflow.visible,
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              '${"Order Area: ".tr()}${orderModel.city}',
+              maxLines: 2,
+              overflow: pw.TextOverflow.visible,
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
               '${"Order Address: ".tr()}${orderModel.address}',
               style: pw.TextStyle(
                   color: PdfColors.black,
                   fontSize: 8,
                   fontWeight: pw.FontWeight.normal),
               maxLines: 3,
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            '${"Item Name: ".tr()}${orderModel.type}',maxLines: 2,overflow: pw.TextOverflow.visible,
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            '${"Service Type: ".tr()}${orderModel.serviceType}',maxLines: 2,overflow: pw.TextOverflow.visible,
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            orderModel.number != 0
-                ? '${"Order Number: ".tr()}${orderModel.number.toString()}'
-                : "",
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          //barcode
-          pw.Center(
-            child: pw.BarcodeWidget(
-              data: orderModel.barCode,
-              barcode: pw.Barcode.qrCode(
-                  errorCorrectLevel:
-                  pw.BarcodeQRCorrectionLevel.high),
-              width: 100,
-              height: 100,
             ),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            '${"Date: ".tr()}${DateFormat().format(
-                DateTime.parse(orderModel.date))}',maxLines: 2,overflow: pw.TextOverflow.visible,
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            '${"Price".tr()}${orderModel.price.toString()}',maxLines: 2,overflow: pw.TextOverflow.visible,
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            '${"Charging".tr()}${orderModel.salOfCharging.toString()}',
-            style: pw.TextStyle(
-                color: PdfColors.black,
-                fontSize: 10,
-                fontWeight: pw.FontWeight.normal),
-          ),
-          pw.SizedBox(
-            height: 2,
-          ),
-          pw.Text(
-            "${"Total Price: ".tr()}${orderModel.totalPrice}",style: pw.TextStyle(
-              color: PdfColors.black,
-              fontSize: 10,
-              fontWeight: pw.FontWeight.normal),),
-        ],
-      )
-    );
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              '${"Item Name: ".tr()}${orderModel.type}',
+              maxLines: 2,
+              overflow: pw.TextOverflow.visible,
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              '${"Service Type: ".tr()}${orderModel.serviceType}',
+              maxLines: 2,
+              overflow: pw.TextOverflow.visible,
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              orderModel.number != 0
+                  ? '${"Order Number: ".tr()}${orderModel.number.toString()}'
+                  : "",
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            //barcode
+            pw.Center(
+              child: pw.BarcodeWidget(
+                data: orderModel.barCode,
+                barcode: pw.Barcode.qrCode(
+                    errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
+                width: 100,
+                height: 100,
+              ),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              '${"Date: ".tr()}${DateFormat().format(DateTime.parse(orderModel.date))}',
+              maxLines: 2,
+              overflow: pw.TextOverflow.visible,
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              '${"Price".tr()}${orderModel.price.toString()}',
+              maxLines: 2,
+              overflow: pw.TextOverflow.visible,
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              '${"Charging".tr()}${orderModel.salOfCharging.toString()}',
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+            pw.SizedBox(
+              height: 2,
+            ),
+            pw.Text(
+              "${"Total Price: ".tr()}${orderModel.totalPrice}",
+              style: pw.TextStyle(
+                  color: PdfColors.black,
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal),
+            ),
+          ],
+        ));
   }
+
+  pw.Document pdf = pw.Document();
+
   Future<void> addPage() async {
+    pdf = pw.Document();
     pdf.addPage(
       pw.MultiPage(
           pageFormat: PdfPageFormat.standard,
@@ -454,45 +486,43 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           build: (ctx) {
             List<pw.Widget> lists = [];
-            for (int i = 0; i < selectedOrders.length&&i<300; ) {
+            for (int i = 0; i < selectedOrders.length ;) {
+              if(i>300){
+                break;
+              }
               lists.add(
-              pw.Padding(
-                padding: const pw.EdgeInsets.all(2),
-                child:  pw.Column(
-                  mainAxisSize: pw.MainAxisSize.min,
-                  mainAxisAlignment: pw.MainAxisAlignment.end,
-                  crossAxisAlignment: pw.CrossAxisAlignment.end,
-                  children: [
-                    pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          if(selectedOrders.length-1>i)
-                          getItem(selectedOrders[i++]),
-                          if(selectedOrders.length-1>i)
-                          getItem(selectedOrders[i++]),
-                        ]),
-                    pw.SizedBox(
-                      height: 2
-                    ),
-                    pw.Container(
-                      width: double.infinity,
-                      height: 1,
-                      color: PdfColors.grey
-                    ),
-                    pw.SizedBox(
-                        height: 2
-                    ),
-                    pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          if(selectedOrders.length-1>i)
-                          getItem(selectedOrders[i++]),
-                          if(selectedOrders.length-1>i)
-                          getItem(selectedOrders[i++]),
-                        ]),
-                  ],
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(2),
+                  child: pw.Column(
+                    mainAxisSize: pw.MainAxisSize.min,
+                    mainAxisAlignment: pw.MainAxisAlignment.end,
+                    crossAxisAlignment: pw.CrossAxisAlignment.end,
+                    children: [
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            if(selectedOrders.length>i)
+                              getItem(selectedOrders[i++]),
+                            if(selectedOrders.length>i)
+                              getItem(selectedOrders[i++]),
+                          ]),
+                      pw.SizedBox(height: 2),
+                      pw.Container(
+                          width: double.infinity,
+                          height: 1,
+                          color: PdfColors.grey),
+                      pw.SizedBox(height: 2),
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            if(selectedOrders.length>i)
+                              getItem(selectedOrders[i++]),
+                            if(selectedOrders.length>i)
+                              getItem(selectedOrders[i++]),
+                          ]),
+                    ],
+                  ),
                 ),
-              ),
               );
               //i=i+4;
             }
@@ -500,21 +530,22 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen> {
           }),
     );
   }
-  Future<void> selectAll() async{
-  setState(() {
-    for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
-      OrdersHomeCubit.get(context).orders[i].isSelected=true;
-      selectedOrders.add( OrdersHomeCubit.get(context).orders[i]);
-    }
-  });
-}
-  Future<void> clearAll() async{
+
+  Future<void> selectAll() async {
     setState(() {
       for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
-        OrdersHomeCubit.get(context).orders[i].isSelected=false;
+        OrdersHomeCubit.get(context).orders[i].isSelected = true;
+        selectedOrders.add(OrdersHomeCubit.get(context).orders[i]);
+      }
+    });
+  }
+
+  Future<void> clearAll() async {
+    setState(() {
+      for (int i = 0; i < OrdersHomeCubit.get(context).orders.length; i++) {
+        OrdersHomeCubit.get(context).orders[i].isSelected = false;
       }
       selectedOrders.clear();
     });
   }
-
 }

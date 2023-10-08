@@ -1,15 +1,14 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls, non_constant_identifier_names
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:orders/modules/admin_screen/showPapers/papers.dart';
-import 'dart:io';
-import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
-import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:once/once.dart';
+import 'package:open_file/open_file.dart';
 import 'package:orders/layout/cubit/states.dart';
 import 'package:orders/models/admin_model.dart';
 import 'package:orders/models/category_model.dart';
@@ -29,7 +28,8 @@ import 'package:orders/modules/admin_screen/today_orders/orders.dart';
 import 'package:orders/modules/admin_screen/update_order/update_order.dart';
 import 'package:orders/shared/components/components.dart';
 import 'package:orders/shared/network/local/cashe_helper.dart';
-import 'package:once/once.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
 
 // ignore_for_file: avoid_print
 class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
@@ -135,7 +135,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (orderModel.date.split(' ')[0] ==
-                DateTime.now().toString().split(' ')[0] &&
+            DateTime.now().toString().split(' ')[0] &&
             orderModel.employerName == userProfile!.name) {
           totalTodayOrdersOfCurrentEmp++;
           if (filter == "كل الطلبات") {
@@ -545,27 +545,27 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 //update orders
   void updateOrder(
       {required String orderName,
-      required String conservation,
-      required String city,
-      required String address,
-      required String type,
-      required String barCode,
-      required String employerName,
-      required String employerPhone,
-      required String employerEmail,
-      required String orderPhone,
-      required String serviceType,
-      required String statusOrder,
-      required String notes,
-      required String paper,
-      required bool isSelected,
-      required String editEmail,
-      required String date,
-      required int number,
-      required double price,
-      required double totalPrice,
-      required double salOfCharging,
-      required context}) async {
+        required String conservation,
+        required String city,
+        required String address,
+        required String type,
+        required String barCode,
+        required String employerName,
+        required String employerPhone,
+        required String employerEmail,
+        required String orderPhone,
+        required String serviceType,
+        required String statusOrder,
+        required String notes,
+        required String paper,
+        required bool isSelected,
+        required String editEmail,
+        required String date,
+        required int number,
+        required double price,
+        required double totalPrice,
+        required double salOfCharging,
+        required context}) async {
     OrderModel orderModel = OrderModel(
       employerEmail: employerEmail,
       orderPhone: orderPhone,
@@ -607,23 +607,23 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   //add orders
   void addOrders(
       {required String orderName,
-      required String conservation,
-      required String city,
-      required String address,
-      required String type,
-      required String paper,
-      required String employerName,
-      required String employerPhone,
-      required String employerEmail,
-      required String orderPhone,
-      required String notes,
-      required String serviceType,
-      required String statusOrder,
-      required int number,
-      required double price,
-      required double totalPrice,
-      required double salOfCharging,
-      required context}) {
+        required String conservation,
+        required String city,
+        required String address,
+        required String type,
+        required String paper,
+        required String employerName,
+        required String employerPhone,
+        required String employerEmail,
+        required String orderPhone,
+        required String notes,
+        required String serviceType,
+        required String statusOrder,
+        required int number,
+        required double price,
+        required double totalPrice,
+        required double salOfCharging,
+        required context}) {
     emit(OrderAddOrderLoadingStates());
     OrderModel orderModel = OrderModel(
       orderPhone: orderPhone,
@@ -691,24 +691,27 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       emit(RejectFileErrorStates());
     });
   }
+
 //remove collection of order
-  void removeCollectionsOrders({required List<OrderModel>orders, required context}) {
-   orders.forEach((order) {
-     emit(RejectFileLoadingStates());
-     navigateToWithReturn(context, const AdminShowOrders());
-     String text = "Deleted Successfully".tr();
-     FirebaseFirestore.instance
-         .collection('orders')
-         .doc(order.barCode)
-         .delete()
-         .then((value) {
-           showToast(message: text, state: ToastState.SUCCESS);
-       emit(RejectFileSuccessStates());
-     }).catchError((onError) {
-       emit(RejectFileErrorStates());
-     });
-   });
+  void removeCollectionsOrders(
+      {required List<OrderModel> orders, required context}) {
+    orders.forEach((order) {
+      emit(RejectFileLoadingStates());
+      navigateToWithReturn(context, const AdminShowOrders());
+      String text = "Deleted Successfully".tr();
+      FirebaseFirestore.instance
+          .collection('orders')
+          .doc(order.barCode)
+          .delete()
+          .then((value) {
+        showToast(message: text, state: ToastState.SUCCESS);
+        emit(RejectFileSuccessStates());
+      }).catchError((onError) {
+        emit(RejectFileErrorStates());
+      });
+    });
   }
+
 ////////////////////////////////////////////////////////////////////////////////////
 //mode
   void modeChange() {
@@ -775,7 +778,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       price: price,
     );
     CollectionReference ref =
-        FirebaseFirestore.instance.collection('categories');
+    FirebaseFirestore.instance.collection('categories');
     DocumentReference docRef = ref.doc();
     String docId = docRef.id;
     categoryModel.catId = docId;
@@ -947,7 +950,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       final instance = FirebaseFirestore.instance;
       final batch = instance.batch();
       var collection =
-          instance.collection('group').doc('chat').collection('massages');
+      instance.collection('group').doc('chat').collection('massages');
       var snapshots = await collection.get();
       for (var doc in snapshots.docs) {
         batch.delete(doc.reference);
@@ -964,8 +967,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 
   void editCat(
       {required String docId,
-      required CategoryModel categoryModel,
-      required context}) {
+        required CategoryModel categoryModel,
+        required context}) {
     emit(RejectFileLoadingStates());
     FirebaseFirestore.instance
         .collection('categories')
@@ -1054,7 +1057,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         } else if (!finishDate.isAtSameMomentAs(firstDate) &&
             orderDate.isAtSameMomentAs(firstDate)) {
           TimeOfDay time =
-              TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+          TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
           tempHourTime = time.hour;
           tempHourFirstTime = firstTime.hour;
           tempHourLastTime = lastTime.hour;
@@ -1084,7 +1087,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         } else if (!finishDate.isAtSameMomentAs(firstDate) &&
             orderDate.isAtSameMomentAs(finishDate)) {
           TimeOfDay time =
-              TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+          TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
           tempHourTime = time.hour;
           tempHourFirstTime = firstTime.hour;
           tempHourLastTime = lastTime.hour;
@@ -1114,7 +1117,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         } else if (finishDate.isAtSameMomentAs(firstDate) &&
             orderDate.isAtSameMomentAs(finishDate)) {
           TimeOfDay time =
-              TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
+          TimeOfDay.fromDateTime(DateTime.parse(orderModel.date));
           tempHourTime = time.hour;
           tempHourFirstTime = firstTime.hour;
           tempHourLastTime = lastTime.hour;
@@ -1152,9 +1155,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
             }
           }
           if ((tempHourTime >= 13 && tempHourTime <= 23) &&
-                  (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
-                  (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
-                  tempHourTime < tempHourLastTime ||
+              (tempHourFirstTime >= 1 && tempHourFirstTime <= 12) &&
+              (tempHourLastTime >= 13 && tempHourLastTime <= 23) &&
+              tempHourTime < tempHourLastTime ||
               (tempHourTime >= 13 && tempHourTime <= 23) &&
                   (tempHourFirstTime >= 13 && tempHourFirstTime <= 23) &&
                   tempHourTime > tempHourFirstTime &&
@@ -1357,7 +1360,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     DocumentReference docRef = ref.doc();
     String docId = docRef.id;
     MoneyModel moneyModel =
-        MoneyModel(type: type, value: double.parse(value), docId: docId);
+    MoneyModel(type: type, value: double.parse(value), docId: docId);
     String text = "Money Uploaded Successfully".tr();
     docRef.set(moneyModel.toMap()).then((value) {
       showToast(message: text, state: ToastState.SUCCESS);
@@ -1447,7 +1450,7 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     DocumentReference docRef = ref.doc();
     String docId = docRef.id;
     PageModel pageModel =
-        PageModel(id: docId, name: paper, date: DateTime.now().toString());
+    PageModel(id: docId, name: paper, date: DateTime.now().toString());
     docRef.set(pageModel.toMap()).then((value) {
       showToast(message: "تم اضافة الصفحة بنجاح", state: ToastState.SUCCESS);
       emit(SocialGetUserStatusSuccessStates());
@@ -1586,7 +1589,8 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       totalOfAllOrdersConfirm = 0;
       totalOfConfirmedNumber = 0;
       totalOfConfirmedPrice = 0;
-      papersDetailsFilter.updateAll((key, value) => papersDetailsFilter[key] = []);
+      papersDetailsFilter
+          .updateAll((key, value) => papersDetailsFilter[key] = []);
       event.docs.forEach((element) {
         OrderModel orderModel = OrderModel.fromMap(element.data());
         if (papersDetailsFilter.containsKey(orderModel.paper)) {
@@ -1600,10 +1604,12 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
           totalOfConfirmedNumber++;
         }
         if (filter == "كل الطلبات") {
+          orderModel.isSelected = false;
           orders.add(orderModel);
           totalOfAllOrders += orderModel.totalPrice;
         }
         if (filter == orderModel.statusOrder) {
+          orderModel.isSelected = false;
           orders.add(orderModel);
           totalOfAllOrders += orderModel.totalPrice;
         }
@@ -1618,30 +1624,25 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
   Map<String, List<OrderModel>> papersDetailsFilter = {};
   List<PageModel> resPagesFilter = [];
   List<String> resPagesUnique = [];
-  void getPapersFilter(String date,context) async{
+  void getPapersFilter(String date, context) async {
     emit(GetPaperFiltermLoadingStates());
-     FirebaseFirestore.instance
-        .collection('orders')
-        .get()
-        .then((value) {
+    FirebaseFirestore.instance.collection('orders').get().then((value) {
       papersDetailsFilter = {};
       resPagesFilter = [];
-      resPagesUnique=[];
+      resPagesUnique = [];
       value.docs.forEach((order) {
-        if (date.split(" ")[0] == OrderModel.fromMap(order.data()).date.split(" ")[0]) {
-          OrderModel  orderModel=OrderModel.fromMap(order.data());
-          FirebaseFirestore.instance
-              .collection('papers')
-              .get()
-              .then((value) {
-            value.docs.forEach((element) async{
+        if (date.split(" ")[0] ==
+            OrderModel.fromMap(order.data()).date.split(" ")[0]) {
+          OrderModel orderModel = OrderModel.fromMap(order.data());
+          FirebaseFirestore.instance.collection('papers').get().then((value) {
+            value.docs.forEach((element) async {
               if (!resPagesUnique.contains(element['name'])) {
                 resPagesUnique.add(element['name']);
                 resPagesFilter.add(PageModel.fromMap(element.data()));
               }
-              if(orderModel.paper==element['name']) {
-                if ( !papersDetailsFilter.containsKey(element['name'])) {
-                   papersDetailsFilter[element['name']]=[];
+              if (orderModel.paper == element['name']) {
+                if (!papersDetailsFilter.containsKey(element['name'])) {
+                  papersDetailsFilter[element['name']] = [];
                 }
                 if (papersDetailsFilter.containsKey(element['name'])) {
                   papersDetailsFilter[element['name']]!.add(orderModel);
@@ -1649,7 +1650,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
               }
             });
             emit(GetFileSuccessStates());
-
           }).catchError((onError) {
             emit(GetVedioErrorStates());
           });
@@ -1658,11 +1658,10 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       print(papersDetailsFilter);
 
       emit(GetFileSuccessStates());
-    }).catchError((onError){
+    }).catchError((onError) {
       emit(GetVedioErrorStates());
     });
     emit(GetFileSuccessStates());
-
   }
 
   List<String> papers = [];
@@ -1675,9 +1674,9 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .listen((value) {
       papers = [];
       value.docs.forEach((element) {
-          if (!papers.contains(element['name'])) {
-            papers.add(element['name']);
-          }
+        if (!papers.contains(element['name'])) {
+          papers.add(element['name']);
+        }
       });
       //getOrders('كل الطلبات');
     }).onError((onError) {
@@ -1881,13 +1880,13 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
 //add categories
   void addSource(
       {required date,
-      required sourceName,
-      required num,
-      required total,
-      required price,
-      required context}) {
+        required sourceName,
+        required num,
+        required total,
+        required price,
+        required context}) {
     SourceModel sourceModel =
-        SourceModel(date: date, price: price, num: num, total: total);
+    SourceModel(date: date, price: price, num: num, total: total);
     String text = "Source Uploaded Successfully".tr();
     FirebaseFirestore.instance
         .collection('sources')
@@ -2029,10 +2028,11 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
         .doc(barCode)
         .update(orderModel.toMap());
   }
+
   ////////////////////////
   void createExcelSheet(context) async {
     emit(GhhhetFinishedStates());
-    if(await File("orders.xlsx").exists()){
+    if (await File("orders.xlsx").exists()) {
       File("orders.xlsx").delete();
     }
     excel.Workbook workbook = excel.Workbook();
@@ -2055,49 +2055,28 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
     sheet.getRangeByIndex(1, 16).setText("Service_Type");
     sheet.getRangeByIndex(1, 17).setText("notes");
     for (int i = 0; i < orders.length; i++) {
-      orders[i].statusOrder= 'جاري الشحن';
-      sheet
-          .getRangeByIndex(i + 2, 1)
-          .setText(orders[i].orderName);
-      sheet
-          .getRangeByIndex(i + 2, 2)
-          .setText(orders[i].conservation);
-      sheet
-          .getRangeByIndex(i + 2, 3)
-          .setText(orders[i].city);
-      sheet
-          .getRangeByIndex(i + 2, 4)
-          .setText(orders[i].address);
-      sheet
-          .getRangeByIndex(i + 2, 5)
-          .setText(orders[i].orderPhone);
+      orders[i].statusOrder = 'جاري الشحن';
+      sheet.getRangeByIndex(i + 2, 1).setText(orders[i].orderName);
+      sheet.getRangeByIndex(i + 2, 2).setText(orders[i].conservation);
+      sheet.getRangeByIndex(i + 2, 3).setText(orders[i].city);
+      sheet.getRangeByIndex(i + 2, 4).setText(orders[i].address);
+      sheet.getRangeByIndex(i + 2, 5).setText(orders[i].orderPhone);
       sheet.getRangeByIndex(i + 2, 6).setText(" ");
-      sheet
-          .getRangeByIndex(i + 2, 7)
-          .setText(orders[i].employerName);
+      sheet.getRangeByIndex(i + 2, 7).setText(orders[i].employerName);
       sheet.getRangeByIndex(i + 2, 8).setText(" ");
-      sheet.getRangeByIndex(i + 2, 9).setText(" ");
       sheet
-          .getRangeByIndex(i + 2, 10)
-          .setText(orders[i].type);
-      sheet
-          .getRangeByIndex(i + 2, 11)
-          .setValue(orders[i].number);
+          .getRangeByIndex(i + 2, 9)
+          .setText(orders[i].salOfCharging.toString());
+      sheet.getRangeByIndex(i + 2, 10).setText(orders[i].type);
+      sheet.getRangeByIndex(i + 2, 11).setText(orders[i].number.toString());
       sheet.getRangeByIndex(i + 2, 12).setText(" ");
-      sheet
-          .getRangeByIndex(i + 2, 13)
-          .setNumber(orders[i].totalPrice);
+      sheet.getRangeByIndex(i + 2, 13).setNumber(orders[i].totalPrice);
       sheet.getRangeByIndex(i + 2, 14).setText(" ");
       sheet.getRangeByIndex(i + 2, 15).setText(" ");
-      sheet
-          .getRangeByIndex(i + 2, 16)
-          .setText(orders[i].serviceType);
-      sheet
-          .getRangeByIndex(i + 2, 17)
-          .setText(orders[i].notes);
+      sheet.getRangeByIndex(i + 2, 16).setText(orders[i].serviceType);
+      sheet.getRangeByIndex(i + 2, 17).setText(orders[i].notes);
     }
-    Future.delayed(const Duration(minutes: 1))
-    .then((value)async{
+    Future.delayed(const Duration(minutes: 1)).then((value) async {
       //save
       String text = "Edited Successfully...".tr();
       showToast(message: text, state: ToastState.SUCCESS);
@@ -2108,15 +2087,14 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
       final String fileName = '$path/orders.xlsx';
       final File file = File(fileName);
       await file.writeAsBytes(
-      bytes,
-      flush: true,
+        bytes,
+        flush: true,
       );
       emit(GetFinishedStates());
       OpenFile.open(fileName);
     });
-     Future.delayed(const Duration(milliseconds: 10))
-    .then((value)async{
-      for(int i=0;i<orders.length;i++){
+    Future.delayed(const Duration(milliseconds: 10)).then((value) async {
+      for (int i = 0; i < orders.length; i++) {
         updateOrderCharging(
             orderName: orders[i].orderName,
             paper: orders[i].paper,
@@ -2141,9 +2119,6 @@ class OrdersHomeCubit extends Cubit<OrdersHomeStates> {
             salOfCharging: orders[i].salOfCharging,
             context: context);
       }
-    })
-    .catchError((onError){
-    });
+    }).catchError((onError) {});
   }
-
 }
