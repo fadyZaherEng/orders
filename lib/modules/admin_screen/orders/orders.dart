@@ -487,9 +487,6 @@ class _DisplayOrdersScreenState extends State<DisplayOrdersScreen>
           build: (ctx) {
             List<pw.Widget> lists = [];
             for (int i = 0; i < selectedOrders.length ;) {
-              if(i>300){
-                break;
-              }
               lists.add(
                 pw.Padding(
                   padding: const pw.EdgeInsets.all(2),
